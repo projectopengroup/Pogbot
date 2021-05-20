@@ -3,7 +3,7 @@
 <a href="//discord.gg/MPesmHm">MMF Community Discord</a>
 </p>
 
-This is a community ran project, coded in python and running on AWS
+This is an open source community ran project. Join the MMF discord above for more information on how to participate. Coded in python, running on AWS.
 
 ## Project Leads
 
