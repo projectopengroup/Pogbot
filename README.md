@@ -1,4 +1,4 @@
-# pogbot
+# Pogbot
 <p align="left">  
 <a href="//discord.gg/MPesmHm">MMF Community Discord</a>
 </p>
