@@ -1,5 +1,5 @@
 # pogbot
-<p align="center">  
+<p align="left">  
 <a href="//discord.gg/MPesmHm">MMF Community Discord</a>
 </p>
 
