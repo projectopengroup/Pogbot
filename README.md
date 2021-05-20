@@ -12,4 +12,4 @@ This is an open source community ran project. Join the MMF discord above for mor
 * **America**
 
 ## Contributors
-* **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group Logo as well as the bots logo icon.
+* **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group and Pogbot logos.
