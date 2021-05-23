@@ -2,7 +2,7 @@
 import discord
 from discord.ext import commands
 
-# Define bot and it's commands prefix.
+# Define bot and it's commands prefix..
 bot = commands.Bot(command_prefix="!")
 
 @bot.event
