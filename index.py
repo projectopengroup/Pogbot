@@ -2,7 +2,7 @@
 import discord
 from discord.ext import commands
 
-# Define bot and it's commands prefix..
+# Define bot and it's commands prefix.
 bot = commands.Bot(command_prefix="!")
 
 @bot.event
@@ -44,4 +44,4 @@ async def on_member_remove(member):
 
 
 # Run the bot using it's token.
-bot.run('ODQzMjcyOTc1NzcxNjMxNjE2.YKBdKA.3hnuj5De0R2sSD7QLGyRJFvK9Nw')
+bot.run('TOKEN HERE')
