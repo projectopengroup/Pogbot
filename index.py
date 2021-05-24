@@ -58,6 +58,7 @@ async def avatar(ctx):
     # Sending the embed message response back.
     await ctx.send(embed=embed)
 
+
 @bot.event
 # Check to see if bot is ready.
 async def on_ready():
