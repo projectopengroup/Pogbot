@@ -58,30 +58,6 @@ async def avatar(ctx):
     # Sending the embed message response back.
     await ctx.send(embed=embed)
 
-
-# DJ's code for finding an avatar
-# Assigning command aliases to look for.
-@bot.command(name='avatar', aliases=['av', 'pfp'])
-# Look for a command called avatar.
-async def avatar(ctx):
-    # Defining 'user' from command origin(ctx)'s author(person who sent the command).
-    user = ctx.author
-    # Defining 'userid' from command origin(ctx)'s author's ID(identification number).
-    userid = ctx.message.author.id
-    # Defining pfp from ctx.author(user)'s avatar_url.
-    pfp = user.avatar_url
-    # Creating an embed response using an f string to insert the author long name by using our variable 'user'.
-    embed = discord.Embed(
-        title=f'**{user}**',
-        description='**Avatar**',
-        color=0x08d5f7
-    )
-    # Setting the embed's image url property to the one we defined from user(ctx.author).avatar_url
-    embed.set_image(url=pfp)
-    # Sending the embed message response back.
-    await ctx.send(embed=embed)
-
-
 @bot.event
 # Check to see if bot is ready.
 async def on_ready():
