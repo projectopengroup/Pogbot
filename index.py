@@ -23,9 +23,9 @@ async def on_message(msg):
 
 @bot.command()
 # Look for a command called ping.
-async def ping(msg):
+async def ping(ctx):
     # Send a message "Pong" when ping has been used.
-    await msg.send("Pong")
+    await ctx.send("Pong")
 
 @bot.command()
 # Look for a command called github.
