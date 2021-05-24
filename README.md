@@ -14,4 +14,4 @@ This is an open source community ran project. Join the MMF discord above for mor
 ## Contributors
 * **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group and Pogbot logos.
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)** -> Code contributions. (github command).
-* **[DJ-DeHao(DJ DeHao#4627 on discord)](https://github.com/DJ-DeHao)** -> Code contributions. (avatar command).
+* **[DJ DeHao(DJ DeHao#4627 on discord)](https://github.com/DJ-DeHao)** -> Code contributions. (avatar command).
