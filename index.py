@@ -27,6 +27,11 @@ async def ping(msg):
     # Send a message "Pong" when ping has been used.
     await msg.send("Pong")
 
+@bot.command()
+# Look for a command called github.
+async def github(ctx):
+    # Sends the link to the bot github page when the github command is used.
+    await ctx.send("https://github.com/projectopengroup/Pogbot")
 
 @bot.event
 # Check to see if bot is ready.
