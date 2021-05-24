@@ -2,6 +2,9 @@
 import discord
 from discord.ext import commands
 
+# Request bot token from user input.
+BotToken = input("Enter bot token: ")
+
 # Define bot and it's commands prefix.
 bot = commands.Bot(command_prefix="!")
 
@@ -30,6 +33,8 @@ async def ping(msg):
 async def on_ready():
     # Print status to terminal.
     print('Status: Ready.')
+    await bot.change_presence(
+        activity=discord.Game(name='with discord API'))
 
 @bot.event
 # Look for members joining.
@@ -43,5 +48,5 @@ async def on_member_remove(member):
     print(f'{member} left.')
 
 
-# Run the bot using it's token.
-bot.run('TOKEN HERE')
+# Run the bot using its token.
+bot.run(BotToken)
