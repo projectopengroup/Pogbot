@@ -8,6 +8,7 @@ BotToken = input("Enter bot token: ")
 # Define bot and it's commands prefix.
 bot = commands.Bot(command_prefix="!")
 
+
 @bot.event
 # Look for incoming messages in DMs and in Chat.
 async def on_message(msg):
@@ -27,11 +28,13 @@ async def ping(ctx):
     # Send a message "Pong" when ping has been used.
     await ctx.send("Pong")
 
+
 @bot.command()
 # Look for a command called github.
 async def github(ctx):
     # Sends the link to the bot github page when the github command is used.
     await ctx.send("https://github.com/projectopengroup/Pogbot")
+
 
 @bot.event
 # Check to see if bot is ready.
@@ -40,6 +43,7 @@ async def on_ready():
     print('Status: Ready.')
     await bot.change_presence(
         activity=discord.Game(name='with discord API'))
+
 
 @bot.event
 # Look for members joining.
