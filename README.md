@@ -7,10 +7,11 @@ This is an open source community ran project. Join the MMF discord above for mor
 
 ## Project Leads
 
-* **[Mag (@projectopengroup)(Mag#7777 on discord)](https://github.com/projectopengroup)**
-* **[Jonny (@JDMDevelopment)(h3resjonny#0741 on discord)](https://github.com/JDMDevelopment)**
+* **[Mag(Mag#7777 on discord)](https://github.com/projectopengroup)**
+* **[Jonny(h3resjonny#0741 on discord)](https://github.com/JDMDevelopment)**
 * **America(ٰٰٰ'#2728 on discord)**
 
 ## Contributors
 * **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group and Pogbot logos.
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)** -> Code contributions. (github command).
+* **[DJ-DeHao(DJ DeHao#4627 on discord)](https://github.com/DJ-DeHao)** -> Code contributions. (avatar command).
