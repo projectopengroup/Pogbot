@@ -43,16 +43,14 @@ async def echo(ctx, *, arg):
     await ctx.send(arg)
 
 
-# DJ's code for finding an avatar
-# Assigning command aliases to look for.
 @bot.command(name='avatar', aliases=['av', 'pfp'])
-# Look for a command called avatar.
-async def avatar(ctx):
-    # Defining 'user' from command origin(ctx)'s author(person who sent the command).
-    user = ctx.author
-    # Defining 'userid' from command origin(ctx)'s author's ID(identification number).
-    # userid = user.id
-    # Defining pfp from ctx.author(user)'s avatar_url.
+# Look for a command called avatar and collects optional user parameter, so if no user given, user = None.
+async def avatar(ctx, user: discord.Member = None):
+    # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
+    # command author.
+    if user is None:
+        user = ctx.author
+    # Defining pfp from user's avatar_url.
     pfp = user.avatar_url
     # Creating an embed response using an f string to insert the author long name by using our variable 'user'.
     embed = discord.Embed(
@@ -60,14 +58,14 @@ async def avatar(ctx):
         description='**Avatar**',
         color=0x08d5f7
     )
-    # Setting the embed's image url property to the one we defined from user(ctx.author).avatar_url
+    # Setting the embed's image url property to the one we defined from user.avatar_url
     embed.set_image(url=pfp)
     # Sending the embed message response back.
     await ctx.send(embed=embed)
 
 
-@bot.command()
-# Look for a command called myid and collects optional user parameter, so if no user given, user = None.
+@bot.command(name='userid', aliases=['id', 'uid'])
+# Look for a command called userid and collects optional user parameter, so if no user given, user = None.
 async def userid(ctx, user: discord.Member = None):
     # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
     # command author.
