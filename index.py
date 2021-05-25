@@ -18,7 +18,19 @@ async def send_embed(ctx, title = None, description = None, author = None, autho
     if title is None and description is None:
         print("[Error]: Error creating embed. No title or description specified.")
     else:
-        new_embed = discord.Embed(title=title, description=description, color=color)
+        # Initializes new_embed variable
+        new_embed = None
+
+        # Checks if title and description are 'None'. If None, that element isn't added to the embed
+        if title is not None and description is not None:
+            new_embed = discord.Embed(title=title, description=description, color=color)
+        elif title is not None and description is None:
+            new_embed = discord.Embed(title=title, color=color)
+        elif title is None and description is not None:
+            new_embed = discord.Embed(description=description, color=color)
+
+        # Checks if each argument is 'None'. If None, the argument is ignored. But if not None, then the element is
+        # added to the embed.
         if image is not None:
             new_embed.set_image(url=image)
         if footer is not None:
@@ -29,8 +41,6 @@ async def send_embed(ctx, title = None, description = None, author = None, autho
             new_embed.set_author(name=author, icon_url=author_pfp)
         elif author is not None and author_pfp is None:
             new_embed.set_author(name=author)
-        elif author is None and author_pfp is not None:
-            new_embed.set_author(icon_url=author_pfp)
         await ctx.send(embed=new_embed)
 
 
