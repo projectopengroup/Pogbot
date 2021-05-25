@@ -30,10 +30,18 @@ async def ping(ctx):
 
 
 @bot.command()
+# Look for a command called github.
+async def github(ctx):
+    # Sends the link to the bot github page when the github command is used.
+    await ctx.send("https://github.com/projectopengroup/Pogbot")
+
+
+@bot.command()
 # Look for a command called echo
 async def echo(ctx, *, arg):
     # Send an echo of the keyword-only argument.
     await ctx.send(arg)
+
 
 # DJ's code for finding an avatar
 # Assigning command aliases to look for.
