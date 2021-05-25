@@ -65,6 +65,7 @@ async def avatar(ctx):
     # Sending the embed message response back.
     await ctx.send(embed=embed)
 
+
 @bot.command()
 # Look for a command called myid and collects optional user parameter, so if no user given, user = None.
 async def userid(ctx, user: discord.Member = None):
@@ -76,6 +77,7 @@ async def userid(ctx, user: discord.Member = None):
     # description (Which gets the user's id), and color (which is the bot's color).
     idembed = discord.Embed(title=f"**{user}'s ID**", description=f'**{user.id}**', color=0x08d5f7)
     await ctx.send(embed=idembed)
+
 
 @bot.event
 # Check to see if bot is ready.
