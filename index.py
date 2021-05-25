@@ -3,10 +3,36 @@ import discord
 from discord.ext import commands
 
 # Request bot token from user input.
-BotToken = input("Enter bot token: ")
+BotToken = 'ODQzMjcyOTc1NzcxNjMxNjE2.YKBdKA.FPLwqmXf1570Q4YRJ41z1EVDwdE'
+# BotToken = input("Enter bot token: ")
 
 # Define bot and it's commands prefix.
 bot = commands.Bot(command_prefix="!")
+
+# Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
+# all args need to be filled out, but a title or description is required. One of them has to be filled
+# out to create an embed, or both. To create an embed, just type ' await send_embed(ctx, arg=value) ' with the arg being
+# one of the args that it takes and the appropriate value. Any image, thumbnail, pfp, etc. takes a url in the form of a
+# string.
+async def send_embed(ctx, title = None, description = None, author = None, author_pfp = None,
+                     color = discord.Colour.default(), footer = None, thumbnail = None, image = None):
+    if title is None and description is None:
+        print("[Error]: Error creating embed. No title or description specified.")
+    else:
+        new_embed = discord.Embed(title=title, description=description, color=color)
+        if image is not None:
+            new_embed.set_image(url=image)
+        if footer is not None:
+            new_embed.set_footer(text=footer)
+        if thumbnail is not None:
+            new_embed.set_thumbnail(url=thumbnail)
+        if author is not None and author_pfp is not None:
+            new_embed.set_author(name=author, icon_url=author_pfp)
+        elif author is not None and author_pfp is None:
+            new_embed.set_author(name=author)
+        elif author is None and author_pfp is not None:
+            new_embed.set_author(icon_url=author_pfp)
+        await ctx.send(embed=new_embed)
 
 
 @bot.event
@@ -52,12 +78,9 @@ async def avatar(ctx, user: discord.Member = None):
         user = ctx.author
     # Defining pfp from user's avatar_url.
     pfp = user.avatar_url
-    # Creating an embed response using an f string to insert the author long name by using our variable 'user'.
-    embed = discord.Embed(title=f'**{user}**', description='**Avatar**', color=0x08d5f7)
-    # Setting the embed's image url property to the one we defined from user.avatar_url
-    embed.set_image(url=pfp)
-    # Sending the embed message response back.
-    await ctx.send(embed=embed)
+    # Creating an embed response using an f string to insert the author long name by using our variable 'user', setting
+    # the description to '**Avatar**', the color to match the bot, and the image to the specified user's pfp.
+    await send_embed(ctx, title=f'**{user}**', description='**Avatar**', color=0x08d5f7, image=pfp)
 
 
 @bot.command(name='userid', aliases=['id', 'uid'])
@@ -69,8 +92,8 @@ async def userid(ctx, user: discord.Member = None):
         user = ctx.author
     # Creates a discord embed with the elements: title (Which gets the user's tag),
     # description (Which gets the user's id), and color (which is the bot's color).
-    idembed = discord.Embed(title=f"**{user}'s ID**", description=f'**{user.id}**', color=0x08d5f7)
-    await ctx.send(embed=idembed)
+    await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**', color=0x08d5f7)
+
 
 
 @bot.event
