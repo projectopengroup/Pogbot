@@ -3,8 +3,7 @@ import discord
 from discord.ext import commands
 
 # Request bot token from user input.
-BotToken = 'ODQzMjcyOTc1NzcxNjMxNjE2.YKBdKA.FPLwqmXf1570Q4YRJ41z1EVDwdE'
-# BotToken = input("Enter bot token: ")
+BotToken = input("Enter bot token: ")
 
 # Define bot and it's commands prefix.
 bot = commands.Bot(command_prefix="!")
