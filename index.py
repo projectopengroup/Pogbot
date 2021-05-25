@@ -53,11 +53,7 @@ async def avatar(ctx, user: discord.Member = None):
     # Defining pfp from user's avatar_url.
     pfp = user.avatar_url
     # Creating an embed response using an f string to insert the author long name by using our variable 'user'.
-    embed = discord.Embed(
-        title=f'**{user}**',
-        description='**Avatar**',
-        color=0x08d5f7
-    )
+    embed = discord.Embed(title=f'**{user}**', description='**Avatar**', color=0x08d5f7)
     # Setting the embed's image url property to the one we defined from user.avatar_url
     embed.set_image(url=pfp)
     # Sending the embed message response back.
