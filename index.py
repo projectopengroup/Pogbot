@@ -36,6 +36,13 @@ async def github(ctx):
     await ctx.send("https://github.com/projectopengroup/Pogbot")
 
 
+@bot.command()
+# Look for a command called echo
+async def echo(ctx, *, arg):
+    # Send an echo of the keyword-only argument.
+    await ctx.send(arg)
+
+
 # DJ's code for finding an avatar
 # Assigning command aliases to look for.
 @bot.command(name='avatar', aliases=['av', 'pfp'])
