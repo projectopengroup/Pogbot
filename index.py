@@ -200,6 +200,7 @@ if __name__ == "__main__":
         cur = conn.cursor()
         # Reset our Token to "None"
         cur.execute(f"UPDATE configs SET BotToken = 'None' WHERE BotToken = '{BotToken}'")
-        # Commit and close the database.
+        # Commit Database
         conn.commit()
+        # Close Database
         conn.close()
