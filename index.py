@@ -135,9 +135,9 @@ async def github(ctx):
 
 @bot.command()
 # Look for a command called github.
-async def test(ctx):
+async def pog(ctx):
     # Sends the link to the bot github page when the github command is used.
-    await ctx.send("This is a test.")
+    await ctx.send("Poggers.")
 
 
 @bot.command()
