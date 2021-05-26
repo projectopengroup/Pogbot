@@ -7,9 +7,9 @@ This is an open source community ran project. Join the discord above for more in
 
 ## Project Leads
 
-* **[Mag(Mag#7777 on discord)](https://github.com/projectopengroup)**
+* **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)**
 * **[Jonny(h3resjonny#0741 on discord)](https://github.com/JDMDevelopment)**
-* **America(ٰٰٰ'#2728 on discord)**
+* **Stu(ٰٰٰ'#2728 on discord)**
 
 ## Contributors
 * **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group and Pogbot logos.
