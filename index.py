@@ -4,6 +4,21 @@ import sqlite3
 import discord
 from discord.ext import commands
 
+# Print the bot logo to terminal on start
+print('''
+      ___           ___           ___           ___           ___           ___     
+     /\  \         /\  \         /\  \         /\  \         /\  \         /\  \    
+    /::\  \       /::\  \       /::\  \       /::\  \       /::\  \        \:\  \   
+   /:/\:\  \     /:/\:\  \     /:/\:\  \     /:/\:\  \     /:/\:\  \        \:\  \  
+  /::\~\:\  \   /:/  \:\  \   /:/  \:\  \   /::\~\:\__\   /:/  \:\  \       /::\  \ 
+ /:/\:\ \:\__\ /:/__/ \:\__\ /:/__/_\:\__\ /:/\:\ \:|__| /:/__/ \:\__\     /:/\:\__\\
+ \/__\:\/:/  / \:\  \ /:/  / \:\  /\ \/__/ \:\~\:\/:/  / \:\  \ /:/  /    /:/  \/__/
+      \::/  /   \:\  /:/  /   \:\ \:\__\    \:\ \::/  /   \:\  /:/  /    /:/  /     
+       \/__/     \:\/:/  /     \:\/:/  /     \:\/:/  /     \:\/:/  /     \/__/      
+                  \::/  /       \::/  /       \::/__/       \::/  /                 
+                   \/__/         \/__/         ~~            \/__/                                                                                            
+''')
+
 # Making our connection to the sqllite3 database.
 conn = sqlite3.connect('prefs.db')
 # Setting this connection to strings/
@@ -167,13 +182,12 @@ async def on_message_delete(message):
 
 # Run the bot using its token if running from main.
 if __name__ == "__main__":
-    print(BotToken)
     # Try to login with the bot token
     try:
         bot.run(BotToken)
     # On login error do this
     except discord.errors.LoginFailure as e:
-        print("Login unsuccessful.")
+        print("Status: Login unsuccessful.")
         # Pull up the database again
         conn = sqlite3.connect('prefs.db')
         # Create our SQL cursor.
