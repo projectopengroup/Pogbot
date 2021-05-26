@@ -37,7 +37,7 @@ if [ -d ".git" ]; then
               exit 1
           else
               echo $GU_SUCCESS_REPORT
-              pkill -9 -e -f processname
+              pkill -9 -e -f index.py
               python3 index.py
           fi
       fi
