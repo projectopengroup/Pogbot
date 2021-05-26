@@ -91,10 +91,16 @@ async def send_embed(ctx, title=None, description=None, author=None, author_pfp=
 async def on_message(msg):
     # Check if the message author is a bot.
     if msg.author.bot:
-        # if it is a bot then return the code from here, not going any further.
+        # if it is a bot then return the code from here without going further.
+        return
+
+    # Check if the message channel contains the word direct message
+    if "Direct Message" in str(msg.channel):
+        # If it does, then print it as such and return without going further.
+        print(f'{msg.channel} - {msg.author} : {msg.content}')
         return
     # Print the server name and channel of the message followed by author name and the message content.
-    print(f'(Server: {msg.guild}) [{msg.channel}] {msg.author} : {msg.content}')
+    print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
     # Ensure that we process our commands, as on_message overrides and stops command execution.
     await bot.process_commands(msg)
 
