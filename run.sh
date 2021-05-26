@@ -3,7 +3,7 @@
 # Default to working directory
 LOCAL_REPO="."
 # Default to git pull with FF merge in quiet mode
-GIT_COMMAND="git pull upstream master --quiet"
+GIT_COMMAND="git pull --quiet"
 
 # User messages
 GU_ERROR_FETCH_FAIL="Unable to fetch the remote repository."
