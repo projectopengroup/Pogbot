@@ -1,20 +1,48 @@
 # Importing requirements
+import re
+import sqlite3
 import discord
 from discord.ext import commands
 
-# Request bot token from user input.
-BotToken = input("Enter bot token: ")
+# Making our connection to the sqllite3 database.
+conn = sqlite3.connect('prefs.db')
+# Setting this connection to strings/
+conn.text_factory = str
+# Creating our SQL cursor.
+cur = conn.cursor()
+# Executing a query that selects everything from the table called configs.
+cur.execute('SELECT * FROM configs')
+# Pulling data from the cursor by fetching everything.
+data = cur.fetchall()
+# Setting the bot token variable by looking for the second columns value in the data.
+BotToken = (data[0][1])
+# If the BotToken is it's default value of "None" then do this stuff.
+if "None" not in BotToken:
+    print("Status: Bot token found! Loading bot...'")
+else:
+    print("Status: No bot token found!, prompting user for input")
+    # Request bot token from user input.
+    BotToken = input("Enter bot token: ")
+    # Update the database with the provided BotToken.
+    cur.execute(f"UPDATE configs SET BotToken = '{BotToken}' WHERE BotToken = 'None'")
+    # Commit the database changes.
+    conn.commit()
+
+
+# Close the database connection
+conn.close()
 
 # Define bot and it's commands prefix.
 bot = commands.Bot(command_prefix="!")
+
 
 # Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
 # all args need to be filled out, but a title or description is required. One of them has to be filled
 # out to create an embed, or both. To create an embed, just type ' await send_embed(ctx, arg=value) ' with the arg being
 # one of the args that it takes and the appropriate value. Any image, thumbnail, pfp, etc. takes a url in the form of a
 # string.
-async def send_embed(ctx, title = None, description = None, author = None, author_pfp = None,
-                     color = discord.Colour.default(), footer = None, thumbnail = None, image = None):
+async def send_embed(ctx, title=None, description=None, author=None, author_pfp=None,
+                     color=discord.Colour.default(), footer=None, thumbnail=None, image=None):
     if title is None and description is None:
         print("[Error]: Error creating embed. No title or description specified.")
     else:
@@ -101,8 +129,8 @@ async def userid(ctx, user: discord.Member = None):
         user = ctx.author
     # Creates a discord embed with the elements: title (Which gets the user's tag),
     # description (Which gets the user's id), and color (which is the bot's color).
-    await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**', color=0x08d5f7)
-
+    await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
+                     color=0x08d5f7)
 
 
 @bot.event
@@ -128,4 +156,19 @@ async def on_member_remove(member):
 
 # Run the bot using its token if running from main.
 if __name__ == "__main__":
-  bot.run(BotToken)
+    print(BotToken)
+    # Try to login with the bot token
+    try:
+        bot.run(BotToken)
+    # On login error do this
+    except discord.errors.LoginFailure as e:
+        print("Login unsuccessful.")
+        # Pull up the database again
+        conn = sqlite3.connect('prefs.db')
+        # Create our SQL cursor.
+        cur = conn.cursor()
+        # Reset our Token to "None"
+        cur.execute(f"UPDATE configs SET BotToken = 'None' WHERE BotToken = '{BotToken}'")
+        # Commit and close the database.
+        conn.commit()
+        conn.close()
