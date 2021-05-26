@@ -1,6 +1,6 @@
 # Importing requirements
-import re
 import sqlite3
+import base64
 import discord
 from discord.ext import commands
 
@@ -98,6 +98,7 @@ async def on_message(msg):
     if "Direct Message" in str(msg.channel):
         # If it does, then print it as such and return without going further.
         print(f'{msg.channel} - {msg.author} : {msg.content}')
+        await bot.process_commands(msg)
         return
     # Print the server name and channel of the message followed by author name and the message content.
     print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
@@ -117,6 +118,13 @@ async def ping(ctx):
 async def github(ctx):
     # Sends the link to the bot github page when the github command is used.
     await ctx.send("https://github.com/projectopengroup/Pogbot")
+
+
+@bot.command()
+# Look for a command called github.
+async def Test(ctx):
+    # Sends the link to the bot github page when the github command is used.
+    await ctx.send("This was a test.")
 
 
 @bot.command()
