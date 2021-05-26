@@ -28,7 +28,6 @@ else:
     # Commit the database changes.
     conn.commit()
 
-
 # Close the database connection
 conn.close()
 
@@ -152,6 +151,18 @@ async def on_member_join(member):
 # Look for members leaving.
 async def on_member_remove(member):
     print(f'{member} left.')
+
+
+@bot.event
+# Look for members joining.
+async def on_message_edit(before, after):
+    print(f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
+
+
+@bot.event
+# Look for members joining.
+async def on_message_delete(message):
+    print(f'Message Deleted: Author: {message.author} Message: {message.clean_content}.')
 
 
 # Run the bot using its token if running from main.
