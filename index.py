@@ -126,5 +126,6 @@ async def on_member_remove(member):
     print(f'{member} left.')
 
 
-# Run the bot using its token.
-bot.run(BotToken)
+# Run the bot using its token if running from main.
+if __name__ == "__main__":
+  bot.run(BotToken)
