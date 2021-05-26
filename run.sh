@@ -3,7 +3,7 @@
 # Default to working directory
 LOCAL_REPO="."
 # Default to git pull with FF merge in quiet mode
-GIT_COMMAND="git pull --quiet"
+GIT_COMMAND="git pull upstream master --quiet"
 
 # User messages
 GU_ERROR_FETCH_FAIL="Unable to fetch the remote repository."
@@ -37,6 +37,7 @@ if [ -d ".git" ]; then
               exit 1
           else
               echo $GU_SUCCESS_REPORT
+              pkill -9 -e -f processname
               python3 index.py
           fi
       fi
