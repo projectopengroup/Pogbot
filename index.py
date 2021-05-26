@@ -137,7 +137,7 @@ async def github(ctx):
 # Look for a command called github.
 async def test(ctx):
     # Sends the link to the bot github page when the github command is used.
-    await ctx.send("This was a test.")
+    await ctx.send("This is a test.")
 
 
 @bot.command()
