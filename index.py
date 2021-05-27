@@ -1,7 +1,7 @@
 # Importing requirements
+import re
 import sqlite3
 import discord
-import base64
 from discord.ext import commands
 
 # Print the bot logo to terminal on start
@@ -34,25 +34,12 @@ BotToken = (data[0][1])
 # If the BotToken is it's default value of "None" then do this stuff.
 if "None" not in BotToken:
     print("Status: Bot token found! Loading bot...'")
-    # Convert base64 string to bytes
-    base64_bytes = BotToken.encode("ascii")
-    # Decode base64 bytes to bytes
-    fromBytes = base64.b64decode(base64_bytes)
-    # Convert to string
-    BotToken = fromBytes.decode("ascii")
 else:
     print("Status: No bot token found!, prompting user for input")
     # Request bot token from user input.
     BotToken = input("Enter bot token: ")
-    # Change string to bytes
-    toBytes = BotToken.encode("ascii")
-    # Make bytes base64
-    base64_bytes = base64.b64encode(toBytes)
-    # Change bytes back to a base64 encoded string
-    base64_token = base64_bytes.decode("ascii")
-
-    # Update the database with the provided BotToken in Base64.
-    cur.execute(f"UPDATE configs SET BotToken = '{base64_token}' WHERE BotToken = 'None'")
+    # Update the database with the provided BotToken.
+    cur.execute(f"UPDATE configs SET BotToken = '{BotToken}' WHERE BotToken = 'None'")
     # Commit the database changes.
     conn.commit()
 
@@ -104,17 +91,10 @@ async def send_embed(ctx, title=None, description=None, author=None, author_pfp=
 async def on_message(msg):
     # Check if the message author is a bot.
     if msg.author.bot:
-        # if it is a bot then return the code from here without going further.
-        return
-
-    # Check if the message channel contains the word direct message
-    if "Direct Message" in str(msg.channel):
-        # If it does, then print it as such and return without going further.
-        print(f'{msg.channel} - {msg.author} : {msg.content}')
-        await bot.process_commands(msg)
+        # if it is a bot then return the code from here, not going any further.
         return
     # Print the server name and channel of the message followed by author name and the message content.
-    print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
+    print(f'(Server: {msg.guild}) [{msg.channel}] {msg.author} : {msg.content}')
     # Ensure that we process our commands, as on_message overrides and stops command execution.
     await bot.process_commands(msg)
 
@@ -125,18 +105,12 @@ async def ping(ctx):
     # Send a message "Pong" when ping has been used.
     await ctx.send("Pong")
 
+
 @bot.command()
 # Look for a command called github.
 async def github(ctx):
     # Sends the link to the bot github page when the github command is used.
     await ctx.send("https://github.com/projectopengroup/Pogbot")
-
-
-@bot.command()
-# Look for a command called github.
-async def codeck(ctx):
-    # Sends the link to the bot github page when the github command is used.
-    await ctx.send("https://open.codecks.io/pog")
 
 
 @bot.command()
@@ -150,6 +124,7 @@ async def echo(ctx, *, arg):
 async def icon(ctx):
     # Send pogbot icon
     await ctx.send('https://media.discordapp.net/attachments/842935093579350016/843257420339871774/POG_BotPFP.png?width=618&height=618')
+
 
 @bot.command(name='avatar', aliases=['av', 'pfp'])
 # Look for a command called avatar and collects optional user parameter, so if no user given, user = None.
@@ -176,13 +151,6 @@ async def userid(ctx, user: discord.Member = None):
     # description (Which gets the user's id), and color (which is the bot's color).
     await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
                      color=0x08d5f7)
-
-@bot.command()
-# Look for a command called icon.
-async def icon(ctx):
-    # Send pogbot icon
-    await ctx.send('https://media.discordapp.net/attachments/842935093579350016/843257420339871774/POG_BotPFP.png?width=618&height=618')
-
 
 @bot.event
 # Check to see if bot is ready.
@@ -231,7 +199,6 @@ if __name__ == "__main__":
         cur = conn.cursor()
         # Reset our Token to "None"
         cur.execute(f"UPDATE configs SET BotToken = 'None' WHERE BotToken = '{BotToken}'")
-        # Commit Database
+        # Commit and close the database.
         conn.commit()
-        # Close Database
         conn.close()
