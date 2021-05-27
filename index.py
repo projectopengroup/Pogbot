@@ -128,7 +128,7 @@ async def ping(ctx):
 
 @bot.command()
 # Look for a command called ping.
-async def pog(ctx):
+async def pogger(ctx):
     # Send a message "Pong" when ping has been used.
     await ctx.send("https://media1.giphy.com/media/c5skRQb3BXp8RwKGKW/giphy.gif")
 
