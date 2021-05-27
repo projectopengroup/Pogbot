@@ -145,6 +145,12 @@ async def echo(ctx, *, arg):
     # Send an echo of the keyword-only argument.
     await ctx.send(arg)
 
+@bot.command()
+# Look for a command called icon.
+async def icon(ctx):
+    # Send pogbot icon
+    await ctx.send('https://media.discordapp.net/attachments/842935093579350016/843257420339871774/POG_BotPFP.png?width=618&height=618')
+
 
 @bot.command(name='avatar', aliases=['av', 'pfp'])
 # Look for a command called avatar and collects optional user parameter, so if no user given, user = None.
@@ -171,7 +177,6 @@ async def userid(ctx, user: discord.Member = None):
     # description (Which gets the user's id), and color (which is the bot's color).
     await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
                      color=0x08d5f7)
-
 
 @bot.event
 # Check to see if bot is ready.
