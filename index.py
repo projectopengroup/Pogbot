@@ -177,6 +177,12 @@ async def userid(ctx, user: discord.Member = None):
     await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
                      color=0x08d5f7)
 
+@bot.command()
+# Look for a command called icon.
+async def icon(ctx):
+    # Send pogbot icon
+    await ctx.send('https://media.discordapp.net/attachments/842935093579350016/843257420339871774/POG_BotPFP.png?width=618&height=618')
+
 
 @bot.event
 # Check to see if bot is ready.
