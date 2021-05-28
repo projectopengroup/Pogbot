@@ -67,9 +67,10 @@ bot = commands.Bot(command_prefix="!")
 # all args need to be filled out, but a title or description is required. One of them has to be filled
 # out to create an embed, or both. To create an embed, just type ' await send_embed(ctx, arg=value) ' with the arg being
 # one of the args that it takes and the appropriate value. Any image, thumbnail, pfp, etc. takes a url in the form of a
-# string.
+# string. The fields argument takes an array of tuples. So for example:
+#                                                           [(name1, value1, inline1), (name2, value2, inline2)]
 async def send_embed(ctx, title=None, description=None, author=None, author_pfp=None,
-                     color=discord.Colour.default(), footer=None, thumbnail=None, image=None):
+                     color=discord.Colour.default(), footer=None, thumbnail=None, image=None, fields=None):
     if title is None and description is None:
         print("[Error]: Error creating embed. No title or description specified.")
     else:
@@ -96,6 +97,11 @@ async def send_embed(ctx, title=None, description=None, author=None, author_pfp=
             new_embed.set_author(name=author, icon_url=author_pfp)
         elif author is not None and author_pfp is None:
             new_embed.set_author(name=author)
+
+        if fields is not None:
+            for field in fields:
+                new_embed.add_field(name=field[0], value=field[1], inline=field[2])
+
         await ctx.send(embed=new_embed)
 
 
@@ -134,9 +140,9 @@ async def github(ctx):
 
 
 @bot.command()
-# Look for a command called github.
+# Look for a command called codeck.
 async def codeck(ctx):
-    # Sends the link to the bot github page when the github command is used.
+    # Sends the link to the bot codeck page when the codeck command is used.
     await ctx.send("https://open.codecks.io/pog")
 
 
@@ -178,6 +184,38 @@ async def userid(ctx, user: discord.Member = None):
     # Creates a discord embed with the elements: title (Which gets the user's tag),
     # description (Which gets the user's id), and color (which is the bot's color).
     await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
+                     color=0x08d5f7)
+
+
+@bot.command()
+# Look for a command called userid and collects optional user parameter, so if no user given, user = None.
+async def whois(ctx, user: discord.Member = None):
+    # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
+    # command author.
+    if user is None:
+        user = ctx.author
+
+    # Checks if the user is a bot and stores it in a variable
+    isBot = "No"
+    if user.bot:
+        isBot = "Yes"
+
+    # Checks if the user has a nickname set by taking the username, removing the # and numbers, and comparing it with
+    # the display name.
+    usernameFull = str(user)
+    username, usertag = usernameFull.split("#")
+    nickname = user.display_name
+    if username == nickname:
+        nickname = "None"
+
+    # Creates and sends an embed with various user info by adding them as fields. When getting dates, the format as to
+    # be converted so that it is easier to read.
+    await send_embed(ctx, title=f"**{username}**", thumbnail=user.avatar_url,
+                     fields=[(f'**Username:**', usernameFull, True), (f'**Nickname:**', nickname, True),
+                             (f'**User ID:**', str(user.id), True),
+                             (f'**Registered:**', str(user.created_at.strftime("%b %d, %Y")), True),
+                             (f'**Joined Server:**', str(user.joined_at.strftime("%b %d, %Y")), True),
+                             (f'**Is Bot:**', isBot, True)],
                      color=0x08d5f7)
 
 
