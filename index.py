@@ -2,6 +2,7 @@
 import sqlite3
 import discord
 import base64
+import os
 from discord.ext import commands
 
 # Print the bot logo to terminal on start
@@ -116,6 +117,14 @@ async def on_message(msg):
     # Check if the message channel contains the word direct message
     if "Direct Message" in str(msg.channel):
         # If it does, then print it as such and return without going further.
+        print(str(msg.author.id))
+        if str(msg.author.id) == "421781675727388672":
+            print(msg.content)
+            if "reboot" in msg.content:
+                print("Reboot Command Accepted.")
+                os.system('bash run.sh')
+                quit()
+
         print(f'{msg.channel} - {msg.author} : {msg.content}')
         await bot.process_commands(msg)
         return
