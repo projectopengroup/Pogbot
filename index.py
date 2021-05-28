@@ -116,16 +116,17 @@ async def on_message(msg):
 
     # Check if the message channel contains the word direct message
     if "Direct Message" in str(msg.channel):
-        # If it does, then print it as such and return without going further.
-        print(str(msg.author.id))
-        if str(msg.author.id) == "421781675727388672":
-            print(msg.content)
+        # If any of the IDs match Mag, Cheetah, or Jonny then
+        if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
+            # Look for the text "reboot" in the message
             if "reboot" in msg.content:
+                # reboot has been found so go ahead and run the update command, and then quit the script.
                 print("Reboot Command Accepted.")
                 os.system('bash run.sh')
                 quit()
-
+        # Print incoming direct messages to terminal.
         print(f'{msg.channel} - {msg.author} : {msg.content}')
+        # Ensure that we process our commands, as on_message overrides and stops command execution.
         await bot.process_commands(msg)
         return
     # Print the server name and channel of the message followed by author name and the message content.
