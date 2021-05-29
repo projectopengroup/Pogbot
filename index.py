@@ -313,31 +313,58 @@ async def setup(ctx):
                     print("Found")
                     # If found, then form the embed.
                     embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
-                                                 description="Would you like to set this channel as the welcome message "
-                                                             "channel?", color=0x08d5f7,
+                                                 description="Select the type of welcome message or action you'd like "
+                                                             "to edit.", color=0x08d5f7,
                                                  thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                 fields=[('Repond with', "**Yes** or **No**", True)])
+                                                 fields=[('Respond with', "**channel**, **dm**, **role** or **back**", True)])
                     # Edit the message.
                     await pogsetupid.edit(embed=embededit)
                     await reply.delete()
                     reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
                     inwelcomesetup = True
 
-                if "yes" in str(reply.content.lower()):
+                if "channel" in str(reply.content.lower()):
                     if inwelcomesetup is True:
                         # If found, then form the embed.
-                        embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
+                        embededit = await send_embed(ctx, send_option=2, title=f"**Channel Welcome Setup**",
                                                      description=f"**{ctx.message.channel}** will be set to the "
                                                                  f"welcome message channel. \n\n **Choose a type of "
                                                                  f"welcome message to continue.**", color=0x08d5f7,
                                                      thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                     fields=[('Repond with', "**image**, **text**, or **both**", True)])
+                                                     fields=[('Respond with', "**image**, **text**, or **both**", True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
                         reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
 
-                if "no" in str(reply.content.lower()):
+                if "role" in str(reply.content.lower()):
+                    if inwelcomesetup is True:
+                        # If found, then form the embed.
+                        embededit = await send_embed(ctx, send_option=2, title=f"**Role Handout Setup**",
+                                                     description=f"**Respond with the Role ID you'd like to hand out to "
+                                                                 f"users when they join the server.**", color=0x08d5f7,
+                                                     thumbnail='https://i.imgur.com/rYKYpDw.png')
+                        # Edit the message.
+                        await pogsetupid.edit(embed=embededit)
+                        await reply.delete()
+                        reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                if "dm" in str(reply.content.lower()):
+                    if inwelcomesetup is True:
+                        embededit = await send_embed(ctx, send_option=2, title=f"**Direct Message Welcome Setup**",
+                                                     description=f"**Respond with the text you'd like to use for the "
+                                                                 f"welcome message.**", color=0x08d5f7,
+                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                     fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
+                                                             ('Example:', "Hey %USER%, glad you're here, welcome to "
+                                                                          "%SERVER%! Come join us in %CHANNEL%.",
+                                                              True)])
+                    # Edit the message.
+                    await pogsetupid.edit(embed=embededit)
+                    await reply.delete()
+                    reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                if "back" in str(reply.content.lower()):
                     if inwelcomesetup is True:
                         embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**", color=0x08d5f7,
                                                      thumbnail='https://i.imgur.com/rYKYpDw.png',
