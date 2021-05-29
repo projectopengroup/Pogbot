@@ -57,20 +57,7 @@ else:
 conn.close()
 
 # set a global var called prefix
-global prefix
 prefix = "!"
-# set a global var called prefixsetup
-global prefixsetup
-prefixsetup = False
-# set a global var called pogsetup
-global pogsetup
-pogsetup = False
-# set a global var called pogsetupID
-global pogsetupid
-pogsetupid = "0"
-
-global orginchannel
-orginchannel = "0"
 
 
 # Function to expire setup.
@@ -281,9 +268,7 @@ async def whois(ctx, user: discord.Member = None):
 @bot.command()
 # Look for a command called setup
 async def setup(ctx):
-    global pogsetupid
-    global pogsetup
-    global orginchannel
+    global prefix
     # Check if the user using the setup command has administrator:
     if ctx.author.guild_permissions.administrator:
         # Sending a message embed that says running setup.
@@ -305,15 +290,82 @@ async def setup(ctx):
                                              ('Switcher', "Turn on/off commands.", True)
                                              ])
         # Setting our global pogsetup var to true.
-        pogsetup = True
-        orginchannel = ctx.message.channel
+        #pogsetup = True
+
+        # orginchannel = ctx.message.channel
         # Editing our original message into our new embed.
         await pogsetupid.edit(embed=embededit)
         # Delete the orignal message.
         await ctx.message.delete()
-        # Run our task to expire setup.
-        asyncio.run(await revert_setup())
 
+        def checkAuthor(message):
+            return message.author.id == ctx.author.id
+
+        while True:
+            await pogsetupid.edit(embed=embededit)
+            try:
+                reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+                if "set" in str(reply.content.lower()):
+                    # If it's found then form our embed.
+                    embededit = await send_embed(ctx, send_option=2, title=f"**Basic Settings**",
+                                                 thumbnail='https://i.imgur.com/rYKYpDw.png', color=0x08d5f7,
+                                                 description="Respond with any menu option to proceed.",
+                                                 fields=[('Prefix', "Set the bots prefix.", True),
+                                                         ('Welcomes', "Setup a channel for welcome messages.", True)])
+                    # Edit the original message.
+                    await pogsetupid.edit(embed=embededit)
+                    # Delete the message.
+                    await reply.delete()
+                    reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+                # Look for pre in lowercase message
+                if "pre" in str(reply.content.lower()):
+                    # If it's found then form the embed.
+                    print(get_prefix(bot, ctx))
+                    embededit = await send_embed(ctx, send_option=2, title=f"**Prefix Setting**",
+                                                 description="Respond with a new prefix for the bot.", color=0x08d5f7,
+                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                 fields=[('Current Prefix', f"{prefix[0]}", True)])
+                    # Edit the message.
+
+                    await pogsetupid.edit(embed=embededit)
+                    # Delete the user message.
+                    await reply.delete()
+                    # Set setup to false.
+                    pogsetup = False
+                    # Set prefix setup to true.
+                    prefixsetup = True
+                    reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                    # Set the prefix var to the message.
+                    prefix = reply.content
+                    # connect to db.
+                    conn = sqlite3.connect('prefs.db')
+                    # Str for connection type.
+                    conn.text_factory = str
+                    # Define cursor.
+                    cur = conn.cursor()
+                    # Update the servers table, set prefix to new prefix where the server ID matches this one.
+                    cur.execute(f"UPDATE servers SET Prefix = '{prefix}' WHERE ServerID = '{ctx.guild.id}'")
+                    # Commit the changes.
+                    conn.commit()
+                    # Close the database.
+                    conn.close()
+                    # Setup the embed.
+                    embededit = discord.Embed(description=f'<:Check:845178458426179605> **Bot prefix changed to {prefix}**',
+                                              color=0x08d5f7)
+                    # Edit the original message
+                    await pogsetupid.edit(embed=embededit)
+                    # Turn off Prefix setup.
+                    prefixsetup = False
+                    # Delete the message sent by user.
+                    await reply.delete()
+                    break
+            except asyncio.TimeoutError:
+                embedexpire = discord.Embed(description='<:Check:845178458426179605> **Setup Session Expired...**',
+                                            color=0x08d5f7)
+                # Edit the Original Message.
+                await pogsetupid.edit(embed=embedexpire)
+                break
     else:
         # Sending a message saying the user has to be admin to run the command, keeping the message ID as a var.
         denymessage = await send_embed(ctx, description=f'<:Check:845178458426179605> **You must have ADMINISTRATOR '
@@ -390,66 +442,6 @@ async def on_message(msg):
         return
     # Print the server name and channel of the message followed by author name and the message content.
     print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
-    # If we're in prefix setup then
-    if msg.channel == orginchannel:
-        if msg.author.guild_permissions.administrator:
-            if prefixsetup is True:
-                # Set the prefix var to the message.
-                prefix = msg.content
-                # connect to db.
-                conn = sqlite3.connect('prefs.db')
-                # Str for connection type.
-                conn.text_factory = str
-                # Define cursor.
-                cur = conn.cursor()
-                # Update the servers table, set prefix to new prefix where the server ID matches this one.
-                cur.execute(f"UPDATE servers SET Prefix = '{prefix}' WHERE ServerID = '{msg.guild.id}'")
-                # Commit the changes.
-                conn.commit()
-                # Close the database.
-                conn.close()
-                # Setup the embed.
-                embededit = discord.Embed(description=f'<:Check:845178458426179605> **Bot prefix changed to {prefix}**',
-                                          color=0x08d5f7)
-                # Edit the original message
-                await pogsetupid.edit(embed=embededit)
-                # Turn off Prefix setup.
-                prefixsetup = False
-                # Delete the message sent by user.
-                await msg.delete()
-    # If the bot is in setup mode then
-    if msg.channel == orginchannel:
-        if pogsetup is True:
-            # Make sure the user is admin.
-            if msg.author.guild_permissions.administrator:
-                # Look for the word set in the message that has been converted into lower case.
-                if "set" in str(msg.content.lower()):
-                    # If it's found then form our embed.
-                    embededit = await send_embed(msg.channel, send_option=2, title=f"**Basic Settings**",
-                                                 thumbnail='https://i.imgur.com/rYKYpDw.png', color=0x08d5f7,
-                                                 description="Respond with any menu option to proceed.",
-                                                 fields=[('Prefix', "Set the bots prefix.", True),
-                                                         ('Welcomes', "Setup a channel for welcome messages.", True)])
-                    # Edit the original message.
-                    await pogsetupid.edit(embed=embededit)
-                    # Delete the message.
-                    await msg.delete()
-                # Look for pre in lowercase message
-                if "pre" in str(msg.content.lower()):
-                    # If it's found then form the embed.
-                    embededit = await send_embed(msg.channel, send_option=2, title=f"**Prefix Setting**",
-                                                 description="Respond with a new prefix for the bot.", color=0x08d5f7,
-                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                 fields=[('Current Prefix', f"{prefix[0]}", True)])
-                    # Edit the message.
-
-                    await pogsetupid.edit(embed=embededit)
-                    # Delete the user message.
-                    await msg.delete()
-                    # Set setup to false.
-                    pogsetup = False
-                    # Set prefix setup to true.
-                    prefixsetup = True
 
     # Ensure that we process our commands, as on_message overrides and stops command execution.
     await bot.process_commands(msg)
