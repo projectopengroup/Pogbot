@@ -61,18 +61,6 @@ prefix = "!"
 
 
 # Function to expire setup.
-async def revert_setup():
-    # Sleep the thread 15 seconds.
-    await asyncio.sleep(15)
-    global pogsetup
-    # Set setup to False.
-    pogsetup = False
-    # Build and Embed.
-    embedexpire = discord.Embed(description='<:Check:845178458426179605> **Setup Session Expired...**',
-                                color=0x08d5f7)
-    # Edit the Original Message.
-    await pogsetupid.edit(embed=embedexpire)
-
 
 # Get Prefix Function, this gets the prefix for every message sent on the bot client.
 async def get_prefix(client, message):
@@ -269,6 +257,7 @@ async def whois(ctx, user: discord.Member = None):
 # Look for a command called setup
 async def setup(ctx):
     global prefix
+    inwelcomesetup = False
     # Check if the user using the setup command has administrator:
     if ctx.author.guild_permissions.administrator:
         # Sending a message embed that says running setup.
@@ -305,6 +294,7 @@ async def setup(ctx):
             await pogsetupid.edit(embed=embededit)
             try:
                 reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+
                 if "set" in str(reply.content.lower()):
                     # If it's found then form our embed.
                     embededit = await send_embed(ctx, send_option=2, title=f"**Basic Settings**",
@@ -317,6 +307,52 @@ async def setup(ctx):
                     # Delete the message.
                     await reply.delete()
                     reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                # Look for wel in lowercase message.
+                if "wel" in str(reply.content.lower()):
+                    print("Found")
+                    # If found, then form the embed.
+                    embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
+                                             description="Would you like to set this channel as the welcome message "
+                                                         "channel?", color=0x08d5f7,
+                                             thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                             fields=[('Repond with', "**Yes** or **No**", True)])
+                    # Edit the message.
+                    await pogsetupid.edit(embed=embededit)
+                    await reply.delete()
+                    reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+                    inwelcomesetup = True
+
+                if "yes" in str(reply.content.lower()):
+                    if inwelcomesetup is True:
+                        # If found, then form the embed.
+                        embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
+                                                       description=f"**{ctx.message.channel}** has been set to the "
+                                                                   f"welcome message channel. \n\n **Choose a type of "
+                                                                   f"welcome message to continue.**", color=0x08d5f7,
+                                                       thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                       fields=[('Repond with', "**image**, **text**, or **both**", True)])
+                        # Edit the message.
+                        await pogsetupid.edit(embed=embededit)
+                        await reply.delete()
+                        reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+                        inwelcomesetup = False
+                if "no" in str(reply.content.lower()):
+                    if inwelcomesetup is True:
+                        embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**", color=0x08d5f7,
+                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                     description="Respond with any menu option to proceed.",
+                                                     fields=[('Settings', 'Basic server settings.', True),
+                                                             ('Moderator', "Moderator settings.", True),
+                                                             ('Reactions', "Setup role reactions.", True),
+                                                             ('Commands', "Configure custom commands.", True),
+                                                             ('Logs', "Enable event logs.", True),
+                                                             ('Switcher', "Turn on/off commands.", True)
+                                                             ])
+                        await pogsetupid.edit(embed=embededit)
+                        await reply.delete()
+                        inwelcomesetup = False
+
                 # Look for pre in lowercase message
                 if "pre" in str(reply.content.lower()):
                     # If it's found then form the embed.
@@ -365,6 +401,9 @@ async def setup(ctx):
                                             color=0x08d5f7)
                 # Edit the Original Message.
                 await pogsetupid.edit(embed=embedexpire)
+                await asyncio.sleep(0.4)
+                await pogsetupid.delete()
+                inwelcomesetup = False
                 break
     else:
         # Sending a message saying the user has to be admin to run the command, keeping the message ID as a var.
