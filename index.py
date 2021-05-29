@@ -3,21 +3,18 @@ import sqlite3
 import discord
 import base64
 import os
+import asyncio
 from discord.ext import commands
 
 # Print the bot logo to terminal on start
 print('''
-      ___           ___           ___           ___           ___           ___     
-     /\  \         /\  \         /\  \         /\  \         /\  \         /\  \    
-    /::\  \       /::\  \       /::\  \       /::\  \       /::\  \        \:\  \   
-   /:/\:\  \     /:/\:\  \     /:/\:\  \     /:/\:\  \     /:/\:\  \        \:\  \  
-  /::\~\:\  \   /:/  \:\  \   /:/  \:\  \   /::\~\:\__\   /:/  \:\  \       /::\  \ 
- /:/\:\ \:\__\ /:/__/ \:\__\ /:/__/_\:\__\ /:/\:\ \:|__| /:/__/ \:\__\     /:/\:\__\\
- \/__\:\/:/  / \:\  \ /:/  / \:\  /\ \/__/ \:\~\:\/:/  / \:\  \ /:/  /    /:/  \/__/
-      \::/  /   \:\  /:/  /   \:\ \:\__\    \:\ \::/  /   \:\  /:/  /    /:/  /     
-       \/__/     \:\/:/  /     \:\/:/  /     \:\/:/  /     \:\/:/  /     \/__/      
-                  \::/  /       \::/  /       \::/__/       \::/  /                 
-                   \/__/         \/__/         ~~            \/__/                                                                                            
+    ___       ___       ___       ___       ___       ___   
+   /\  \     /\  \     /\  \     /\  \     /\  \     /\  \  
+  /::\  \   /::\  \   /::\  \   /::\  \   /::\  \    \:\  \ 
+ /::\:\__\ /:/\:\__\ /:/\:\__\ /::\:\__\ /:/\:\__\   /::\__\\
+ \/\::/  / \:\/:/  / \:\:\/__/ \:\::/  / \:\/:/  /  /:/\/__/
+    \/__/   \::/  /   \::/  /   \::/  /   \::/  /   \/__/   
+             \/__/     \/__/     \/__/     \/__/                                                                                      
 ''')
 
 # Making our connection to the sqllite3 database.
@@ -51,7 +48,6 @@ else:
     base64_bytes = base64.b64encode(toBytes)
     # Change bytes back to a base64 encoded string
     base64_token = base64_bytes.decode("ascii")
-
     # Update the database with the provided BotToken in Base64.
     cur.execute(f"UPDATE configs SET BotToken = '{base64_token}' WHERE BotToken = 'None'")
     # Commit the database changes.
@@ -60,8 +56,58 @@ else:
 # Close the database connection
 conn.close()
 
-# Define bot and it's commands prefix.
-bot = commands.Bot(command_prefix="!")
+# set a global var called prefix
+global prefix
+prefix = "!"
+# set a global var called prefixsetup
+global prefixsetup
+prefixsetup = False
+# set a global var called pogsetup
+global pogsetup
+pogsetup = False
+# set a global var called pogsetupID
+global pogsetupid
+pogsetupid = "0"
+
+
+# Get Prefix Function, this gets the prefix for every message sent on the bot client.
+async def get_prefix(client, message):
+    global prefix
+    # Connect to the SQL DB.
+    conn = sqlite3.connect('prefs.db')
+    # Set type to string.
+    conn.text_factory = str
+    # Set the cursor for the connection.
+    cur = conn.cursor()
+    # Execute command on the db that looks for the prefix field where serverID matches the incoming messages server ID.
+    cur.execute(f'SELECT Prefix FROM servers WHERE ServerID={message.guild.id}')
+    # Fetch the response.
+    data = cur.fetchone()
+    # Set a var named prefixer to the response from the query.
+    prefixer = data
+    # if the response is nothing
+    if str(prefixer) == "None":
+        # Explain what we're doing to the terminal.
+        print("Prefix was none, executing SQL")
+        # Format new empty values for the row, with the exception of the server ID. This is default setup for a server.
+        # It will only run this once, because only once will it not find the prefix, because we set it here.
+        prefs_query = f"""INSERT INTO servers
+                                 (ServerID, Prefix, MutedRole, ModRoles, EditLogs, DeleteLogs, JoinLogs, LeaveLogs, 
+                                 WarnLogs, KickLogs, BanLogs, MuteLogs)
+                                  VALUES 
+                                 ('{message.guild.id}', '!', 'None', 'None', 0, 0, 0, 0, 0, 0, 0, 0)"""
+        # Execute our query
+        cur.execute(prefs_query)
+        # Commit the changes.
+        conn.commit()
+        # Set prefixer to the default prefix.
+        prefixer = "!"
+    # Close the connection.
+    conn.close()
+    # Set Global Prefix to Prefixer
+    prefix = prefixer
+    # Return prefixer to our function entry point
+    return prefixer
 
 
 # Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
@@ -106,33 +152,8 @@ async def send_embed(ctx, title=None, description=None, author=None, author_pfp=
         await ctx.send(embed=new_embed)
 
 
-@bot.event
-# Look for incoming messages in DMs and in Chat.
-async def on_message(msg):
-    # Check if the message author is a bot.
-    if msg.author.bot:
-        # if it is a bot then return the code from here without going further.
-        return
-
-    # Check if the message channel contains the word direct message
-    if "Direct Message" in str(msg.channel):
-        # If any of the IDs match Mag, Cheetah, or Jonny then
-        if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
-            # Look for the text "reboot" in the message
-            if "reboot" in msg.content:
-                # reboot has been found so go ahead and run the update command, and then quit the script.
-                print("Reboot Command Accepted.")
-                os.system('bash run.sh')
-                quit()
-        # Print incoming direct messages to terminal.
-        print(f'{msg.channel} - {msg.author} : {msg.content}')
-        # Ensure that we process our commands, as on_message overrides and stops command execution.
-        await bot.process_commands(msg)
-        return
-    # Print the server name and channel of the message followed by author name and the message content.
-    print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
-    # Ensure that we process our commands, as on_message overrides and stops command execution.
-    await bot.process_commands(msg)
+# Define bot and it's commands prefix, calling the get_prefix function, where it returns the server specific prefix.
+bot = commands.Bot(command_prefix=get_prefix)
 
 
 @bot.command()
@@ -229,10 +250,48 @@ async def whois(ctx, user: discord.Member = None):
                      color=0x08d5f7)
 
 
+@bot.command()
+# Look for a command called setup
+async def setup(ctx):
+    global pogsetupid
+    global pogsetup
+    # Check if the user using the setup command has administrator:
+    if ctx.author.guild_permissions.administrator:
+        # Sending a message embed that says running setup.
+        embedorg = discord.Embed(description='<:Check:845178458426179605> **Running Setup...**',
+                                 color=0x08d5f7)
+        # Collecting the message ID into our global setup id var.
+        pogsetupid = await ctx.send(embed=embedorg)
+        # Sleep the thread for a little bit so we can edit the message.
+        await asyncio.sleep(0.4)
+        # Form the embed that we want to use for our edit.
+        embededit = discord.Embed(title=f"**Pogbot Setup**", description="Respond with any menu option to proceed.",
+                                  color=0x08d5f7)
+        embededit.set_thumbnail(url='https://i.imgur.com/rYKYpDw.png')
+        embededit.add_field(name='Settings', value="Basic server settings.")
+        embededit.add_field(name='Moderator', value="Moderator settings.")
+        embededit.add_field(name='Reactions', value="Setup role reactions.")
+        embededit.add_field(name='Commands', value="Configure custom commands.")
+        embededit.add_field(name='Logs', value="Enable event logs.")
+        embededit.add_field(name='Switcher', value="Turn on/off commands.")
+        # Setting our global pogsetup var to true.
+        pogsetup = True
+        # Editing our original message into our new embed.
+        await pogsetupid.edit(embed=embededit)
+        # Delete the orignal message.
+        await ctx.delete()
+
+    else:
+        # Sending a message saying the user has to be admin to run the command, keeping the message ID as a var.
+        denymessage = await send_embed(ctx, description=f'<:Check:845178458426179605> **You must have ADMINISTRATOR '
+                                                        f'to run setup.**',
+                         color=0x08d5f7)
+
+
 @bot.event
 # Check to see if bot is ready.
 async def on_ready():
-    # Print status to terminal.
+    # Print status to terminal
     print('Status: Ready.')
     await bot.change_presence(
         activity=discord.Game(name='with discord API'))
@@ -262,11 +321,103 @@ async def on_message_delete(message):
     print(f'Message Deleted: Author: {message.author} Message: {message.clean_content}.')
 
 
+@bot.event
+# Look for incoming messages in DMs and in Chat.
+async def on_message(msg):
+    global prefixsetup
+    global prefix
+    global pogsetup
+
+    # Check if the message author is a bot.
+    if msg.author.bot:
+        # if it is a bot then return the code from here without going further.
+        return
+
+    # Check if the message channel contains the word direct message
+    if "Direct Message" in str(msg.channel):
+        # If any of the IDs match Mag, Cheetah, or Jonny then
+        if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
+            # Look for the text "reboot" in the message
+            if "reboot" in msg.content:
+                # reboot has been found so go ahead and run the update command, and then quit the script.
+                print("Reboot Command Accepted.")
+                os.system('bash run.sh')
+                quit()
+        # Print incoming direct messages to terminal.
+        print(f'{msg.channel} - {msg.author} : {msg.content}')
+        # Ensure that we process our commands, as on_message overrides and stops command execution.
+        await bot.process_commands(msg)
+        return
+    # Print the server name and channel of the message followed by author name and the message content.
+    print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
+    # If we're in prefix setup then
+    if prefixsetup is True:
+        # Set the prefix var to the message.
+        prefix = msg.content
+        # connect to db.
+        conn = sqlite3.connect('prefs.db')
+        # Str for connection type.
+        conn.text_factory = str
+        # Define cursor.
+        cur = conn.cursor()
+        # Execute query and update the servers table, set prefix to the new prefix where the server ID matches this one.
+        cur.execute(f"UPDATE servers SET Prefix = '{prefix}' WHERE ServerID = '{msg.guild.id}'")
+        # Commit the changes.
+        conn.commit()
+        #Close the database.
+        conn.close()
+        # Setup the embed.
+        embededit = discord.Embed(description=f'<:Check:845178458426179605> **Bot prefix changed to {prefix}**',
+                                  color=0x08d5f7)
+        # Edit the original message
+        await pogsetupid.edit(embed=embededit)
+        # Turn off Prefix setup.
+        prefixsetup = False
+        # Delete the message sent by user.
+        await msg.delete()
+    #If the bot is in setup mode then
+    if pogsetup is True:
+        # Make sure the user is admin.
+        if msg.author.guild_permissions.administrator:
+            # Look for the word set in the message that has been converted into lower case.
+            if "set" in str(msg.content.lower()):
+                # If it's found then form our embed.
+                embededit = discord.Embed(title=f"**Basic Settings**",
+                                          description="Respond with any menu option to proceed.", color=0x08d5f7)
+                embededit.set_thumbnail(url='https://i.imgur.com/rYKYpDw.png')
+                embededit.add_field(name='Prefix', value="Set the bots prefix.")
+                embededit.add_field(name='Welcomes', value="Setup a channel for welcome messages.")
+                # Edit the original message.
+                await pogsetupid.edit(embed=embededit)
+                # Delete the message.
+                await msg.delete()
+            # Look for pre in lowercase message
+            if "pre" in str(msg.content.lower()):
+                # If it's found then form the embed.
+                embededit = discord.Embed(title=f"**Prefix Setting**",
+                                          description="Respond with a new prefix for the bot.", color=0x08d5f7)
+                embededit.set_thumbnail(url='https://i.imgur.com/rYKYpDw.png')
+
+                embededit.add_field(name='Current Prefix', value=f"{prefix}")
+                # Edit the message.
+                await pogsetupid.edit(embed=embededit)
+                # Delete the user message.
+                await msg.delete()
+                # Set setup to false.
+                pogsetup = False
+                # Set prefix setup to true.
+                prefixsetup = True
+
+    # Ensure that we process our commands, as on_message overrides and stops command execution.
+    await bot.process_commands(msg)
+
+
 # Run the bot using its token if running from main.
 if __name__ == "__main__":
     # Try to login with the bot token
     try:
         bot.run(BotToken)
+        # bot = commands.Bot(command_prefix=get_prefix)
     # On login error do this
     except discord.errors.LoginFailure as e:
         print("Status: Login unsuccessful.")
