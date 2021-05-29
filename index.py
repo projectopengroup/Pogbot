@@ -73,12 +73,17 @@ global orginchannel
 orginchannel = "0"
 
 
+# Function to expire setup.
 async def revert_setup():
+    # Sleep the thread 15 seconds.
     await asyncio.sleep(15)
     global pogsetup
+    # Set setup to False.
     pogsetup = False
+    # Build and Embed.
     embedexpire = discord.Embed(description='<:Check:845178458426179605> **Setup Session Expired...**',
-                             color=0x08d5f7)
+                                color=0x08d5f7)
+    # Edit the Original Message.
     await pogsetupid.edit(embed=embedexpire)
 
 
@@ -294,6 +299,7 @@ async def setup(ctx):
         await pogsetupid.edit(embed=embededit)
         # Delete the orignal message.
         await ctx.message.delete()
+        # Run our task to expire setup.
         asyncio.run(await revert_setup())
 
     else:
@@ -355,8 +361,8 @@ async def on_message(msg):
             embededadd = discord.Embed(title=f"**Click here to add Pogbot to your server**",
                                        url="https://discord.com/api/oauth2/authorize?client_id=843272975771631616"
                                            "&permissions=0&scope=bot",
-                                      description="The default prefix is ! \n Run the command !setup once added to "
-                                                  "get started.", color=0x08d5f7)
+                                       description="The default prefix is ! \n Run the command !setup once added to "
+                                                   "get started.", color=0x08d5f7)
             # https://discord.com/api/oauth2/authorize?client_id=843272975771631616&permissions=0&scope=bot
             await msg.channel.send(embed=embededadd)
         if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
