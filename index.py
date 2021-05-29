@@ -73,6 +73,15 @@ global orginchannel
 orginchannel = "0"
 
 
+async def revert_setup():
+    await asyncio.sleep(15)
+    global pogsetup
+    pogsetup = False
+    embedexpire = discord.Embed(description='<:Check:845178458426179605> **Setup Session Expired...**',
+                             color=0x08d5f7)
+    await pogsetupid.edit(embed=embedexpire)
+
+
 # Get Prefix Function, this gets the prefix for every message sent on the bot client.
 async def get_prefix(client, message):
     global prefix
@@ -285,6 +294,7 @@ async def setup(ctx):
         await pogsetupid.edit(embed=embededit)
         # Delete the orignal message.
         await ctx.message.delete()
+        asyncio.run(await revert_setup())
 
     else:
         # Sending a message saying the user has to be admin to run the command, keeping the message ID as a var.
