@@ -60,8 +60,6 @@ conn.close()
 prefix = "!"
 
 
-# Function to expire setup.
-
 # Get Prefix Function, this gets the prefix for every message sent on the bot client.
 async def get_prefix(client, message):
     global prefix
@@ -94,12 +92,16 @@ async def get_prefix(client, message):
         conn.commit()
         # Set prefixer to the default prefix.
         prefixer = "!"
-    # Close the connection.
-    conn.close()
-    # Set Global Prefix to Prefixer
-    prefix = prefixer
-    # Return prefixer to our function entry point
-    return prefixer
+         # Close the connection.
+        conn.close()
+        # Set Global Prefix to Prefixer
+        prefix = prefixer
+        # Return prefixer to our function entry point
+    prefix = prefixer[0]
+    prefixer = prefixer[0]
+    prefixed = commands.when_mentioned(bot, message)
+    prefixed.append(prefixer)
+    return prefixed
 
 
 # Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
@@ -156,6 +158,7 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
 
 
 # Define bot and it's commands prefix, calling the get_prefix function, where it returns the server specific prefix.
+
 bot = commands.Bot(command_prefix=get_prefix)
 
 
@@ -252,7 +255,11 @@ async def whois(ctx, user: discord.Member = None):
                              (f'**Is Bot:**', isBot, True)],
                      color=0x08d5f7)
 
-
+@bot.command()
+async def prefix(ctx):
+    global prefix
+    await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {prefix}**",
+                             color=0x08d5f7)
 @bot.command()
 # Look for a command called setup
 async def setup(ctx):
@@ -316,7 +323,8 @@ async def setup(ctx):
                                                  description="Select the type of welcome message or action you'd like "
                                                              "to edit.", color=0x08d5f7,
                                                  thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                 fields=[('Respond with', "**channel**, **dm**, **role** or **back**", True)])
+                                                 fields=[('Respond with', "**channel**, **dm**, **role** or **back**",
+                                                          True)])
                     # Edit the message.
                     await pogsetupid.edit(embed=embededit)
                     await reply.delete()
@@ -331,7 +339,8 @@ async def setup(ctx):
                                                                  f"welcome message channel. \n\n **Choose a type of "
                                                                  f"welcome message to continue.**", color=0x08d5f7,
                                                      thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                     fields=[('Respond with', "**image**, **text**, or **both**", True)])
+                                                     fields=[
+                                                         ('Respond with', "**image**, **text**, or **both**", True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
@@ -383,7 +392,7 @@ async def setup(ctx):
                     if inwelcomesetup is True:
                         embededit = discord.Embed(description=f'<:Check:845178458426179605> **{ctx.message.channel} set'
                                                               f' to welcome message channel.**',
-                                                     color=0x08d5f7)
+                                                  color=0x08d5f7)
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
                         inwelcomesetup = False
@@ -481,7 +490,7 @@ async def on_ready():
     # Print status to terminal
     print('Status: Ready.')
     await bot.change_presence(
-        activity=discord.Game(name='Message me "join."'))
+        activity=discord.Game(name='Message me "add" to add me to your server.'))
 
 
 @bot.event
@@ -523,7 +532,7 @@ async def on_message(msg):
     # Check if the message channel contains the word direct message
     if "Direct Message" in str(msg.channel):
         # If any of the IDs match Mag, Cheetah, or Jonny then
-        if "join" in msg.content:
+        if "add" in msg.content:
             # https://discord.com/api/oauth2/authorize?client_id=843272975771631616&permissions=0&scope=bot
             await send_embed(msg.channel, send_option=0, title=f"**Click here to add Pogbot to your server**",
                              url="https://discord.com/api/oauth2/authorize?client_id=843272975771631616"
@@ -554,6 +563,7 @@ if __name__ == "__main__":
     # Try to login with the bot token
     try:
         bot.run(BotToken)
+
         # bot = commands.Bot(command_prefix=get_prefix)
     # On login error do this
     except discord.errors.LoginFailure as e:
