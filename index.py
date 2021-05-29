@@ -279,7 +279,7 @@ async def setup(ctx):
         # Editing our original message into our new embed.
         await pogsetupid.edit(embed=embededit)
         # Delete the orignal message.
-        await ctx.delete()
+        await ctx.message.delete()
 
     else:
         # Sending a message saying the user has to be admin to run the command, keeping the message ID as a var.
@@ -398,7 +398,7 @@ async def on_message(msg):
                                           description="Respond with a new prefix for the bot.", color=0x08d5f7)
                 embededit.set_thumbnail(url='https://i.imgur.com/rYKYpDw.png')
 
-                embededit.add_field(name='Current Prefix', value=f"{prefix}")
+                embededit.add_field(name='Current Prefix', value=f"{prefix[0]}")
                 # Edit the message.
                 await pogsetupid.edit(embed=embededit)
                 # Delete the user message.
