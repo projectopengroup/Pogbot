@@ -299,7 +299,7 @@ async def on_ready():
     # Print status to terminal
     print('Status: Ready.')
     await bot.change_presence(
-        activity=discord.Game(name='with discord API'))
+        activity=discord.Game(name='Message me "join."'))
 
 
 @bot.event
@@ -341,6 +341,14 @@ async def on_message(msg):
     # Check if the message channel contains the word direct message
     if "Direct Message" in str(msg.channel):
         # If any of the IDs match Mag, Cheetah, or Jonny then
+        if "join" in msg.content:
+            embededadd = discord.Embed(title=f"**Click here to add Pogbot to your server**",
+                                       url="https://discord.com/api/oauth2/authorize?client_id=843272975771631616"
+                                           "&permissions=0&scope=bot",
+                                      description="The default prefix is ! \n Run the command !setup once added to "
+                                                  "get started.", color=0x08d5f7)
+            # https://discord.com/api/oauth2/authorize?client_id=843272975771631616&permissions=0&scope=bot
+            await msg.channel.send(embed=embededadd)
         if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
             # Look for the text "reboot" in the message
             if "reboot" in msg.content:
@@ -351,7 +359,7 @@ async def on_message(msg):
         # Print incoming direct messages to terminal.
         print(f'{msg.channel} - {msg.author} : {msg.content}')
         # Ensure that we process our commands, as on_message overrides and stops command execution.
-        await bot.process_commands(msg)
+        # await bot.process_commands(msg)
         return
     # Print the server name and channel of the message followed by author name and the message content.
     print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
