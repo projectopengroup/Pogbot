@@ -279,7 +279,7 @@ async def setup(ctx):
                                              ('Switcher', "Turn on/off commands.", True)
                                              ])
         # Setting our global pogsetup var to true.
-        #pogsetup = True
+        # pogsetup = True
 
         # orginchannel = ctx.message.channel
         # Editing our original message into our new embed.
@@ -313,10 +313,10 @@ async def setup(ctx):
                     print("Found")
                     # If found, then form the embed.
                     embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
-                                             description="Would you like to set this channel as the welcome message "
-                                                         "channel?", color=0x08d5f7,
-                                             thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                             fields=[('Repond with', "**Yes** or **No**", True)])
+                                                 description="Would you like to set this channel as the welcome message "
+                                                             "channel?", color=0x08d5f7,
+                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                 fields=[('Repond with', "**Yes** or **No**", True)])
                     # Edit the message.
                     await pogsetupid.edit(embed=embededit)
                     await reply.delete()
@@ -327,16 +327,16 @@ async def setup(ctx):
                     if inwelcomesetup is True:
                         # If found, then form the embed.
                         embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
-                                                       description=f"**{ctx.message.channel}** has been set to the "
-                                                                   f"welcome message channel. \n\n **Choose a type of "
-                                                                   f"welcome message to continue.**", color=0x08d5f7,
-                                                       thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                       fields=[('Repond with', "**image**, **text**, or **both**", True)])
+                                                     description=f"**{ctx.message.channel}** will be set to the "
+                                                                 f"welcome message channel. \n\n **Choose a type of "
+                                                                 f"welcome message to continue.**", color=0x08d5f7,
+                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                     fields=[('Repond with', "**image**, **text**, or **both**", True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
                         reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
-                        inwelcomesetup = False
+
                 if "no" in str(reply.content.lower()):
                     if inwelcomesetup is True:
                         embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**", color=0x08d5f7,
@@ -352,7 +352,42 @@ async def setup(ctx):
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
                         inwelcomesetup = False
-
+                if "image" in str(reply.content.lower()):
+                    if inwelcomesetup is True:
+                        embededit = discord.Embed(description=f'<:Check:845178458426179605> **{ctx.message.channel} set'
+                                                              f' to welcome message channel.**',
+                                                     color=0x08d5f7)
+                        await pogsetupid.edit(embed=embededit)
+                        await reply.delete()
+                        inwelcomesetup = False
+                if "text" in str(reply.content.lower()):
+                    if inwelcomesetup is True:
+                        embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
+                                                     description=f"**Respond with the text you'd like to use for the "
+                                                                 f"welcome message.**", color=0x08d5f7,
+                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                     fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
+                                                             ('Example:', "Hey %USER%, glad you're here, welcome to "
+                                                                          "%SERVER%! Come join us in %CHANNEL%.",
+                                                              True)])
+                    # Edit the message.
+                    await pogsetupid.edit(embed=embededit)
+                    await reply.delete()
+                    reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
+                if "both" in str(reply.content.lower()):
+                    if inwelcomesetup is True:
+                        embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
+                                                     description=f"**Respond with the text you'd like to use for the "
+                                                                 f"welcome message.**", color=0x08d5f7,
+                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                     fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
+                                                             ('Example:', "Hey %USER%, glad you're here, welcome to "
+                                                                          "%SERVER%! Come join us in %CHANNEL%.",
+                                                              True)])
+                    # Edit the message.
+                    await pogsetupid.edit(embed=embededit)
+                    await reply.delete()
+                    reply = await bot.wait_for('message', timeout=20, check=checkAuthor)
                 # Look for pre in lowercase message
                 if "pre" in str(reply.content.lower()):
                     # If it's found then form the embed.
@@ -387,8 +422,9 @@ async def setup(ctx):
                     # Close the database.
                     conn.close()
                     # Setup the embed.
-                    embededit = discord.Embed(description=f'<:Check:845178458426179605> **Bot prefix changed to {prefix}**',
-                                              color=0x08d5f7)
+                    embededit = discord.Embed(
+                        description=f'<:Check:845178458426179605> **Bot prefix changed to {prefix}**',
+                        color=0x08d5f7)
                     # Edit the original message
                     await pogsetupid.edit(embed=embededit)
                     # Turn off Prefix setup.
@@ -397,7 +433,7 @@ async def setup(ctx):
                     await reply.delete()
                     break
             except asyncio.TimeoutError:
-                embedexpire = discord.Embed(description='<:Check:845178458426179605> **Setup Session Expired...**',
+                embedexpire = discord.Embed(description='<:Check:845178458426179605> **Exiting setup...**',
                                             color=0x08d5f7)
                 # Edit the Original Message.
                 await pogsetupid.edit(embed=embedexpire)
