@@ -161,99 +161,16 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
 
 bot = commands.Bot(command_prefix=get_prefix)
 
-
-@bot.command()
-# Look for a command called ping.
-async def ping(ctx):
-    # Send a message "Pong" when ping has been used.
-    await ctx.send("Pong")
-
-
-@bot.command()
-# Look for a command called github.
-async def github(ctx):
-    # Sends the link to the bot github page when the github command is used.
-    await ctx.send("https://github.com/projectopengroup/Pogbot")
-
-
-@bot.command()
-# Look for a command called codeck.
-async def codeck(ctx):
-    # Sends the link to the bot codeck page when the codeck command is used.
-    await ctx.send("https://open.codecks.io/pog")
-
-
-@bot.command()
-# Look for a command called echo
-async def echo(ctx, *, arg):
-    # Send an echo of the keyword-only argument.
-    await ctx.send(arg)
-
-
-@bot.command()
-# Look for a command called icon.
-async def icon(ctx):
-    # Send pogbot icon
-    await ctx.send(bot.user.avatar_url)
-
-
-@bot.command(name='avatar', aliases=['av', 'pfp'])
-# Look for a command called avatar and collects optional user parameter, so if no user given, user = None.
-async def avatar(ctx, user: discord.Member = None):
-    # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
-    # command author.
-    if user is None:
-        user = ctx.author
-    # Defining pfp from user's avatar_url.
-    pfp = user.avatar_url
-    # Creating an embed response using an f string to insert the author long name by using our variable 'user', setting
-    # the description to '**Avatar**', the color to match the bot, and the image to the specified user's pfp.
-    await send_embed(ctx, title=f'**{user}**', description='**Avatar**', color=0x08d5f7, image=pfp)
-
-
-@bot.command(name='userid', aliases=['id', 'uid'])
-# Look for a command called userid and collects optional user parameter, so if no user given, user = None.
-async def userid(ctx, user: discord.Member = None):
-    # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
-    # command author.
-    if user is None:
-        user = ctx.author
-    # Creates a discord embed with the elements: title (Which gets the user's tag),
-    # description (Which gets the user's id), and color (which is the bot's color).
-    await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
-                     color=0x08d5f7)
-
-
-@bot.command()
-# Look for a command called userid and collects optional user parameter, so if no user given, user = None.
-async def whois(ctx, user: discord.Member = None):
-    # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
-    # command author.
-    if user is None:
-        user = ctx.author
-
-    # Checks if the user is a bot and stores it in a variable
-    isBot = "No"
-    if user.bot:
-        isBot = "Yes"
-
-    # Checks if the user has a nickname set by taking the username, removing the # and numbers, and comparing it with
-    # the display name.
-    usernameFull = str(user)
-    username, usertag = usernameFull.split("#")
-    nickname = user.display_name
-    if username == nickname:
-        nickname = "None"
-
-    # Creates and sends an embed with various user info by adding them as fields. When getting dates, the format as to
-    # be converted so that it is easier to read.
-    await send_embed(ctx, title=f"**{username}**", thumbnail=user.avatar_url,
-                     fields=[(f'**Username:**', usernameFull, True), (f'**Nickname:**', nickname, True),
-                             (f'**User ID:**', str(user.id), True),
-                             (f'**Registered:**', str(user.created_at.strftime("%b %d, %Y")), True),
-                             (f'**Joined Server:**', str(user.joined_at.strftime("%b %d, %Y")), True),
-                             (f'**Is Bot:**', isBot, True)],
-                     color=0x08d5f7)
+if __name__ == "__main__":
+    for files in os.listdir("./cogs"):
+        if files.endswith(".py"):
+            extension = files[:-3]
+            try:
+                bot.load_extension(f"cogs.{extension}")
+                print(f"Status: Extension '{extension}' loaded.")
+            except Exception as exp:
+                exception = f"{type(exp).__name__}: {exp}"
+                print(f"Status: Failed loading extension {extension}\n{exception}")
 
 
 @bot.command()
