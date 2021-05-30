@@ -10,10 +10,9 @@ class General(commands.Cog, name="general"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.', description='This command '
-                                                                                                    'will respond '
-                                                                                                    'with the '
-                                                                                                    'bots latency')
+    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.', description="Responds "
+                                                                                                    "with "
+                                                                                                    "Pogbot's latency")
     # Look for a command called ping.
     async def ping(self, ctx):
         # Responds with the bots latency in a embed.

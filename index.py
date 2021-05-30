@@ -485,7 +485,7 @@ class HelpFormatted(commands.MinimalHelpCommand):
             # https://i.imgur.com/dF7bjKo.png
 
             embedhelp = discord.Embed(title="**Pogbot Help Menu**", description=page, color=0x08d5f7)
-            embedhelp = embedhelp.set_thumbnail(url="https://i.imgur.com/dF7bjKo.png")
+            embedhelp = embedhelp.set_thumbnail(url="https://i.imgur.com/a9dzSlL.png")
             await destination.send(embed=embedhelp)
 
 
