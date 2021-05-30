@@ -76,9 +76,6 @@ if __name__ == "__main__":
                 print(f"Status: Failed loading extension {extension}\n{exception}")
 
 
-
-
-
 @bot.command()
 # Look for a command called setup
 async def setup(ctx):
@@ -381,8 +378,6 @@ class HelpFormatted(commands.MinimalHelpCommand):
     async def send_pages(self):
         destination = self.get_destination()
         for page in self.paginator.pages:
-            # https://i.imgur.com/dF7bjKo.png
-
             embedhelp = discord.Embed(title="**Pogbot's Help Menu**", description=page, color=0x08d5f7)
             embedhelp = embedhelp.set_thumbnail(url="https://i.imgur.com/a9dzSlL.png")
             await destination.send(embed=embedhelp)
@@ -392,7 +387,7 @@ class HelpFormatted(commands.MinimalHelpCommand):
 if __name__ == "__main__":
     # Try to login with the bot token
     try:
-        bot.help_command = HelpFormatted()
+        bot.help_command = HelpFormatted(no_category='documentation')
         bot.run(BotToken)
 
         # bot = commands.Bot(command_prefix=get_prefix)
