@@ -11,7 +11,6 @@ class Config(commands.Cog, name="config"):
     def __init__(self, bot):
         self.bot = bot
 
-
     @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
                       description="Responds with Pogbot's latency.")
     # Look for a command called ping.
@@ -23,14 +22,12 @@ class Config(commands.Cog, name="config"):
         # Edit the original message
         await ctx.send(embed=embedping)
 
-
     @commands.command(name='prefix', brief='Responds with the prefix.',
                       description="Responds with Pogbot's command prefix.")
     async def prefix(self, ctx):
         justprefix = await get_prefix(self.bot, ctx.message)
         await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
                          color=0x08d5f7)
-
 
     @commands.command(name='setup', brief='Walks you through setup.',
                       description='Walks you through, and lists setup options for Pogbot.')
@@ -116,7 +113,8 @@ class Config(commands.Cog, name="config"):
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                          fields=[
                                                              (
-                                                             'Respond with', "**image**, **text**, or **both**", True)])
+                                                                 'Respond with', "**image**, **text**, or **both**",
+                                                                 True)])
                             # Edit the message.
                             await pogsetupid.edit(embed=embededit)
                             await reply.delete()
@@ -145,9 +143,10 @@ class Config(commands.Cog, name="config"):
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                          fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
                                                                  (
-                                                                 'Example:', "Hey %USER%, glad you're here, welcome to "
-                                                                             "%SERVER%! Come join us in %CHANNEL%.",
-                                                                 True)])
+                                                                     'Example:',
+                                                                     "Hey %USER%, glad you're here, welcome to "
+                                                                     "%SERVER%! Come join us in %CHANNEL%.",
+                                                                     True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
@@ -186,9 +185,10 @@ class Config(commands.Cog, name="config"):
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                          fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
                                                                  (
-                                                                 'Example:', "Hey %USER%, glad you're here, welcome to "
-                                                                             "%SERVER%! Come join us in %CHANNEL%.",
-                                                                 True)])
+                                                                     'Example:',
+                                                                     "Hey %USER%, glad you're here, welcome to "
+                                                                     "%SERVER%! Come join us in %CHANNEL%.",
+                                                                     True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
@@ -202,9 +202,10 @@ class Config(commands.Cog, name="config"):
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                          fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
                                                                  (
-                                                                 'Example:', "Hey %USER%, glad you're here, welcome to "
-                                                                             "%SERVER%! Come join us in %CHANNEL%.",
-                                                                 True)])
+                                                                     'Example:',
+                                                                     "Hey %USER%, glad you're here, welcome to "
+                                                                     "%SERVER%! Come join us in %CHANNEL%.",
+                                                                     True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
