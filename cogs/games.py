@@ -6,7 +6,7 @@ import asyncio
 from discord.ext import commands
 
 
-class Games(commands.Cog, name="Games"):
+class Games(commands.Cog, name="games"):
     def __init__(self, bot):
         self.bot = bot
 

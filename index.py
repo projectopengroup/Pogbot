@@ -159,7 +159,7 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
 
 # Define bot and it's commands prefix, calling the get_prefix function, where it returns the server specific prefix.
 
-bot = commands.Bot(command_prefix=get_prefix)
+bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True)
 
 if __name__ == "__main__":
     for files in os.listdir("./cogs"):
@@ -410,7 +410,7 @@ async def on_ready():
     # Print status to terminal
     print('Status: Ready.')
     await bot.change_presence(
-        activity=discord.Game(name='Message me "add" to add me to your server.'))
+        activity=discord.Game(name='Message "add" to add me to your server.'))
 
 
 @bot.event

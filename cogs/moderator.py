@@ -6,7 +6,7 @@ import asyncio
 from discord.ext import commands
 
 
-class Moderator(commands.Cog, name="Moderator"):
+class Moderator(commands.Cog, name="moderator"):
     def __init__(self, bot):
         self.bot = bot
 

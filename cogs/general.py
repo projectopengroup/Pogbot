@@ -6,15 +6,22 @@ import asyncio
 from discord.ext import commands
 
 
-class General(commands.Cog, name="General"):
+class General(commands.Cog, name="general"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.', description='This command '
+                                                                                                    'will respond '
+                                                                                                    'with the '
+                                                                                                    'bots latency')
     # Look for a command called ping.
     async def ping(self, ctx):
-        # Send a message "Pong" when ping has been used.
-        await ctx.send("Pong")
+        # Responds with the bots latency in a embed.
+        embedping = discord.Embed(
+            description=f"<:Check:845178458426179605> **Pogbot's latency is {round(self.bot.latency * 100)}ms**",
+            color=0x08d5f7)
+        # Edit the original message
+        await ctx.send(embed=embedping)
 
     @commands.command()
     # Look for a command called github.
