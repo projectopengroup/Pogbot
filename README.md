@@ -3,7 +3,7 @@
 <a href="https://discord.gg/zRHZymwxfY">Project Open Group Discord</a>
 </p>
 
-This is an open source community ran project. Join the discord above for more information on how to participate. Coded in python, running on AWS.
+This is an open source community ran project. Join the discord for more information on how to participate. Coded in python, running on AWS.
 
 ## Project Leads
 
@@ -14,7 +14,7 @@ This is an open source community ran project. Join the discord above for more in
 
 ## Contributors
 * **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group and Pogbot logos.
-* **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)** Developer. Foundational code contributions.
+* **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)** Developer. Foundational code contributions. 
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)** -> Developer. Foundational code contributions. 
 * **[DJ DeHao(DJ DeHao#4627 on discord)](https://github.com/DJ-DeHao)** -> Coder. Code contributions. (avatar command).
 * **[Gummies(Panda Gummies#2155 on discord)](https://github.com/Gummies351)** -> Coder. Code contributions. (echo command).
