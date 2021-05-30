@@ -11,9 +11,9 @@ class Config(commands.Cog, name="config"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.', description="Responds "
-                                                                                                    "with "
-                                                                                                    "Pogbot's latency.")
+
+    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
+                      description="Responds with Pogbot's latency.")
     # Look for a command called ping.
     async def ping(self, ctx):
         # Responds with the bots latency in a embed.
@@ -23,15 +23,17 @@ class Config(commands.Cog, name="config"):
         # Edit the original message
         await ctx.send(embed=embedping)
 
-    @commands.command(name='prefix', brief='Responds with the prefix.', description="Responds with Pogbot's command "
-                                                                                    "prefix.")
+
+    @commands.command(name='prefix', brief='Responds with the prefix.',
+                      description="Responds with Pogbot's command prefix.")
     async def prefix(self, ctx):
         justprefix = await get_prefix(self.bot, ctx.message)
         await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
                          color=0x08d5f7)
 
-    @commands.command(name='setup', brief='Walks you through setup.', description='Walks you through, and lists setup '
-                                                                                  'options for Pogbot.')
+
+    @commands.command(name='setup', brief='Walks you through setup.',
+                      description='Walks you through, and lists setup options for Pogbot.')
     # Look for a command called setup
     async def setup(self, ctx):
         inwelcomesetup = False

@@ -61,7 +61,6 @@ conn.close()
 prefix = "!"
 
 # Define bot and it's commands prefix, calling the get_prefix function, where it returns the server specific prefix.
-
 bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True)
 
 if __name__ == "__main__":
@@ -74,8 +73,6 @@ if __name__ == "__main__":
             except Exception as exp:
                 exception = f"{type(exp).__name__}: {exp}"
                 print(f"Status: Failed loading extension {extension}\n{exception}")
-
-
 
 
 @bot.event
@@ -114,9 +111,7 @@ async def on_message_delete(message):
 @bot.event
 # Look for incoming messages in DMs and in Chat.
 async def on_message(msg):
-    global prefixsetup
     global prefix
-    global pogsetup
 
     # Check if the message author is a bot.
     if msg.author.bot:
