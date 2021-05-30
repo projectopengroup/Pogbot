@@ -92,7 +92,7 @@ async def get_prefix(client, message):
         conn.commit()
         # Set prefixer to the default prefix.
         prefixer = "!"
-         # Close the connection.
+        # Close the connection.
         conn.close()
         # Set Global Prefix to Prefixer
         prefix = prefixer
@@ -255,11 +255,14 @@ async def whois(ctx, user: discord.Member = None):
                              (f'**Is Bot:**', isBot, True)],
                      color=0x08d5f7)
 
+
 @bot.command()
 async def prefix(ctx):
     global prefix
     await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {prefix}**",
-                             color=0x08d5f7)
+                     color=0x08d5f7)
+
+
 @bot.command()
 # Look for a command called setup
 async def setup(ctx):
@@ -558,10 +561,22 @@ async def on_message(msg):
     await bot.process_commands(msg)
 
 
+class HelpFormatted(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        for page in self.paginator.pages:
+            # https://i.imgur.com/dF7bjKo.png
+
+            embedhelp = discord.Embed(title="**Pogbot Help Menu**", description=page, color=0x08d5f7)
+            embedhelp = embedhelp.set_thumbnail(url="https://i.imgur.com/dF7bjKo.png")
+            await destination.send(embed=embedhelp)
+
+
 # Run the bot using its token if running from main.
 if __name__ == "__main__":
     # Try to login with the bot token
     try:
+        bot.help_command = HelpFormatted()
         bot.run(BotToken)
 
         # bot = commands.Bot(command_prefix=get_prefix)
