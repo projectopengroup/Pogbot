@@ -4,15 +4,18 @@ import base64
 import os
 import asyncio
 from discord.ext import commands
+from utils.pogfunctions import send_embed
 
 
 class General(commands.Cog, name="general"):
     def __init__(self, bot):
         self.bot = bot
 
+    # name='ping', aliases=['latency'], brief='Responds with latency.', description=""
+
     @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.', description="Responds "
                                                                                                     "with "
-                                                                                                    "Pogbot's latency")
+                                                                                                    "Pogbot's latency.")
     # Look for a command called ping.
     async def ping(self, ctx):
         # Responds with the bots latency in a embed.
@@ -22,31 +25,41 @@ class General(commands.Cog, name="general"):
         # Edit the original message
         await ctx.send(embed=embedping)
 
-    @commands.command()
+    @commands.command(name='github', brief="Responds with github link.", description="Responds with the link to "
+                                                                                     "Pogbot's github.")
     # Look for a command called github.
     async def github(self, ctx):
         # Sends the link to the bot github page when the github command is used.
         await ctx.send("https://github.com/projectopengroup/Pogbot")
 
-    @commands.command()
+    @commands.command(name='codeck', aliases=['deck'], brief='Responds with '
+                                                             'codeck link.',
+                      description="Responds with the link to Pogbot's codeck.")
     # Look for a command called codeck.
     async def codeck(self, ctx):
         # Sends the link to the bot codeck page when the codeck command is used.
         await ctx.send("https://open.codecks.io/pog")
 
-    @commands.command()
+    @commands.command(name='echo', brief='Responds with the argument prov'
+                                         'ided.',
+                      description="Replies with the same text argument that's provided by the user.")
     # Look for a command called echo
     async def echo(self, ctx, *, arg):
         # Send an echo of the keyword-only argument.
         await ctx.send(arg)
 
-    @commands.command()
+    @commands.command(name='icon', brief="Responds with Pogbot's avatar. ", description="Responds with Pogbot's avatar.")
     # Look for a command called icon.
     async def icon(self, ctx):
         # Send pogbot icon
         await ctx.send(self.bot.user.avatar_url)
 
-    @commands.command(name='avatar', aliases=['av', 'pfp'])
+    @commands.command(name='avatar', aliases=['av', 'pfp'], brief='Responds with an '
+                                                                  'avatar.', description="Responds with the avatar of "
+                                                                                         "a user provided, if none "
+                                                                                         "provided, responds with the "
+                                                                                         "avatar of the user that "
+                                                                                         "called the command.")
     # Look for a command called avatar and collects optional user parameter, so if no user given, user = None.
     async def avatar(self, ctx, user: discord.Member = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
@@ -60,7 +73,12 @@ class General(commands.Cog, name="general"):
         # pfp.
         await send_embed(ctx, title=f'**{user}**', description='**Avatar**', color=0x08d5f7, image=pfp)
 
-    @commands.command(name='userid', aliases=['id', 'uid'])
+    @commands.command(name='userid', aliases=['id', 'uid'], brief='Responds with a '
+                                                                  'users ID.', description="Responds with the ID of "
+                                                                                           "a user provided, if none "
+                                                                                           "provided, responds with the"
+                                                                                           " ID of the user that "
+                                                                                           "called the command.")
     # Look for a command called userid and collects optional user parameter, so if no user given, user = None.
     async def userid(self, ctx, user: discord.Member = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
@@ -72,8 +90,14 @@ class General(commands.Cog, name="general"):
         await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
                          color=0x08d5f7)
 
-    @commands.command()
-    # Look for a command called userid and collects optional user parameter, so if no user given, user = None.
+    @commands.command(name='whois', aliases=['info'], brief='Responds with information '
+                                                            'on a user.', description="Responds with the information "
+                                                                                      "of a user provided, if "
+                                                                                      "none provided, responds "
+                                                                                      "with the information "
+                                                                                      "of the user that "
+                                                                                      "called the command.")
+    # Look for a command called whois and collects optional user parameter, so if no user given, user = None.
     async def whois(self, ctx, user: discord.Member = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
         # command author.
@@ -106,44 +130,3 @@ class General(commands.Cog, name="general"):
 
 def setup(bot):
     bot.add_cog(General(bot))
-
-
-async def send_embed(ctx, send_option=0, title=None, description=None, author=None, author_pfp=None,
-                     color=discord.Colour.default(), footer=None, thumbnail=None, image=None, url=None, fields=None):
-    if title is None and description is None:
-        print("[Error]: Error creating embed. No title or description specified.")
-    else:
-        # Initializes new_embed variable
-        new_embed = discord.Embed(colour=color)
-
-        # Checks if title, description, and url are 'None'. If None, that element isn't added to the embed
-        if title is not None:
-            new_embed.title = title
-        if description is not None:
-            new_embed.description = description
-        if url is not None:
-            new_embed.url = url
-
-        # Checks if each argument is 'None'. If None, the argument is ignored. But if not None, then the element is
-        # added to the embed.
-        if image is not None:
-            new_embed.set_image(url=image)
-        if footer is not None:
-            new_embed.set_footer(text=footer)
-        if thumbnail is not None:
-            new_embed.set_thumbnail(url=thumbnail)
-        if author is not None and author_pfp is not None:
-            new_embed.set_author(name=author, icon_url=author_pfp)
-        elif author is not None and author_pfp is None:
-            new_embed.set_author(name=author)
-
-        if fields is not None:
-            for field in fields:
-                new_embed.add_field(name=field[0], value=field[1], inline=field[2])
-
-        if send_option == 0:
-            await ctx.send(embed=new_embed)
-        elif send_option == 1:
-            return await ctx.send(embed=new_embed)
-        elif send_option == 2:
-            return new_embed
