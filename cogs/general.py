@@ -11,20 +11,6 @@ class General(commands.Cog, name="general"):
     def __init__(self, bot):
         self.bot = bot
 
-    # name='ping', aliases=['latency'], brief='Responds with latency.', description=""
-
-    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.', description="Responds "
-                                                                                                    "with "
-                                                                                                    "Pogbot's latency.")
-    # Look for a command called ping.
-    async def ping(self, ctx):
-        # Responds with the bots latency in a embed.
-        embedping = discord.Embed(
-            description=f"<:Check:845178458426179605> **Pogbot's latency is {round(self.bot.latency * 100)}ms**",
-            color=0x08d5f7)
-        # Edit the original message
-        await ctx.send(embed=embedping)
-
     @commands.command(name='github', brief="Responds with github link.", description="Responds with the link to "
                                                                                      "Pogbot's github.")
     # Look for a command called github.
