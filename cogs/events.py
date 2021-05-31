@@ -72,6 +72,7 @@ class Events(commands.Cog):
                 if "reboot" in msg.content:
                     # reboot has been found so go ahead and run the update command, and then quit the script.
                     print("Reboot Command Accepted.")
+                    # go back a dir.
                     os.system('cd ..')
                     os.system('bash run.sh')
                     quit()
