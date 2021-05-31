@@ -85,9 +85,6 @@ class Events(commands.Cog):
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
 
-        # Ensure that we process our commands, as on_message overrides and stops command execution.
-        await self.bot.process_commands(msg)
-
 
 def setup(bot):
     bot.add_cog(Events(bot))
