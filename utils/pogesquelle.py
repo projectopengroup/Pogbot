@@ -6,14 +6,13 @@ from discord.ext import commands
 # Get Prefix Function
 async def get_prefix(client, message):
     try:
-        global prefix
         # Connect to the SQL DB.
         conn = sqlite3.connect('prefs.db')
         # Set type to string.
         conn.text_factory = str
         # Set the cursor for the connection.
         cur = conn.cursor()
-        # Execute command on the db that looks for the prefix field where serverID matches the incoming messages server ID.
+        # Execute command on the db that looks for the prefix field where serverID match the incoming msg server ID.
         cur.execute(f'SELECT Prefix FROM servers WHERE ServerID={message.guild.id}')
         # Fetch the response.
         data = cur.fetchone()
@@ -23,7 +22,7 @@ async def get_prefix(client, message):
         if str(prefixer) == "None":
             # Explain what we're doing to the terminal.
             print("Prefix was none, executing SQL")
-            # Format new empty values for the row, with the exception of the server ID. This is default setup for a server.
+            # Format new empty values for the row, with the exception of the server ID. This is default for a server.
             # It will only run this once, because only once will it not find the prefix, because we set it here.
             prefs_query = f"""INSERT INTO servers
                                      (ServerID, Prefix, MutedRole, ModRoles, EditLogs, DeleteLogs, JoinLogs, LeaveLogs, 
@@ -48,7 +47,7 @@ async def get_prefix(client, message):
         return prefixed
     except:
         prefixed = "!"
-        return
+        return prefixed
 
 
 def get_or_request_token():
