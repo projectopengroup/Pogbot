@@ -52,8 +52,7 @@ class Config(commands.Cog, name="config"):
                                                  ('Reactions', "Setup role reactions.", True),
                                                  ('Commands', "Configure custom commands.", True),
                                                  ('Logs', "Enable event logs.", True),
-                                                 ('Switcher', "Turn on/off commands.", True)
-                                                 ])
+                                                 ('Switcher', "Turn on/off commands.", True)])
             # Setting our global pogsetup var to true.
             # pogsetup = True
 
@@ -91,12 +90,10 @@ class Config(commands.Cog, name="config"):
                         # If found, then form the embed.
                         embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
                                                      description="Select the type of welcome message or action you'd "
-                                                                 "like "
-                                                                 "to edit.", color=0x08d5f7,
+                                                                 "like to edit.", color=0x08d5f7,
                                                      thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                     fields=[
-                                                         ('Respond with', "**channel**, **dm**, **role** or **back**",
-                                                          True)])
+                                                     fields=[('Respond with',
+                                                              "**channel**, **dm**, **role** or **back**", True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
@@ -111,10 +108,8 @@ class Config(commands.Cog, name="config"):
                                                                      f"welcome message channel. \n\n **Choose a type of"
                                                                      f" welcome message to continue.**", color=0x08d5f7,
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                         fields=[
-                                                             (
-                                                                 'Respond with', "**image**, **text**, or **both**",
-                                                                 True)])
+                                                         fields=[('Respond with', "**image**, **text**, or **both**",
+                                                                  True)])
                             # Edit the message.
                             await pogsetupid.edit(embed=embededit)
                             await reply.delete()
@@ -125,10 +120,8 @@ class Config(commands.Cog, name="config"):
                             # If found, then form the embed.
                             embededit = await send_embed(ctx, send_option=2, title=f"**Role Handout Setup**",
                                                          description=f"**Respond with the Role ID you'd like to hand "
-                                                                     f"out to "
-                                                                     f"users when they join the server.**",
-                                                         color=0x08d5f7,
-                                                         thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                                                     f"out to users when they join the server.**",
+                                                         color=0x08d5f7, thumbnail='https://i.imgur.com/rYKYpDw.png')
                             # Edit the message.
                             await pogsetupid.edit(embed=embededit)
                             await reply.delete()
@@ -138,15 +131,11 @@ class Config(commands.Cog, name="config"):
                         if inwelcomesetup is True:
                             embededit = await send_embed(ctx, send_option=2, title=f"**Direct Message Welcome Setup**",
                                                          description=f"**Respond with the text you'd like to use for "
-                                                                     f"the "
-                                                                     f"welcome message.**", color=0x08d5f7,
+                                                                     f"the welcome message.**", color=0x08d5f7,
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                          fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
-                                                                 (
-                                                                     'Example:',
-                                                                     "Hey %USER%, glad you're here, welcome to "
-                                                                     "%SERVER%! Come join us in %CHANNEL%.",
-                                                                     True)])
+                                                                 ('Example:', "Hey %USER%, glad you're here, welcome to"
+                                                                  " %SERVER%! Come join us in %CHANNEL%.", True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
@@ -180,15 +169,11 @@ class Config(commands.Cog, name="config"):
                         if inwelcomesetup is True:
                             embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
                                                          description=f"**Respond with the text you'd like to use for "
-                                                                     f"the "
-                                                                     f"welcome message.**", color=0x08d5f7,
+                                                                     f"the welcome message.**", color=0x08d5f7,
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                          fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
-                                                                 (
-                                                                     'Example:',
-                                                                     "Hey %USER%, glad you're here, welcome to "
-                                                                     "%SERVER%! Come join us in %CHANNEL%.",
-                                                                     True)])
+                                                                 ('Example:', "Hey %USER%, glad you're here, welcome to"
+                                                                  " %SERVER%! Come join us in %CHANNEL%.", True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
@@ -197,30 +182,24 @@ class Config(commands.Cog, name="config"):
                         if inwelcomesetup is True:
                             embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
                                                          description=f"**Respond with the text you'd like to use for "
-                                                                     f"the "
-                                                                     f"welcome message.**", color=0x08d5f7,
+                                                                     f"the welcome message.**", color=0x08d5f7,
                                                          thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                          fields=[('Wildcards:', "%USER%, %SERVER%, %CHANNEL%", True),
-                                                                 (
-                                                                     'Example:',
-                                                                     "Hey %USER%, glad you're here, welcome to "
-                                                                     "%SERVER%! Come join us in %CHANNEL%.",
-                                                                     True)])
+                                                                 ('Example:', "Hey %USER%, glad you're here, welcome to"
+                                                                  " %SERVER%! Come join us in %CHANNEL%.", True)])
                         # Edit the message.
                         await pogsetupid.edit(embed=embededit)
                         await reply.delete()
-                        reply = await self.self.bot.wait_for('message', timeout=20, check=checkAuthor)
+                        reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
                     # Look for pre in lowercase message
                     if "pre" in str(reply.content.lower()):
                         # If it's found then form the embed.
                         trueprefix = await get_prefix(self.bot, ctx)
                         embededit = await send_embed(ctx, send_option=2, title=f"**Prefix Setting**",
                                                      description="Respond with a new prefix for the bot.",
-                                                     color=0x08d5f7,
-                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                     color=0x08d5f7, thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                      fields=[('Current Prefix', f"{trueprefix[2]}", True)])
                         # Edit the message.
-
                         await pogsetupid.edit(embed=embededit)
                         # Delete the user message.
                         await reply.delete()
@@ -245,9 +224,8 @@ class Config(commands.Cog, name="config"):
                         # Close the database.
                         conn.close()
                         # Setup the embed.
-                        embededit = discord.Embed(
-                            description=f'<:Check:845178458426179605> **Bot prefix changed to {prefix}**',
-                            color=0x08d5f7)
+                        embededit = discord.Embed(color=0x08d5f7,
+                                                  description=f'<:Check:845178458426179605> **Bot prefix changed to {prefix}**')
                         # Edit the original message
                         await pogsetupid.edit(embed=embededit)
                         # Turn off Prefix setup.
