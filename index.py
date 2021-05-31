@@ -6,6 +6,7 @@ import os
 import asyncio
 from discord.ext import commands
 from utils.pogfunctions import get_prefix, send_embed
+from utils.pogesquelle import get_or_request_token, reset_token
 
 # Print the bot logo to terminal on start
 print('''
@@ -18,60 +19,34 @@ print('''
              \/__/     \/__/     \/__/     \/__/                                                                                      
 ''')
 
-# Making our connection to the sqllite3 database.
-conn = sqlite3.connect('prefs.db')
-# Setting this connection to strings/
-conn.text_factory = str
-# Creating our SQL cursor.
-cur = conn.cursor()
-# Executing a query that selects everything from the table called configs.
-cur.execute('SELECT * FROM configs')
-# Pulling data from the cursor by fetching everything.
-data = cur.fetchall()
-# Setting the bot token variable by looking for the second columns value in the data.
-BotToken = (data[0][1])
-# If the BotToken is it's default value of "None" then do this stuff.
-if "None" not in BotToken:
-    print("Status: Bot token found! Loading bot...'")
-    # Convert base64 string to bytes
-    base64_bytes = BotToken.encode("ascii")
-    # Decode base64 bytes to bytes
-    fromBytes = base64.b64decode(base64_bytes)
-    # Convert to string
-    BotToken = fromBytes.decode("ascii")
-else:
-    print("Status: No bot token found!, prompting user for input")
-    # Request bot token from user input.
-    BotToken = input("Enter bot token: ")
-    # Change string to bytes
-    toBytes = BotToken.encode("ascii")
-    # Make bytes base64
-    base64_bytes = base64.b64encode(toBytes)
-    # Change bytes back to a base64 encoded string
-    base64_token = base64_bytes.decode("ascii")
-    # Update the database with the provided BotToken in Base64.
-    cur.execute(f"UPDATE configs SET BotToken = '{base64_token}' WHERE BotToken = 'None'")
-    # Commit the database changes.
-    conn.commit()
-
-# Close the database connection
-conn.close()
-
-# set a global var called prefix
+# set a var called prefix to the bots default prefix
 prefix = "!"
 
 # Define bot and it's commands prefix, calling the get_prefix function, where it returns the server specific prefix.
 bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True)
 
+# This is our entry point for loading the bots commands. Cogs are necessary in discord.py for a couple of reasons.
+# 1. In order to display the proper category information in the built in help menu, we're required to do it.
+# 2. As we add more and more commands and features, the main thread of the bot will become bloated otherwise.
+# If we're in the main process.
 if __name__ == "__main__":
+    # Find all the files in the folder named cogs.
     for files in os.listdir("./cogs"):
+        # If in those files we see one that has a .py extension.
         if files.endswith(".py"):
+            # Save the name of the extension into the var without its .py extension.
             extension = files[:-3]
+            # Try this
             try:
+                # Load the scripts as cogs.
                 bot.load_extension(f"cogs.{extension}")
+                # Print if we loaded it.
                 print(f"Status: Extension '{extension}' loaded.")
+                # If it errors then pull the information of the error(exception) and name it "exp" for short.
             except Exception as exp:
+                # Set the var exception by type, name and exception reason.
                 exception = f"{type(exp).__name__}: {exp}"
+                # Print the error to terminal.
                 print(f"Status: Failed loading extension {extension}\n{exception}")
 
 
@@ -80,6 +55,7 @@ if __name__ == "__main__":
 async def on_ready():
     # Print status to terminal
     print('Status: Ready.')
+    # Change bot playing status to information about how to add the bot.
     await bot.change_presence(
         activity=discord.Game(name='Message "add" to add me to your server.'))
 
@@ -147,33 +123,34 @@ async def on_message(msg):
     await bot.process_commands(msg)
 
 
+# Name a new class and call it HelpFormatted passing commands.MinimalHelpCommand as base.
 class HelpFormatted(commands.MinimalHelpCommand):
+    # Make a new function inside of this class called send_pages
     async def send_pages(self):
+        # Name a new var "destination" and use get_destination to get it from the send_pages function that inherited it
+        # from commands.MinimalHelpCommand
         destination = self.get_destination()
+        # For the page send_pages paginator wrap it in a embed and send it back to the destination.
+        # We're doing this to better format the help command responses. This makes them look more EmBeDy.
         for page in self.paginator.pages:
             embedhelp = discord.Embed(title="**Pogbot's Help Menu**", description=page, color=0x08d5f7)
             embedhelp = embedhelp.set_thumbnail(url="https://i.imgur.com/a9dzSlL.png")
             await destination.send(embed=embedhelp)
 
 
-# Run the bot using its token if running from main.
+# If we're running from main.
 if __name__ == "__main__":
-    # Try to login with the bot token
+    # Try to do this
     try:
+        # Set the bots help command to our own formatting, pass the field no category renamed to documentation.
         bot.help_command = HelpFormatted(no_category='documentation')
+        # Get the bots token and name it in a var called BotToken
+        BotToken = get_or_request_token()
+        # Login with our BotToken
         bot.run(BotToken)
-
         # bot = commands.Bot(command_prefix=get_prefix)
     # On login error do this
-    except discord.errors.LoginFailure as e:
+    except discord.errors.LoginFailure as exp:
         print("Status: Login unsuccessful.")
-        # Pull up the database again
-        conn = sqlite3.connect('prefs.db')
-        # Create our SQL cursor.
-        cur = conn.cursor()
-        # Reset our Token to "None"
-        cur.execute(f"UPDATE configs SET BotToken = 'None' WHERE BotToken = '{BotToken}'")
-        # Commit Database
-        conn.commit()
-        # Close Database
-        conn.close()
+        # If the login fails then, reset the token but send the token that was bad with it as an ID.
+        reset_token(get_or_request_token())
