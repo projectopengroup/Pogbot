@@ -1,5 +1,7 @@
 #!/bin/bash
 
-rm -rf ./index.py
-wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/index.py
+cd ..
+rm -rf Pogbot
+git clone https://github.com/projectopengroup/Pogbot.git
+cd Pogbot
 python3 index.py
