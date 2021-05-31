@@ -1,6 +1,54 @@
 import sqlite3
 import base64
-import os
+from discord.ext import commands
+
+
+# Get Prefix Function
+async def get_prefix(client, message):
+    try:
+        global prefix
+        # Connect to the SQL DB.
+        conn = sqlite3.connect('prefs.db')
+        # Set type to string.
+        conn.text_factory = str
+        # Set the cursor for the connection.
+        cur = conn.cursor()
+        # Execute command on the db that looks for the prefix field where serverID matches the incoming messages server ID.
+        cur.execute(f'SELECT Prefix FROM servers WHERE ServerID={message.guild.id}')
+        # Fetch the response.
+        data = cur.fetchone()
+        # Set a var named prefixer to the response from the query.
+        prefixer = data
+        # if the response is nothing
+        if str(prefixer) == "None":
+            # Explain what we're doing to the terminal.
+            print("Prefix was none, executing SQL")
+            # Format new empty values for the row, with the exception of the server ID. This is default setup for a server.
+            # It will only run this once, because only once will it not find the prefix, because we set it here.
+            prefs_query = f"""INSERT INTO servers
+                                     (ServerID, Prefix, MutedRole, ModRoles, EditLogs, DeleteLogs, JoinLogs, LeaveLogs, 
+                                     WarnLogs, KickLogs, BanLogs, MuteLogs)
+                                      VALUES 
+                                     ('{message.guild.id}', '!', 'None', 'None', 0, 0, 0, 0, 0, 0, 0, 0)"""
+            # Execute our query
+            cur.execute(prefs_query)
+            # Commit the changes.
+            conn.commit()
+            # Set prefixer to the default prefix.
+            prefixer = "!"
+            # Close the connection.
+            conn.close()
+            # Set Global Prefix to Prefixer
+            prefix = prefixer
+            # Return prefixer to our function entry point
+        prefix = prefixer[0]
+        prefixer = prefixer[0]
+        prefixed = commands.when_mentioned(client, message)
+        prefixed.append(prefixer)
+        return prefixed
+    except:
+        prefixed = "!"
+        return
 
 
 def get_or_request_token():

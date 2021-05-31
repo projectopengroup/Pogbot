@@ -1,15 +1,7 @@
-import sqlite3
-from datetime import datetime
-
-import discord
-import base64
-import os
-import asyncio
 import aiohttp
 import requests
-import json
 from discord.ext import commands
-from utils.pogfunctions import get_prefix, send_embed
+from utils.pogfunctions import send_embed
 
 
 # https://some-random-api.ml/

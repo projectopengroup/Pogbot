@@ -1,8 +1,3 @@
-import sqlite3
-import discord
-import base64
-import os
-import asyncio
 from discord.ext import commands
 
 
