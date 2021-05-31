@@ -1,4 +1,5 @@
 import discord
+import requests
 from discord.ext import commands
 from utils.pogfunctions import send_embed
 
@@ -96,6 +97,14 @@ class General(commands.Cog, name="general"):
                                  (f'**Joined Server:**', str(user.joined_at.strftime("%b %d, %Y")), True),
                                  (f'**Is Bot:**', isBot, True)],
                          color=0x08d5f7)
+
+    @commands.command(name='qr', brief='Responds with a QR code.',
+                      description="Responds with a QR code of the data provided.")
+    # Look for a command called echo
+    async def qr(self, ctx, *, arg):
+        # Send an echo of the keyword-only argument.
+        request = requests.get(url=f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={arg}')
+        await ctx.send(request.url)
 
 
 def setup(bot):
