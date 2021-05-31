@@ -3,9 +3,6 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed
 import os
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))  # This is your Project Root
-
-
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
