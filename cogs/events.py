@@ -48,7 +48,7 @@ class Events(commands.Cog):
 
         # Check if the message channel contains the word direct message
         if "Direct Message" in str(msg.channel):
-            # If any of the IDs match Mag, Cheetah, or Jonny then
+
             if "add" in msg.content:
                 # https://discord.com/api/oauth2/authorize?client_id=843272975771631616&permissions=0&scope=bot
                 await send_embed(msg.channel, send_option=0, title=f"**Click here to add Pogbot to your server**",
@@ -56,6 +56,7 @@ class Events(commands.Cog):
                                      "&permissions=0&scope=bot",
                                  description="The default prefix is ! \n Run the command !setup once added to "
                                              "get started.", color=0x08d5f7)
+            # If any of the IDs match Mag, Cheetah, or Jonny then
             if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
                 # Look for the text "reboot" in the message
                 if "reboot" in msg.content:

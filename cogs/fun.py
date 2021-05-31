@@ -4,8 +4,6 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed
 
 
-# https://some-random-api.ml/
-
 class Fun(commands.Cog, name="fun"):
     def __init__(self, bot):
         self.bot = bot
@@ -43,6 +41,22 @@ class Fun(commands.Cog, name="fun"):
             await send_embed(ctx, title=str(joke["joke"]), color=0x08d5f7)
         else:
             await send_embed(ctx, title=str(joke["setup"]), description=str(joke["delivery"]), color=0x08d5f7)
+
+    @commands.command(name='idea', aliases=['bored', 'activity'], brief='Suggests and activity.',
+                      description="Suggests and activity for you to do when you're bored.")
+    # Look for a command called activity
+    async def idea(self, ctx):
+        request = requests.get(url=f'https://www.boredapi.com/api/activity')
+        activity = request.json()
+        link = activity['link']
+        if not link:
+            print(activity['link'])
+            await send_embed(ctx, title=str(activity['activity']),
+                             color=0x08d5f7)
+        else:
+            print(activity['link'])
+            await send_embed(ctx, title=str(activity['activity']), url=link,
+                             color=0x08d5f7)
 
 
 def setup(bot):
