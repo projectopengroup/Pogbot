@@ -6,6 +6,7 @@ import base64
 import os
 import asyncio
 import aiohttp
+import requests
 import json
 from discord.ext import commands
 from utils.pogfunctions import get_prefix, send_embed
@@ -36,6 +37,20 @@ class Fun(commands.Cog, name="fun"):
             url = request.url
         await send_embed(ctx, title="Dogs", description='Random dog picture', image=f'{url}',
                          color=0x08d5f7)
+
+    @commands.command(name='joke', aliases=['jokes'], brief='Tells a joke.', description='Tells a random joke.')
+    # Look for a command called joke
+    async def joke(self, ctx, joke_type="Any"):
+        if "pro" in joke_type:
+            joke_type = "Programming"
+        else:
+            joke_type = "Any"
+        request = requests.get(url=f'https://v2.jokeapi.dev/joke/{joke_type}?blacklistFlags=political')
+        joke = request.json()
+        if "joke" in joke:
+            await send_embed(ctx, title=str(joke["joke"]), color=0x08d5f7)
+        else:
+            await send_embed(ctx, title=str(joke["setup"]), description=str(joke["delivery"]), color=0x08d5f7)
 
 
 def setup(bot):
