@@ -3,19 +3,10 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed
 import os
 
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('Ready!')
-        print('Logged in as ---->', self.bot.user)
-        print('ID:', self.bot.user.id)
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        print(message)
 
     @commands.Cog.listener()
     # Check to see if bot is ready.
