@@ -35,7 +35,7 @@ class Fun(commands.Cog, name="fun"):
             joke_type = "Programming"
         else:
             joke_type = "Any"
-        request = requests.get(url=f'https://v2.jokeapi.dev/joke/{joke_type}?blacklistFlags=political')
+        request = requests.get(url=f'https://v2.jokeapi.dev/joke/{joke_type}?blacklistFlags=political,racist,sexist')
         joke = request.json()
         if "joke" in joke:
             await send_embed(ctx, title=str(joke["joke"]), color=0x08d5f7)
