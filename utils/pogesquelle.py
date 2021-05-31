@@ -45,13 +45,13 @@ def get_or_request_token():
     return BotToken
 
 
-def reset_token(bottoken):
+def reset_token():
     # Pull up the database again
     conn = sqlite3.connect('prefs.db')
     # Create our SQL cursor.
     cur = conn.cursor()
     # Reset our Token to "None"
-    cur.execute(f"UPDATE configs SET BotToken = 'None' WHERE BotToken = '{bottoken}'")
+    cur.execute(f"UPDATE configs SET BotToken = 'None' WHERE ID = '1'")
     # Commit Database
     conn.commit()
     # Close Database

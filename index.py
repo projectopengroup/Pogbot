@@ -153,4 +153,5 @@ if __name__ == "__main__":
     except discord.errors.LoginFailure as exp:
         print("Status: Login unsuccessful.")
         # If the login fails then, reset the token but send the token that was bad with it as an ID.
-        reset_token(get_or_request_token())
+        print(BotToken)
+        reset_token()
