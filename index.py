@@ -61,6 +61,7 @@ class HelpFormatted(commands.MinimalHelpCommand):
 # If we're running from main.
 if __name__ == "__main__":
     # Try to do this
+    # This
     try:
         # Set the bots help command to our own formatting, pass the field no category renamed to documentation.
         bot.help_command = HelpFormatted(no_category='documentation')
