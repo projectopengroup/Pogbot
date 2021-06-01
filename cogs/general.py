@@ -106,6 +106,18 @@ class General(commands.Cog, name="general"):
         request = requests.get(url=f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={arg}')
         await ctx.send(request.url)
 
+    @commands.command(name='contributors', aliases=['contrib', 'contribs'], brief='Responds with a list of contributors.',
+                      description="Responds with a full list of project contributors.")
+    async def contributors(self, ctx):
+        contribs = "__**Leads**: Mag#7777, h3resjonny#0741, TheOneCheetah#3764, and Stu__\n \n" \
+                   "**TG#5287** -> Graphics contributions. POG logo, Pogbot logo, welcome graphic. \n " \
+                   "**Mag#7777** -> Developer. Foundational code contributions. \n **TheOneCheetah#3764** -> " \
+                   "Developer. Foundational code contributions. \n **DJ DeHao#4627** -> Coder. Code contributions. (" \
+                   "avatar command). \n **Panda Gummies#2155** -> Coder. Code contributions. (echo command). \n " \
+                   "**ravenig#8429** -> Coder. Code contributions. (main check and run.sh). \n **Jaycon#4073** -> " \
+                   "Coder. Code contributions. (icon command). "
+        await send_embed(ctx, title="**Pogbot's Contributors**", description=contribs, color=0x08d5f7)
+
 
 def setup(bot):
     bot.add_cog(General(bot))

@@ -36,12 +36,12 @@ class Events(commands.Cog):
         print(f'{member} left.')
 
     @commands.Cog.listener()
-    # Look for members joining.
+    # Look for members editing messages.
     async def on_message_edit(self, before, after):
         print(f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
 
     @commands.Cog.listener()
-    # Look for members joining.
+    # Look for members deleting messages.
     async def on_message_delete(self, message):
         print(f'Message Deleted: Author: {message.author} Message: {message.clean_content}.')
 

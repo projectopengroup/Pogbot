@@ -61,7 +61,6 @@ class HelpFormatted(commands.MinimalHelpCommand):
 # If we're running from main.
 if __name__ == "__main__":
     # Try to do this
-    # This
     try:
         # Set the bots help command to our own formatting, pass the field no category renamed to documentation.
         bot.help_command = HelpFormatted(no_category='documentation')
@@ -71,7 +70,7 @@ if __name__ == "__main__":
         bot.run(BotToken)
     # On login error do this
     except discord.errors.LoginFailure as exp:
+        # Print to terminal that login failed.
         print("Status: Login unsuccessful.")
-        # If the login fails then, reset the token but send the token that was bad with it as an ID.
-        print(BotToken)
+        # If the login fails then reset the token.
         reset_token()
