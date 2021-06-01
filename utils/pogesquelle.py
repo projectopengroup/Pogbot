@@ -3,6 +3,20 @@ import base64
 from discord.ext import commands
 
 
+def encodebase64(string):
+    toBytes = string.encode("ascii")
+    base64_bytes = base64.b64encode(toBytes)
+    base64_string = base64_bytes.decode("ascii")
+    return base64_string
+
+
+def decodebase64(base64str):
+    base64_bytes = base64str.encode("ascii")
+    fromBytes = base64.b64decode(base64_bytes)
+    string = fromBytes.decode("ascii")
+    return string
+
+
 # Get Prefix Function
 async def get_prefix(client, message):
     try:
@@ -26,9 +40,10 @@ async def get_prefix(client, message):
             # It will only run this once, because only once will it not find the prefix, because we set it here.
             prefs_query = f"""INSERT INTO servers
                                      (ServerID, Prefix, MutedRole, ModRoles, EditLogs, DeleteLogs, JoinLogs, LeaveLogs, 
-                                     WarnLogs, KickLogs, BanLogs, MuteLogs)
+                                     WarnLogs, KickLogs, BanLogs, MuteLogs, Welcome, WelcomeDM, WelcomeRole)
                                       VALUES 
-                                     ('{message.guild.id}', '!', 'None', 'None', 0, 0, 0, 0, 0, 0, 0, 0)"""
+                                     ('{message.guild.id}', '!', 'None', 'None', 0, 0, 0, 0, 0, 0, 0, 0, 'None', 
+                                     'None', 'None', 0, 0) """
             # Execute our query
             cur.execute(prefs_query)
             # Commit the changes.
@@ -103,3 +118,120 @@ def reset_token():
     conn.commit()
     # Close Database
     conn.close()
+
+
+def set_welcome_message(message, serverid, base64):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    if base64 == "1":
+        message = encodebase64(message)
+    if base64 == "0":
+        message = message
+    cur.execute(f"UPDATE servers SET Welcome = '{message}' WHERE ServerID = '{serverid}'")
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+
+
+def get_welcome_message(serverid):
+    # 0 is false 1 is true
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT Welcome FROM servers WHERE ServerID={serverid}')
+    data = cur.fetchone()
+    data = data[0]
+    data = decodebase64(data)
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_welcome_dm_message(message, serverid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE servers SET WelcomeDM = '{message}' WHERE ServerID = '{serverid}'")
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+
+
+def get_welcome_dm_message(serverid):
+    # 0 is false 1 is true
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT WelcomeDM FROM servers WHERE ServerID={serverid}')
+    data = cur.fetchone()
+    data = data[0]
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_welcome_role(role, serverid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE servers SET WelcomeRole = '{role}' WHERE ServerID = '{serverid}'")
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+
+
+def get_welcome_role(serverid):
+    # 0 is false 1 is true
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT WelcomeRole FROM servers WHERE ServerID={serverid}')
+    data = cur.fetchone()
+    data = data[0]
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_welcome_card(integer, serverid):
+    # 0 is false 1 is true
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE servers SET WelcomeCard = '{integer}' WHERE ServerID = '{serverid}'")
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+
+
+def get_welcome_card(serverid):
+    # 0 is false 1 is true
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT WelcomeCard FROM servers WHERE ServerID={serverid}')
+    data = cur.fetchone()
+    data = data[0]
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_welcome_channel(channelid, serverid):
+    # 0 is false 1 is true
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE servers SET WelcomeChannel = '{channelid}' WHERE ServerID = '{serverid}'")
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+
+
+def get_welcome_channel(serverid):
+    # 0 is false 1 is true
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT WelcomeChannel FROM servers WHERE ServerID={serverid}')
+    data = cur.fetchone()
+    data = data[0]
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+    return data

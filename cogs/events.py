@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 from utils.pogfunctions import send_embed
+from utils.pogesquelle import get_welcome_card, get_welcome_role, \
+    get_welcome_channel, get_welcome_message, get_welcome_dm_message
 import os
 
 
@@ -21,6 +23,12 @@ class Events(commands.Cog):
     # Look for members joining.
     async def on_member_join(self, member):
         print(f'{member} joined.')
+        welcomemessage = get_welcome_message(member.guild.id)
+        if welcomemessage != "None":
+            channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
+            welcomemessage = welcomemessage.replace("%USER%", f"{member.mention}")
+            welcomemessage = welcomemessage.replace("%SERVER%", f"{member.guild}")
+            await channel.send(welcomemessage)
 
     @commands.Cog.listener()
     # Look for members leaving.
