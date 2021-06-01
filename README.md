@@ -5,6 +5,14 @@
 
 This is an open source community ran project. Join the discord for more information on how to participate. Coded in python, running on AWS.
 
+## Adding Pogbot
+
+To add Pogbot to your discord server, send a message to Pogbot#0689 with the keyword **add**.
+
+## Getting Started
+
+Once Pogbot is added, run the command !setup to get antiquated with Pogbot.
+
 ## Project Leads
 
 * **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)**
@@ -20,3 +28,7 @@ This is an open source community ran project. Join the discord for more informat
 * **[Gummies(Panda Gummies#2155 on discord)](https://github.com/Gummies351)** -> Coder. Code contributions. (echo command).
 * **[ProgrammingMyLife(ravenig#8429 on discord)](https://github.com/ProgrammingMyLife)** -> Coder. Code contributions. (main check and run.sh).
 * **[Jaycon(Jaycon#4073 on discord)](https://github.com/jaycon2)** -> Coder. Code contributions. (icon command).
+
+## Would you like to contribute?
+
+You can learn more about contributing by reading [CONTRIBUTING.md](https://github.com/projectopengroup/Pogbot/blob/main/CONTRIBUTING.md)
