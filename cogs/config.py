@@ -4,7 +4,7 @@ import asyncio
 from discord.ext import commands
 from utils.pogfunctions import send_embed
 from utils.pogesquelle import get_prefix, set_welcome_message, \
-    set_welcome_dm_message, set_welcome_role, set_welcome_card, set_welcome_channel
+    set_welcome_dm_message, set_welcome_role, set_welcome_card, set_welcome_channel, reset_welcome_message
 
 
 class Config(commands.Cog, name="config"):
@@ -165,7 +165,7 @@ class Config(commands.Cog, name="config"):
                             # If found, then form the embed.
                             set_welcome_card(0, reply.guild.id)
                             set_welcome_channel(0, reply.guild.id)
-                            set_welcome_message("None", reply.guild.id, 0)
+                            reset_welcome_message(reply.guild.id)
                             embededit = discord.Embed(description=f'<:Check:845178458426179605> **Reset welcome '
                                                                   f'messages for channels and disabled them.**'
                                                       , color=0x08d5f7)
@@ -203,7 +203,7 @@ class Config(commands.Cog, name="config"):
                     if textsetup is True:
                         if textreply:
                             set_welcome_channel(textreply.channel.id, textreply.guild.id)
-                            set_welcome_message(str(textreply.content), textreply.guild.id, 1)
+                            set_welcome_message(str(textreply.content), textreply.guild.id)
                             embededit = await send_embed(ctx, send_option=2,
                                                          title=f"**{textreply.guild}'s welcome message has been set.**",
                                                          description=f"Channel: {textreply.channel} \n"
@@ -228,7 +228,7 @@ class Config(commands.Cog, name="config"):
                         inwelcomesetup = False
                     if bothsetup is True:
                         if bothreply:
-                            set_welcome_message(str(bothreply.content), bothreply.guild.id, 1)
+                            set_welcome_message(str(bothreply.content), bothreply.guild.id)
                             set_welcome_card(1, bothreply.guild.id)
                             set_welcome_channel(bothreply.channel.id, bothreply.guild.id)
                             embededit = await send_embed(ctx, send_option=2,

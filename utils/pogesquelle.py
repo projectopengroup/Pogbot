@@ -120,14 +120,20 @@ def reset_token():
     conn.close()
 
 
-def set_welcome_message(message, serverid, base64):
+def set_welcome_message(message, serverid):
     conn = sqlite3.connect('prefs.db')
     cur = conn.cursor()
-    if base64 == "1":
-        message = encodebase64(message)
-    if base64 == "0":
-        message = message
+    message = encodebase64(message)
     cur.execute(f"UPDATE servers SET Welcome = '{message}' WHERE ServerID = '{serverid}'")
+    # Commit the database changes.
+    conn.commit()
+    conn.close()
+
+
+def reset_welcome_message(serverid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE servers SET Welcome = 'None' WHERE ServerID = '{serverid}'")
     # Commit the database changes.
     conn.commit()
     conn.close()
