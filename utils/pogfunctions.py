@@ -99,7 +99,7 @@ def create_welcome_card(avatarRequest, user, server):
     id_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 25)
     member_num_font = ImageFont.truetype("fonts/Vegur-Light.otf", 20)
 
-    # Draw are compiled image as a base.
+    # Draw our compiled image as a base.
     draw = ImageDraw.Draw(compiled)
 
     # Set all of our text at specific positions, colors, and with certain fonts.
