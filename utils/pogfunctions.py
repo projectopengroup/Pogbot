@@ -75,13 +75,14 @@ def create_welcome_card(avatarRequest, user, server):
 
     compiled = baselayer.copy()
 
-    #                               ,right(x)
-    # baselayer.paste(avatarlayer, (0, 0))fd
-    #                                   ^down(y)
+    #               ,right(x)
+    # paste(image, (0, 0))
+    #                  ^down(y)
 
     compiled.paste(avatarlayer, (46, 37), mask=avatarlayer)
     compiled.paste(toplayer, (0, 0), mask=toplayer)
-    compiled.paste(circlelayer, (0, 0), mask=circlelayer)
+    # Going to leave the circle off for now, I think it looks better without it? Maybe I'm wrong. Lol.
+    # compiled.paste(circlelayer, (0, 0), mask=circlelayer)
 
     name_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 50)
     msg_font = ImageFont.truetype("fonts/Vegur-Light.otf", 30)
@@ -89,17 +90,17 @@ def create_welcome_card(avatarRequest, user, server):
     member_num_font = ImageFont.truetype("fonts/Vegur-Light.otf", 20)
 
     draw = ImageDraw.Draw(compiled)
-    draw.text((365, 120), str(user), (255, 255, 255), font=name_font)
+    draw.text((365, 120), str(user).upper(), (255, 255, 255), font=name_font)
     draw.text((365, 170), f"HAS JOINED THE SERVER", (255, 255, 255), font=msg_font)
     draw.text((365, 200), f"ID#{user.id}", (255, 255, 255), font=id_font)
-    draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font)
+    draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font )
 
     arr = io.BytesIO()
     compiled.save(arr, format='PNG')
     arr.seek(0)
     file = discord.File(fp=arr, filename=f'WelcomeCard.png')
     return file
-    # compiled.save(f'{welcomecardfolder / "compiled/welcomecard.png"}')
+
 
 
 

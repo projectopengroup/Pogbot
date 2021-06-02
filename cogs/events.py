@@ -24,13 +24,21 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members joining.
     async def on_member_join(self, member):
+        channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
         print(f'{member} joined.')
         welcomemessage = get_welcome_message(member.guild.id)
         if welcomemessage != "None":
-            channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
+
             welcomemessage = welcomemessage.replace("%USER%", f"{member.mention}")
             welcomemessage = welcomemessage.replace("%SERVER%", f"{member.guild}")
             await channel.send(welcomemessage)
+
+        welcomecardon = 0
+        welcomecardon = get_welcome_card(member.guild.id)
+        if welcomecardon == 1:
+            avatarRequest = (requests.get(member.avatar_url)).content
+            # Testing create welcome card on message send right now, until we get it done.
+            await channel.send(file=create_welcome_card(avatarRequest, member, member.guild))
 
     @commands.Cog.listener()
     # Look for members leaving.

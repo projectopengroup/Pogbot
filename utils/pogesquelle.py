@@ -146,7 +146,8 @@ def get_welcome_message(serverid):
     cur.execute(f'SELECT Welcome FROM servers WHERE ServerID={serverid}')
     data = cur.fetchone()
     data = data[0]
-    data = decodebase64(data)
+    if data != "None":
+        data = decodebase64(data)
     # Commit the database changes.
     conn.commit()
     conn.close()
