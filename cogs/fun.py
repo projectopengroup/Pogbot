@@ -63,17 +63,16 @@ class Fun(commands.Cog, name="fun"):
                       description="Responds with a joke that pertains to Spock.")
     async def spock(self, ctx):
         spock = ["Spock had three ears: a left ear, a right ear, and a final front ear",
-                 "What did Spock find in the toilet of the Enterprise? \n **The captain's log.**",
-                 "What does Spock use as birth control? \n **Vulcanized Rubber.**",
-                 "Why doesn't Spock give hand jobs? \n **Because his Vulcan grip will make you limp**",
-                 "What do Captain Kirk and Mister Spock do to get their baggage up to their hotel room? \n **Tell a "
+                 "What did Spock find in the toilet of the Enterprise? \n**The captain's log.**",
+                 "What does Spock use as birth control? \n**Vulcanized Rubber.**",
+                 "Why doesn't Spock give hand jobs? \n**Because his Vulcan grip will make you limp**",
+                 "What do Captain Kirk and Mister Spock do to get their baggage up to their hotel room? \n**Tell a "
                  "porter.**",
-                 "Why didn't Spock do a mind meld with Frodo? \n **Because he figured that would be a bad hobbit to "
+                 "Why didn't Spock do a mind meld with Frodo? \n**Because he figured that would be a bad hobbit to "
                  "get in to.**",
                  "**Yo Mama's so fat, even Spock thought she outweighed the needs of the many!**",
-                 "If the shocker don't rock her. \n Spock Her."]
-        rindex = random.randint(0, len(spock) - 1)
-        await send_embed(ctx, title=spock[rindex], color=0x08d5f7)
+                 "If the shocker don't rock her. \nSpock Her."]
+        await send_embed(ctx, title=random.choice(spock), color=0x08d5f7)
 
 
 def setup(bot):
