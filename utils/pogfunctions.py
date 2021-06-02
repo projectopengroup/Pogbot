@@ -3,6 +3,8 @@ import io
 import discord
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
+from colorthief import ColorThief
+from math import sqrt
 
 
 # Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
@@ -62,12 +64,15 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
 def create_welcome_card(avatarRequest, user, server):
     # Set a var to the image that was passed into the function and convert it to RGBA.
     avatarlayer = Image.open(io.BytesIO(avatarRequest)).convert("RGBA")
+
     # Define our folder.
     welcomecardfolder = Path("img/card_welcomes/")
     # Set our other image variables paths.
     welcomecardbase = welcomecardfolder / "baselayer.png"
     welcomecardtop = welcomecardfolder / "toplayer.png"
     welcomecardcircle = welcomecardfolder / "circlelayer.png"
+    welcomecardbanner = welcomecardfolder / "bannerlayer.png"
+    welcomecardeffect = welcomecardfolder / "effectlayer.png"
 
     fontvegurbold = Path("fonts/") / "Vegur-Bold.otf"
     fontvegurlight = Path("fonts/") / "Vegur-Light.otf"
@@ -76,20 +81,41 @@ def create_welcome_card(avatarRequest, user, server):
     toplayer = Image.open(welcomecardtop)
     baselayer = Image.open(welcomecardbase)
     circlelayer = Image.open(welcomecardcircle)
+    bannerlayer = Image.open(welcomecardbanner)
+    effectlayer = Image.open(welcomecardeffect)
 
     # resize the avatarlayer
     avatarlayer = avatarlayer.resize((300, 300), Image.ANTIALIAS)
 
     # Make a new var called compiled by taking our welcome card base image and copying it
     compiled = baselayer.copy()
+    getcolorfrom = ColorThief(io.BytesIO(avatarRequest))
+    swatch = getcolorfrom.get_palette(color_count=6)
+    domcolor = getcolorfrom.get_color(quality=1)
+    Lightcolor = closest_color((8, 213, 247), swatch)
+    Darkcolor = closest_color((0, 0, 0), swatch)
+    print(swatch[0])
+    print(swatch[1])
+    alpha = toplayer.getchannel('A')
+    toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
+    toplayer.putalpha(alpha)
+    alpha = bannerlayer.getchannel('A')
+    bannerlayer = Image.new('RGBA', bannerlayer.size, color=Darkcolor)
+    bannerlayer.putalpha(alpha)
+    alpha = effectlayer.getchannel('A')
+    effectlayer = Image.new('RGBA', effectlayer.size, color=Darkcolor)
+    effectlayer.putalpha(alpha)
     # This is to help people understand x and y axis and which direction they move in from their orgin state.
     #               ,right(x)
     # paste(image, (0, 0))
     #                  ^down(y)
     # In the new compiled image, paste the avatar layer at x46, y37 and set a mask.
-    compiled.paste(avatarlayer, (46, 37), mask=avatarlayer)
+
     # In the compiled image, paste the toplayer and set a mask.
+    compiled.paste(avatarlayer, (46, 37), mask=avatarlayer)
     compiled.paste(toplayer, (0, 0), mask=toplayer)
+    compiled.paste(bannerlayer, (0, 0), mask=bannerlayer)
+    compiled.paste(effectlayer, (0, 0), mask=effectlayer)
     # Going to leave the circle off for now, I think it looks better without it? Maybe I'm wrong. Lol.
     # compiled.paste(circlelayer, (0, 0), mask=circlelayer)
 
@@ -118,3 +144,13 @@ def create_welcome_card(avatarRequest, user, server):
     file = discord.File(fp=arr, filename=f'WelcomeCard.png')
     # Send the file back.
     return file
+
+
+def closest_color(rgb, COLORS):
+    r, g, b = rgb
+    color_diffs = []
+    for color in COLORS:
+        cr, cg, cb = color
+        color_diff = sqrt(abs(r - cr) ** 2 + abs(g - cg) ** 2 + abs(b - cb) ** 2)
+        color_diffs.append((color_diff, color))
+    return min(color_diffs)[1]
