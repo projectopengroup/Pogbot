@@ -1,3 +1,4 @@
 discord.py
 timeago==1.0.13
 requests
+Pillow

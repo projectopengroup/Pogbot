@@ -1,4 +1,6 @@
 import discord
+from PIL import Image, ImageDraw
+from pathlib import Path
 
 
 # Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
@@ -52,3 +54,25 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
             return await ctx.send(embed=new_embed)
         elif send_option == 2:
             return new_embed
+
+
+def create_welcome_card(avatarpath):
+    welcomecardfolder = Path("img/card_welcomes/")
+    welcomecardbase = welcomecardfolder  / "baselayer.png"
+    welcomecardtop = welcomecardfolder / "toplayer.png"
+    print(welcomecardbase)
+    avatarlayer = Image.open(avatarpath)
+    toplayer = Image.open(welcomecardtop)
+    avatarlayer = avatarlayer.resize((300, 300), Image.ANTIALIAS)
+    baselayer = Image.open(welcomecardbase)
+
+    #                               ,right(x)
+    # baselayer.paste(avatarlayer, (0, 0))fd
+    #                                   ^down(y)
+    baselayer.paste(toplayer, (0, 0))
+    mask_im = Image.open(welcomecardfolder / 'compiled/pillowisgaymask.png')
+    baselayer.paste(avatarlayer, (46, 37), mask_im)
+    baselayer.save(welcomecardfolder / "compiled/welcomecard.png")
+
+
+

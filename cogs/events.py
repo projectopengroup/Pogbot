@@ -1,9 +1,11 @@
 import discord
 from discord.ext import commands
-from utils.pogfunctions import send_embed
+from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message
 import os
+import requests
+from pathlib import Path
 
 
 class Events(commands.Cog):
@@ -76,11 +78,20 @@ class Events(commands.Cog):
                     quit()
             # Print incoming direct messages to terminal.
             print(f'{msg.channel} - {msg.author} : {msg.content}')
+
             # Ensure that we process our commands, as on_message overrides and stops command execution.
             # await bot.process_commands(msg)
             return
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
+        image = requests.get(msg.author.avatar_url, stream=True)
+        welcomecardfolder = Path("img/card_welcomes/")
+        avatar = welcomecardfolder / "avatar.png"
+        file = open(avatar, "wb")
+        file.write(image.content)
+        file.close()
+        # Testing create welcome card on message send right now, until we get it done.
+        # create_welcome_card(avatar)
 
 
 def setup(bot):

@@ -3,6 +3,7 @@ import os
 from discord.ext import commands
 from utils.pogfunctions import send_embed
 from utils.pogesquelle import get_or_request_token, reset_token, get_prefix
+from utils.pogfunctions import create_welcome_card
 
 # Print the bot logo to terminal on start
 print('''
@@ -68,6 +69,7 @@ if __name__ == "__main__":
         BotToken = get_or_request_token()
         # Login with our BotToken
         bot.run(BotToken)
+
     # On login error do this
     except discord.errors.LoginFailure as exp:
         # Print to terminal that login failed.
