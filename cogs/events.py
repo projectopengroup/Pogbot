@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils.pogfunctions import send_embed, create_welcome_card, create_welcome_cardbeta
+from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message
 import os
