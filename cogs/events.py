@@ -90,7 +90,7 @@ class Events(commands.Cog):
         file = open(avatar, "wb")
         file.write(image.content)
         file.close()
-        ## Testing create welcome card on message send right now, until we get it done.
+        # Testing create welcome card on message send right now, until we get it done.
         # create_welcome_card(avatar)
 
 
