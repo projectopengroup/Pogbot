@@ -24,20 +24,30 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members joining.
     async def on_member_join(self, member):
-        channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
+        # Print to terminal when a member joins.
         print(f'{member} joined.')
+        # Get the welcome message from our SQL database by using our function.
         welcomemessage = get_welcome_message(member.guild.id)
+        # If the message isn't "None" then
         if welcomemessage != "None":
-
+            # Set our channel var to the channel specified in our SQL database.
+            channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
+            # Replace our wildcards with the appropriate objects.
             welcomemessage = welcomemessage.replace("%USER%", f"{member.mention}")
             welcomemessage = welcomemessage.replace("%SERVER%", f"{member.guild}")
+            # Send the welcome message.
             await channel.send(welcomemessage)
-
+        # Make a new var called welcomecardon and set the value to 0.
         welcomecardon = 0
+        # Get the welcome card setting(either 0 or 1) from the SQL database
         welcomecardon = get_welcome_card(member.guild.id)
+        # if the welcome card setting is set to ON(or 1) then
         if welcomecardon == 1:
+            # Get the welcome channel from the database and set it to a var named channel.
+            channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
+            # Make a new var called avatarRequest and send a request to download and get the users avatar to it.
             avatarRequest = (requests.get(member.avatar_url)).content
-            # Testing create welcome card on message send right now, until we get it done.
+            # Send a message with the file that our create welcome card function returns.
             await channel.send(file=create_welcome_card(avatarRequest, member, member.guild))
 
     @commands.Cog.listener()

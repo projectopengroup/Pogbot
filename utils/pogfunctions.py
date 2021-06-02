@@ -58,49 +58,63 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
             return new_embed
 
 
+# Card creation for welcome messages
 def create_welcome_card(avatarRequest, user, server):
+    # Set a var to the image that was passed into the function and convert it to RGBA.
     avatarlayer = Image.open(io.BytesIO(avatarRequest)).convert("RGBA")
-
+    # Define our folder.
     welcomecardfolder = Path("img/card_welcomes/")
+    # Set our other image variables paths.
     welcomecardbase = welcomecardfolder / "baselayer.png"
     welcomecardtop = welcomecardfolder / "toplayer.png"
     welcomecardcircle = welcomecardfolder / "circlelayer.png"
+
     fontvegurbold = Path("fonts/") / "Vegur-Bold.otf"
     fontvegurlight = Path("fonts/") / "Vegur-Light.otf"
 
+    # Open our images by their paths.
     toplayer = Image.open(welcomecardtop)
     baselayer = Image.open(welcomecardbase)
     circlelayer = Image.open(welcomecardcircle)
+
+    # resize the avatarlayer
     avatarlayer = avatarlayer.resize((300, 300), Image.ANTIALIAS)
 
+    # Make a new var called compiled by taking our welcome card base image and copying it
     compiled = baselayer.copy()
-
+    # This is to help people understand x and y axis and which direction they move in from their orgin state.
     #               ,right(x)
     # paste(image, (0, 0))
     #                  ^down(y)
-
+    # In the new compiled image, paste the avatar layer at x46, y37 and set a mask.
     compiled.paste(avatarlayer, (46, 37), mask=avatarlayer)
+    # In the compiled image, paste the toplayer and set a mask.
     compiled.paste(toplayer, (0, 0), mask=toplayer)
     # Going to leave the circle off for now, I think it looks better without it? Maybe I'm wrong. Lol.
     # compiled.paste(circlelayer, (0, 0), mask=circlelayer)
 
+    # Name and set our fonts.
     name_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 50)
     msg_font = ImageFont.truetype("fonts/Vegur-Light.otf", 30)
     id_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 25)
     member_num_font = ImageFont.truetype("fonts/Vegur-Light.otf", 20)
 
+    # Draw are compiled image as a base.
     draw = ImageDraw.Draw(compiled)
+
+    # Set all of our text at specific positions, colors, and with certain fonts.
     draw.text((365, 120), str(user).upper(), (255, 255, 255), font=name_font)
     draw.text((365, 170), f"HAS JOINED THE SERVER", (255, 255, 255), font=msg_font)
     draw.text((365, 200), f"ID#{user.id}", (255, 255, 255), font=id_font)
-    draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font )
+    draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font)
 
+    # set a var to arr that represents bytes.
     arr = io.BytesIO()
+    # Save our compiled image in PNG format as bytes
     compiled.save(arr, format='PNG')
+    # Set the byte stream position to 0.
     arr.seek(0)
+    # Set a file var to a file discord understands, using our bytes, with a filename of "WelcomeCard.png"
     file = discord.File(fp=arr, filename=f'WelcomeCard.png')
+    # Send the file back.
     return file
-
-
-
-
