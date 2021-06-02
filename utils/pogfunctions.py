@@ -1,5 +1,7 @@
+import io
+
 import discord
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
 
@@ -56,23 +58,48 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
             return new_embed
 
 
-def create_welcome_card(avatarpath):
+def create_welcome_card(avatarRequest, user, server):
+    avatarlayer = Image.open(io.BytesIO(avatarRequest)).convert("RGBA")
+
     welcomecardfolder = Path("img/card_welcomes/")
-    welcomecardbase = welcomecardfolder  / "baselayer.png"
+    welcomecardbase = welcomecardfolder / "baselayer.png"
     welcomecardtop = welcomecardfolder / "toplayer.png"
-    print(welcomecardbase)
-    avatarlayer = Image.open(avatarpath)
+    welcomecardcircle = welcomecardfolder / "circlelayer.png"
+    fontvegurbold = Path("fonts/") / "Vegur-Bold.otf"
+    fontvegurlight = Path("fonts/") / "Vegur-Light.otf"
+
     toplayer = Image.open(welcomecardtop)
-    avatarlayer = avatarlayer.resize((300, 300), Image.ANTIALIAS)
     baselayer = Image.open(welcomecardbase)
+    circlelayer = Image.open(welcomecardcircle)
+    avatarlayer = avatarlayer.resize((300, 300), Image.ANTIALIAS)
+
+    compiled = baselayer.copy()
 
     #                               ,right(x)
     # baselayer.paste(avatarlayer, (0, 0))fd
     #                                   ^down(y)
-    baselayer.paste(toplayer, (0, 0))
-    mask_im = Image.open(welcomecardfolder / 'compiled/pillowisgaymask.png')
-    baselayer.paste(avatarlayer, (46, 37), mask_im)
-    baselayer.save(welcomecardfolder / "compiled/welcomecard.png")
+
+    compiled.paste(avatarlayer, (46, 37), mask=avatarlayer)
+    compiled.paste(toplayer, (0, 0), mask=toplayer)
+    compiled.paste(circlelayer, (0, 0), mask=circlelayer)
+
+    name_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 50)
+    msg_font = ImageFont.truetype("fonts/Vegur-Light.otf", 30)
+    id_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 25)
+    member_num_font = ImageFont.truetype("fonts/Vegur-Light.otf", 20)
+
+    draw = ImageDraw.Draw(compiled)
+    draw.text((365, 120), str(user), (255, 255, 255), font=name_font)
+    draw.text((365, 170), f"HAS JOINED THE SERVER", (255, 255, 255), font=msg_font)
+    draw.text((365, 200), f"ID#{user.id}", (255, 255, 255), font=id_font)
+    draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font)
+
+    arr = io.BytesIO()
+    compiled.save(arr, format='PNG')
+    arr.seek(0)
+    file = discord.File(fp=arr, filename=f'WelcomeCard.png')
+    return file
+    # compiled.save(f'{welcomecardfolder / "compiled/welcomecard.png"}')
 
 
 

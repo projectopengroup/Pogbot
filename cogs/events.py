@@ -84,14 +84,18 @@ class Events(commands.Cog):
             return
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
-        image = requests.get(msg.author.avatar_url, stream=True)
-        welcomecardfolder = Path("img/card_welcomes/")
-        avatar = welcomecardfolder / "avatar.png"
-        file = open(avatar, "wb")
-        file.write(image.content)
-        file.close()
-        # Testing create welcome card on message send right now, until we get it done.
-        # create_welcome_card(avatar)
+        # image = requests.get(msg.author.avatar_url, stream=True)
+        # welcomecardfolder = Path("img/card_welcomes/")
+        # avatar = welcomecardfolder / "avatar.png"
+        # file = open(avatar, "wb")
+        # file.write(image.content)
+        # file.close()
+
+        # WelcomeCard creation off. So far just in testing.
+        if msg.author.id == 0:
+            avatarRequest = (requests.get(msg.author.avatar_url)).content
+            # Testing create welcome card on message send right now, until we get it done.
+            await msg.channel.send(file=create_welcome_card(avatarRequest, msg.author, msg.guild))
 
 
 def setup(bot):
