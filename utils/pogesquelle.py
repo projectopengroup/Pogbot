@@ -242,3 +242,80 @@ def get_welcome_channel(serverid):
     conn.commit()
     conn.close()
     return data
+
+
+# Global user settings start here, please keep the other settings out of this half of the file ###########
+# GLOBAL USER SETTINGS ###################################################################################
+def check_global_user(userid):
+    conn = sqlite3.connect('prefs.db')
+    conn.text_factory = str
+    cur = conn.cursor()
+    cur.execute(f'SELECT UserID FROM globalusers WHERE UserID={userid}')
+    data = cur.fetchone()
+    Usered = data
+    if str(Usered) == "None":
+        prefs_query = f"""INSERT INTO globalusers
+                                 (UserID, WelcomeImage, UserDarkColor, UserLightColor, ProfileImage, NicknameHistory, 
+                                 Currency, Blacklisted)
+                                  VALUES 
+                                 ('{userid}', 'None', 'None', 'None', 'None', 'None', '0', 0) """
+        cur.execute(prefs_query)
+        conn.commit()
+        conn.close()
+
+
+def set_global_bgcolor(userid, htmlcolor):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE globalusers SET UserLightColor = '{htmlcolor}' WHERE UserID = '{userid}'")
+    conn.commit()
+    conn.close()
+
+
+def get_global_bgcolor(userid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT UserlightColor FROM globalusers WHERE UserID={userid}')
+    data = cur.fetchone()
+    data = data[0]
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_global_bannercolor(userid, htmlcolor):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE globalusers SET UserDarkColor = '{htmlcolor}' WHERE UserID = '{userid}'")
+    conn.commit()
+    conn.close()
+
+
+def get_global_bannercolor(userid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT UserDarkColor FROM globalusers WHERE UserID={userid}')
+    data = cur.fetchone()
+    data = data[0]
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_global_welcomeimg(userid, imageurl):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE globalusers SET WelcomeImage = '{imageurl}' WHERE UserID = '{userid}'")
+    conn.commit()
+    conn.close()
+
+
+def get_global_welcomeimg(userid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT WelcomeImage FROM globalusers WHERE UserID={userid}')
+    data = cur.fetchone()
+    data = data[0]
+    conn.commit()
+    conn.close()
+    return data

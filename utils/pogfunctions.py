@@ -1,10 +1,12 @@
 import io
 
 import discord
-from PIL import Image, ImageDraw, ImageFont
+import requests
+from PIL import Image, ImageDraw, ImageFont, ImageColor
 from pathlib import Path
 from colorthief import ColorThief
 from math import sqrt
+from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get_global_bgcolor
 
 
 # Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
@@ -64,7 +66,6 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
 def create_welcome_card(avatarRequest, user, server):
     # Set a var to the image that was passed into the function and convert it to RGBA.
     avatarlayer = Image.open(io.BytesIO(avatarRequest)).convert("RGBA")
-
     # Define our folder.
     welcomecardfolder = Path("img/card_welcomes/")
     # Set our other image variables paths.
@@ -87,23 +88,61 @@ def create_welcome_card(avatarRequest, user, server):
     # resize the avatarlayer
     avatarlayer = avatarlayer.resize((250, 250), Image.ANTIALIAS)
 
-    # Make a new var called compiled by taking our welcome card base image and copying it
     compiled = baselayer.copy()
+
     getcolorfrom = ColorThief(io.BytesIO(avatarRequest))
     swatch = getcolorfrom.get_palette(color_count=25)
     domcolor = getcolorfrom.get_color(quality=1)
-    Lightcolor = closest_color((8, 213, 247), swatch)
-    # Lightcolor = closest_color((255, 255, 255), swatch)
-    Darkcolor = closest_color((15, 15, 15), swatch)
-    alpha = toplayer.getchannel('A')
-    toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
-    toplayer.putalpha(alpha)
+
+    custombgcolor = get_global_bgcolor(user.id)
+    if custombgcolor != "None":
+        Lightcolor = ImageColor.getrgb(custombgcolor)
+        print(Lightcolor)
+    else:
+        Lightcolor = closest_color((8, 213, 247), swatch)
+        print(Lightcolor)
+
+
+    custombannercolor = get_global_bannercolor(user.id)
+    if custombannercolor != "None":
+        if custombannercolor == "#FFFFFF":
+            custombannercolor = "#000000"
+        Darkcolor = ImageColor.getrgb(custombannercolor)
+        print(Darkcolor)
+    else:
+        Darkcolor = closest_color((15, 15, 15), swatch)
+        print(Darkcolor)
+
+    custombg = get_global_welcomeimg(user.id)
+    if custombg != "None":
+        try:
+            custombgimg = requests.get(custombg).content
+            alpha = toplayer.getchannel('A')
+            newlayer = Image.open(io.BytesIO(custombgimg)).convert("RGBA")
+            newlayer = newlayer.resize((int(toplayer.size[0]), int(toplayer.size[1])), 0)
+            # baselayer = baselayer.resize((int(baselayer.size[0]),int(baselayer.size[1])), 0)
+            print(baselayer.getbands())
+            print(newlayer.getbands())
+            print(baselayer.size)
+            print(newlayer.size)
+            newlayer.putalpha(alpha)
+            toplayer = newlayer.copy()
+            effectlayer = Image.new('RGBA', effectlayer.size, (255, 0, 0, 0))
+        except requests.ConnectionError as exception:
+            alpha = toplayer.getchannel('A')
+            toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
+            toplayer.putalpha(alpha)
+            alpha = effectlayer.getchannel('A')
+            effectlayer = Image.new('RGBA', effectlayer.size, color=Darkcolor)
+            effectlayer.putalpha(alpha)
+    else:
+        alpha = toplayer.getchannel('A')
+        toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
+        toplayer.putalpha(alpha)
+
     alpha = bannerlayer.getchannel('A')
     bannerlayer = Image.new('RGBA', bannerlayer.size, color=Darkcolor)
     bannerlayer.putalpha(alpha)
-    alpha = effectlayer.getchannel('A')
-    effectlayer = Image.new('RGBA', effectlayer.size, color=Darkcolor)
-    effectlayer.putalpha(alpha)
     # This is to help people understand x and y axis and which direction they move in from their orgin state.
     #               ,right(x)
     # paste(image, (0, 0))
@@ -146,7 +185,7 @@ def create_welcome_card(avatarRequest, user, server):
     # Set the byte stream position to 0.
     arr.seek(0)
     # Set a file var to a file discord understands, using our bytes, with a filename of "WelcomeCard.png"
-    file = discord.File(fp=arr, filename=f'WelcomeCard.png')
+    file = discord.File(fp=arr, filename=f'WelcomeCard.PNG')
     # Send the file back.
     return file
 
@@ -159,3 +198,4 @@ def closest_color(rgb, colors):
         color_diff = sqrt(abs(r - cr) ** 2 + abs(g - cg) ** 2 + abs(b - cb) ** 2)
         color_diffs.append((color_diff, color))
     return min(color_diffs)[1]
+

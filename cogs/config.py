@@ -2,10 +2,12 @@ import sqlite3
 import discord
 import asyncio
 import requests
+import re
 from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_prefix, set_welcome_message, \
-    set_welcome_dm_message, set_welcome_role, set_welcome_card, set_welcome_channel, reset_welcome_message
+    set_welcome_dm_message, set_welcome_role, set_welcome_card, \
+    set_welcome_channel, reset_welcome_message, set_global_welcomeimg, set_global_bannercolor, set_global_bgcolor
 
 current_users = set()
 
@@ -21,13 +23,60 @@ class Config(commands.Cog, name="config"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='devcard', brief='displays some things in development')
-    async def devcard(self, ctx, user: discord.Member = None):
+    @commands.command(name='swc', aliases=['showcard', 'card', 'welcomecard', 'showwelcomecard'],
+                      brief='Displays your welcome card.', description="Displays your welcome card.")
+    async def sc(self, ctx, user: discord.Member = None):
         if user is None:
             user = ctx.author
         avatarRequest = (requests.get(user.avatar_url)).content
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
+
+    @commands.command(name='cbg', aliases=['cardbg', 'cardbackground'], brief="Change welcome card background",
+                      description="Allows users to set their welcome card backgrounds to image or color. \n "
+                                  "Suggested size: \n Width: 1000 "
+                                  " Height: 370")
+    async def cbg(self, ctx, *, imageurlorcolor):
+        user = ctx.author
+        try:
+            validate = requests.get(imageurlorcolor)
+            set_global_welcomeimg(user.id, imageurlorcolor)
+            set_global_bgcolor(user.id, "None")
+            avatarRequest = (requests.get(user.avatar_url)).content
+            await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
+        except requests.exceptions.MissingSchema as exception:
+            checkcolor = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', imageurlorcolor)
+            if checkcolor:
+                set_global_bgcolor(user.id, imageurlorcolor)
+                set_global_welcomeimg(user.id, "None")
+                avatarRequest = (requests.get(user.avatar_url)).content
+                await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
+            else:
+                embederror = discord.Embed(
+                    description=f"<:Pogbot_X:850089728018874368> **Not a valid URL or Color.**",
+                    color=0x08d5f7)
+                await ctx.send(embed=embederror)
+        except requests.ConnectionError as exception:
+            embederror = discord.Embed(
+                description=f"<:Pogbot_X:850089728018874368> **Not a valid URL.**",
+                color=0x08d5f7)
+            await ctx.send(embed=embederror)
+
+    @commands.command(name='cbc', aliases=['cbcolor', 'bannercolor', 'cardbcolor', 'cardbannercolor'], brief="Change welcome card banner color",
+                      description="Allows users to set their welcome card banner colors.")
+    async def cbc(self, ctx, *, htmlcolorcode):
+        checkcolor = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', htmlcolorcode)
+        if checkcolor:
+            user = ctx.author
+            set_global_bannercolor(user.id, htmlcolorcode)
+            avatarRequest = (requests.get(user.avatar_url)).content
+            # Testing create welcome card on message send right now, until we get it done.
+            await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
+        else:
+            embederror = discord.Embed(
+                description=f"<:Pogbot_X:850089728018874368> **Not a valid HTML color code.**",
+                color=0x08d5f7)
+            await ctx.send(embed=embederror)
 
     @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
                       description="Responds with Pogbot's latency.")
