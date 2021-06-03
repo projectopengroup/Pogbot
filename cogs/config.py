@@ -1,8 +1,9 @@
 import sqlite3
 import discord
 import asyncio
+import requests
 from discord.ext import commands
-from utils.pogfunctions import send_embed
+from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_prefix, set_welcome_message, \
     set_welcome_dm_message, set_welcome_role, set_welcome_card, set_welcome_channel, reset_welcome_message
 
@@ -10,6 +11,14 @@ from utils.pogesquelle import get_prefix, set_welcome_message, \
 class Config(commands.Cog, name="config"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name='devcard', brief='displays some things in development')
+    async def devcard(self, ctx, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+        avatarRequest = (requests.get(user.avatar_url)).content
+        # Testing create welcome card on message send right now, until we get it done.
+        await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
 
     @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
                       description="Responds with Pogbot's latency.")
@@ -209,6 +218,7 @@ class Config(commands.Cog, name="config"):
                                                          description=f"Channel: {textreply.channel} \n"
                                                                      f"Message:{textreply.content}", color=0x08d5f7)
                             await pogsetupid.edit(embed=embededit)
+                            set_welcome_card(0, reply.guild.id)
                             await textreply.delete()
                             textsetup = False
                     if "both" in str(reply.content.lower()):

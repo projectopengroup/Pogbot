@@ -29,6 +29,22 @@ class Events(commands.Cog):
         print(f'{member} joined.')
         # Get the welcome message from our SQL database by using our function.
         welcomemessage = get_welcome_message(member.guild.id)
+        # Make a new var called welcomecardon and set the value to 0.
+        welcomecardon = 0
+        # Get the welcome card setting(either 0 or 1) from the SQL database
+        welcomecardon = get_welcome_card(member.guild.id)
+
+        if welcomecardon == 1 and welcomemessage != "None":
+            # Get the welcome channel from the database and set it to a var named channel.
+            channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
+            # Make a new var called avatarRequest and send a request to download and get the users avatar to it.
+            avatarRequest = (requests.get(member.avatar_url)).content
+            welcomemessage = welcomemessage.replace("%USER%", f"{member.mention}")
+            welcomemessage = welcomemessage.replace("%SERVER%", f"{member.guild}")
+            # Send a message with the file that our create welcome card function returns.
+            await channel.send(file=create_welcome_card(avatarRequest, member, member.guild), content=welcomemessage)
+            return
+
         # If the message isn't "None" then
         if welcomemessage != "None":
             # Set our channel var to the channel specified in our SQL database.
@@ -38,10 +54,8 @@ class Events(commands.Cog):
             welcomemessage = welcomemessage.replace("%SERVER%", f"{member.guild}")
             # Send the welcome message.
             await channel.send(welcomemessage)
-        # Make a new var called welcomecardon and set the value to 0.
-        welcomecardon = 0
-        # Get the welcome card setting(either 0 or 1) from the SQL database
-        welcomecardon = get_welcome_card(member.guild.id)
+            return
+
         # if the welcome card setting is set to ON(or 1) then
         if welcomecardon == 1:
             # Get the welcome channel from the database and set it to a var named channel.
@@ -50,6 +64,7 @@ class Events(commands.Cog):
             avatarRequest = (requests.get(member.avatar_url)).content
             # Send a message with the file that our create welcome card function returns.
             await channel.send(file=create_welcome_card(avatarRequest, member, member.guild))
+            return
 
     @commands.Cog.listener()
     # Look for members leaving.
@@ -109,12 +124,6 @@ class Events(commands.Cog):
         # file = open(avatar, "wb")
         # file.write(image.content)
         # file.close()
-
-        # WelcomeCard creation off. So far just in testing.
-        if msg.content == "-dev-card":
-            avatarRequest = (requests.get(msg.author.avatar_url)).content
-            # Testing create welcome card on message send right now, until we get it done.
-            await msg.channel.send(file=create_welcome_card(avatarRequest, msg.author, msg.guild))
 
 
 def setup(bot):

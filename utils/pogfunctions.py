@@ -93,9 +93,7 @@ def create_welcome_card(avatarRequest, user, server):
     swatch = getcolorfrom.get_palette(color_count=6)
     domcolor = getcolorfrom.get_color(quality=1)
     Lightcolor = closest_color((8, 213, 247), swatch)
-    Darkcolor = closest_color((0, 0, 0), swatch)
-    print(swatch[0])
-    print(swatch[1])
+    Darkcolor = closest_color((15, 15, 15), swatch)
     alpha = toplayer.getchannel('A')
     toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
     toplayer.putalpha(alpha)
@@ -128,8 +126,16 @@ def create_welcome_card(avatarRequest, user, server):
     # Draw our compiled image as a base.
     draw = ImageDraw.Draw(compiled)
 
+    if len(str(user)) > 13:
+        UserSplit = str(user).upper()
+        UserSplit = UserSplit.split('#')
+        UserFormatted = UserSplit[0]
+        UserFormatted = UserFormatted[0:14] + "...#" + UserSplit[1]
+    else:
+        UserFormatted = str(user).upper()
+
     # Set all of our text at specific positions, colors, and with certain fonts.
-    draw.text((365, 120), str(user).upper(), (255, 255, 255), font=name_font)
+    draw.text((365, 120), UserFormatted, (255, 255, 255), font=name_font)
     draw.text((365, 170), f"HAS JOINED THE SERVER", (255, 255, 255), font=msg_font)
     draw.text((365, 200), f"ID#{user.id}", (255, 255, 255), font=id_font)
     draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font)
@@ -146,10 +152,10 @@ def create_welcome_card(avatarRequest, user, server):
     return file
 
 
-def closest_color(rgb, COLORS):
+def closest_color(rgb, colors):
     r, g, b = rgb
     color_diffs = []
-    for color in COLORS:
+    for color in colors:
         cr, cg, cb = color
         color_diff = sqrt(abs(r - cr) ** 2 + abs(g - cg) ** 2 + abs(b - cb) ** 2)
         color_diffs.append((color_diff, color))
