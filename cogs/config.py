@@ -7,7 +7,8 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_prefix, set_welcome_message, \
     set_welcome_dm_message, set_welcome_role, set_welcome_card, \
-    set_welcome_channel, reset_welcome_message, set_global_welcomeimg, set_global_bannercolor, set_global_bgcolor
+    set_welcome_channel, reset_welcome_message, set_global_welcomeimg, \
+    set_global_bannercolor, set_global_bgcolor, check_global_user
 
 current_users = set()
 
@@ -23,11 +24,12 @@ class Config(commands.Cog, name="config"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='swc', aliases=['showcard', 'card', 'welcomecard', 'showwelcomecard'],
+    @commands.command(name='sc', aliases=['swc', 'showcard', 'card', 'welcomecard', 'showwelcomecard'],
                       brief='Displays your welcome card.', description="Displays your welcome card.")
     async def sc(self, ctx, user: discord.Member = None):
         if user is None:
             user = ctx.author
+        check_global_user(user.id)
         avatarRequest = (requests.get(user.avatar_url)).content
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))

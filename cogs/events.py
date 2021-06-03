@@ -27,6 +27,7 @@ class Events(commands.Cog):
     async def on_member_join(self, member):
         # Print to terminal when a member joins.
         print(f'{member} joined.')
+        check_global_user(member.id)
         # Get the welcome message from our SQL database by using our function.
         welcomemessage = get_welcome_message(member.guild.id)
         # Make a new var called welcomecardon and set the value to 0.
