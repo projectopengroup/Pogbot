@@ -85,7 +85,7 @@ def create_welcome_card(avatarRequest, user, server):
     effectlayer = Image.open(welcomecardeffect)
 
     # resize the avatarlayer
-    avatarlayer = avatarlayer.resize((300, 300), Image.ANTIALIAS)
+    avatarlayer = avatarlayer.resize((250, 250), Image.ANTIALIAS)
 
     # Make a new var called compiled by taking our welcome card base image and copying it
     compiled = baselayer.copy()
@@ -111,7 +111,7 @@ def create_welcome_card(avatarRequest, user, server):
     # In the new compiled image, paste the avatar layer at x46, y37 and set a mask.
 
     # In the compiled image, paste the toplayer and set a mask.
-    compiled.paste(avatarlayer, (46, 37), mask=avatarlayer)
+    compiled.paste(avatarlayer, (75, 60), mask=avatarlayer)
     compiled.paste(toplayer, (0, 0), mask=toplayer)
     compiled.paste(bannerlayer, (0, 0), mask=bannerlayer)
     compiled.paste(effectlayer, (0, 0), mask=effectlayer)
