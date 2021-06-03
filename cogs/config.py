@@ -183,13 +183,15 @@ class Config(commands.Cog, name="config"):
                                     set_welcome_channel(textreply.channel.id, textreply.guild.id)
                                     set_welcome_message(str(textreply.content), textreply.guild.id)
                                     embededit = await send_embed(ctx, send_option=2,
-                                                                 title=f"**{textreply.guild}'s welcome message has been set.**",
+                                                                 title=f"**{textreply.guild}'s welcome message has "
+                                                                       f"been set.**",
                                                                  description=f"Channel: {textreply.channel} \n"
                                                                              f"Message:{textreply.content}",
                                                                  color=0x08d5f7)
                                     await pogsetupid.edit(embed=embededit)
                                     set_welcome_card(0, reply.guild.id)
                                     await textreply.delete()
+                                    await self.bot.wait_for('message', timeout=5, check=checkAuthor)
                                     textsetup = False
                                     break
                             elif "both" in str(reply.content.lower()):
@@ -212,12 +214,14 @@ class Config(commands.Cog, name="config"):
                                     set_welcome_card(1, bothreply.guild.id)
                                     set_welcome_channel(bothreply.channel.id, bothreply.guild.id)
                                     embededit = await send_embed(ctx, send_option=2,
-                                                                 title=f"**{bothreply.guild}'s welcome message has been set.**",
+                                                                 title=f"**{bothreply.guild}'s welcome message has "
+                                                                       f"been set.**",
                                                                  description=f"Channel: {bothreply.channel} \n"
                                                                              f"Message:{bothreply.content}",
                                                                  color=0x08d5f7)
                                     await pogsetupid.edit(embed=embededit)
                                     await bothreply.delete()
+                                    await self.bot.wait_for('message', timeout=5, check=checkAuthor)
                                     bothsetup = False
                                     break
                             else:
