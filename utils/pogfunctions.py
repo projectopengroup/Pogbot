@@ -90,9 +90,10 @@ def create_welcome_card(avatarRequest, user, server):
     # Make a new var called compiled by taking our welcome card base image and copying it
     compiled = baselayer.copy()
     getcolorfrom = ColorThief(io.BytesIO(avatarRequest))
-    swatch = getcolorfrom.get_palette(color_count=6)
+    swatch = getcolorfrom.get_palette(color_count=25)
     domcolor = getcolorfrom.get_color(quality=1)
     Lightcolor = closest_color((8, 213, 247), swatch)
+    # Lightcolor = closest_color((255, 255, 255), swatch)
     Darkcolor = closest_color((15, 15, 15), swatch)
     alpha = toplayer.getchannel('A')
     toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
