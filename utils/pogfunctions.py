@@ -108,8 +108,6 @@ def create_welcome_card(avatarRequest, user, server):
     #               ,right(x)
     # paste(image, (0, 0))
     #                  ^down(y)
-    # In the new compiled image, paste the avatar layer at x46, y37 and set a mask.
-
     # In the compiled image, paste the toplayer and set a mask.
     compiled.paste(avatarlayer, (75, 60), mask=avatarlayer)
     compiled.paste(toplayer, (0, 0), mask=toplayer)
@@ -127,11 +125,11 @@ def create_welcome_card(avatarRequest, user, server):
     # Draw our compiled image as a base.
     draw = ImageDraw.Draw(compiled)
 
-    if len(str(user)) > 13:
+    if len(str(user)) > 18:
         UserSplit = str(user).upper()
         UserSplit = UserSplit.split('#')
         UserFormatted = UserSplit[0]
-        UserFormatted = UserFormatted[0:14] + "...#" + UserSplit[1]
+        UserFormatted = UserFormatted[0:13] + "...#" + UserSplit[1]
     else:
         UserFormatted = str(user).upper()
 
