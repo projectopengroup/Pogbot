@@ -26,3 +26,4 @@ cd utils
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/utils/pogesquelle.py
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/utils/pogfunctions.py
 cd ..
+python3 index.py
