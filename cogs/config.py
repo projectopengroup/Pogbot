@@ -9,6 +9,7 @@ from utils.pogesquelle import get_prefix, set_welcome_message, \
 
 current_users = set()
 
+
 def setup_in_progress(ctx):
     if ctx.guild.id not in current_users:
         current_users.add(ctx.guild.id)
