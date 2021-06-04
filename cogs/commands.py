@@ -5,9 +5,16 @@ from utils.pogfunctions import send_embed
 from utils.pogesquelle import get_prefix
 
 
-class Commands(commands.Cog, name="Basic"):
+class Commands(commands.Cog, name="Commands"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name='prefix', brief='Responds with the prefix.',
+                      description="Responds with Pogbot's command prefix.")
+    async def prefix(self, ctx):
+        justprefix = await get_prefix(self.bot, ctx.message)
+        await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
+                         color=0x08d5f7)
 
     @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
                       description="Responds with Pogbot's latency.")
