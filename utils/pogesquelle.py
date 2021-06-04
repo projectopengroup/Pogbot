@@ -157,6 +157,7 @@ def get_welcome_message(serverid):
 def set_welcome_dm_message(message, serverid):
     conn = sqlite3.connect('prefs.db')
     cur = conn.cursor()
+    message = encodebase64(message)
     cur.execute(f"UPDATE servers SET WelcomeDM = '{message}' WHERE ServerID = '{serverid}'")
     # Commit the database changes.
     conn.commit()
@@ -170,6 +171,8 @@ def get_welcome_dm_message(serverid):
     cur.execute(f'SELECT WelcomeDM FROM servers WHERE ServerID={serverid}')
     data = cur.fetchone()
     data = data[0]
+    if data != "None":
+        data = decodebase64(data)
     # Commit the database changes.
     conn.commit()
     conn.close()
