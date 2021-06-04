@@ -20,7 +20,7 @@ def setup_in_progress(ctx):
     return False
 
 
-class Config(commands.Cog, name="Setup"): #, hidden=True):
+class Config(commands.Cog, name="Setup Command"): #, hidden=True):
     def __init__(self, bot):
         self.bot = bot
 

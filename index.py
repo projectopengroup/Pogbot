@@ -65,7 +65,7 @@ if __name__ == "__main__":
     # Try to do this
     try:
         # Set the bots help command to our own formatting, pass the field no category renamed to documentation.
-        bot.help_command = HelpFormatted(no_category='Help')
+        bot.help_command = HelpFormatted(no_category='Help Command')
         # Get the bots token and name it in a var called BotToken
         BotToken = get_or_request_token()
         # Login with our BotToken
