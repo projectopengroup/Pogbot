@@ -7,7 +7,7 @@ from utils.pogfunctions import send_embed
 
 # https://github.com/public-apis/public-apis
 
-class Fun(commands.Cog, name="Fun Stuff Commands"):
+class Fun(commands.Cog, name="Fun Stuff"):
     def __init__(self, bot):
         self.bot = bot
 

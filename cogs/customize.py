@@ -9,7 +9,7 @@ from utils.pogesquelle import get_prefix, set_welcome_message, \
     set_global_bannercolor, set_global_bgcolor, check_global_user
 
 
-class Customize(commands.Cog, name="Customization Commands"):
+class Customize(commands.Cog, name="Customization"):
     def __init__(self, bot):
         self.bot = bot
 

@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 
-class Madden(commands.Cog, name="Madden Commands"):
+class Madden(commands.Cog, name="Madden"):
     def __init__(self, bot):
         self.bot = bot
 

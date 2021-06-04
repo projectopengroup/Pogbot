@@ -5,7 +5,7 @@ from utils.pogfunctions import send_embed
 from utils.pogesquelle import get_prefix
 
 
-class Commands(commands.Cog, name="Basic Commands"):
+class Commands(commands.Cog, name="Basic"):
     def __init__(self, bot):
         self.bot = bot
 
