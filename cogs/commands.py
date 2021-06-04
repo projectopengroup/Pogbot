@@ -2,11 +2,30 @@ import discord
 import requests
 from discord.ext import commands
 from utils.pogfunctions import send_embed
+from utils.pogesquelle import get_prefix
 
 
-class General(commands.Cog, name="general"):
+class Commands(commands.Cog, name="Basic Commands"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name='prefix', brief='Responds with the prefix.',
+                      description="Responds with Pogbot's command prefix.")
+    async def prefix(self, ctx):
+        justprefix = await get_prefix(self.bot, ctx.message)
+        await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
+                         color=0x08d5f7)
+
+    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
+                      description="Responds with Pogbot's latency.")
+    # Look for a command called ping.
+    async def ping(self, ctx):
+        # Responds with the bots latency in a embed.
+        embedping = discord.Embed(
+            description=f"<:Check:845178458426179605> **Pogbot's latency is {round(self.bot.latency * 100)}ms**",
+            color=0x08d5f7)
+        # Edit the original message
+        await ctx.send(embed=embedping)
 
     @commands.command(name='github', brief="Responds with github link.",
                       description="Responds with the link to Pogbot's github.")
@@ -120,4 +139,4 @@ class General(commands.Cog, name="general"):
 
 
 def setup(bot):
-    bot.add_cog(General(bot))
+    bot.add_cog(Commands(bot))

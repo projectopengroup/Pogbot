@@ -17,7 +17,8 @@ print('''
 ''')
 
 # Define bot and it's commands prefix, calling the get_prefix function, where it returns the server specific prefix.
-bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, intents=discord.Intents.all(),
+                   activity=discord.Game(name='Message "add" to add me to your server.'))
 
 # This is our entry point for loading the bots commands. Cogs are necessary in discord.py for a couple of reasons.
 # 1. In order to display the proper category information in the built in help menu, we're required to do it.
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     # Try to do this
     try:
         # Set the bots help command to our own formatting, pass the field no category renamed to documentation.
-        bot.help_command = HelpFormatted(no_category='documentation')
+        bot.help_command = HelpFormatted(no_category='Help Command')
         # Get the bots token and name it in a var called BotToken
         BotToken = get_or_request_token()
         # Login with our BotToken

@@ -18,6 +18,7 @@ class Events(commands.Cog):
     async def on_ready(self):
         # Print status to terminal
         print('Status: Ready.')
+        # Don't make any API calls from here, can cause disconnects and errors.
         # Change bot playing status to information about how to add the bot.
         # await self.bot.change_presence(
         #   activity=discord.Game(name='Message "add" to add me to your server.'))

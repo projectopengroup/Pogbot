@@ -20,86 +20,9 @@ def setup_in_progress(ctx):
     return False
 
 
-class Config(commands.Cog, name="config"):
+class Setup(commands.Cog, name="Setup Command"):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.command(name='sc', aliases=['swc', 'showcard', 'card', 'welcomecard', 'showwelcomecard'],
-                      brief='Displays your welcome card.', description="Displays your welcome card.")
-    async def sc(self, ctx, user: discord.Member = None):
-        if user is None:
-            user = ctx.author
-        check_global_user(user.id)
-        avatarRequest = (requests.get(user.avatar_url)).content
-        # Testing create welcome card on message send right now, until we get it done.
-        await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
-
-    @commands.command(name='cbg', aliases=['cardbg', 'cardbackground'], brief="Change welcome card background",
-                      description="Allows users to set their welcome card backgrounds to image url or html color. \n "
-                                  "**Color** must be HTML color code: e.g. #b3995d"
-                                  '**Image** must be a valid url to an image file that ends in .jpg, .png, etc.\n \n'
-                                  "Suggested size: \n Width: 1000 "
-                                  " Height: 370")
-    async def cbg(self, ctx, *, imageurlorcolor):
-        user = ctx.author
-        try:
-            validate = requests.get(imageurlorcolor)
-            set_global_welcomeimg(user.id, imageurlorcolor)
-            set_global_bgcolor(user.id, "None")
-            avatarRequest = (requests.get(user.avatar_url)).content
-            await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
-        except requests.exceptions.MissingSchema as exception:
-            checkcolor = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', imageurlorcolor)
-            if checkcolor:
-                set_global_bgcolor(user.id, imageurlorcolor)
-                set_global_welcomeimg(user.id, "None")
-                avatarRequest = (requests.get(user.avatar_url)).content
-                await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
-            else:
-                embederror = discord.Embed(
-                    description=f"<:Pogbot_X:850089728018874368> **Not a valid URL or Color.**",
-                    color=0x08d5f7)
-                await ctx.send(embed=embederror)
-        except requests.ConnectionError as exception:
-            embederror = discord.Embed(
-                description=f"<:Pogbot_X:850089728018874368> **Not a valid URL.**",
-                color=0x08d5f7)
-            await ctx.send(embed=embederror)
-
-    @commands.command(name='cbc', aliases=['cbcolor', 'bannercolor', 'cardbcolor', 'cardbannercolor'], brief="Change welcome card banner color",
-                      description="Allows users to set their welcome card banner colors.\n"
-                                  "Color must be a HTML color code: e.g. #b3995d")
-    async def cbc(self, ctx, *, htmlcolorcode):
-        checkcolor = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', htmlcolorcode)
-        if checkcolor:
-            user = ctx.author
-            set_global_bannercolor(user.id, htmlcolorcode)
-            avatarRequest = (requests.get(user.avatar_url)).content
-            # Testing create welcome card on message send right now, until we get it done.
-            await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
-        else:
-            embederror = discord.Embed(
-                description=f"<:Pogbot_X:850089728018874368> **Not a valid HTML color code.**",
-                color=0x08d5f7)
-            await ctx.send(embed=embederror)
-
-    @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
-                      description="Responds with Pogbot's latency.")
-    # Look for a command called ping.
-    async def ping(self, ctx):
-        # Responds with the bots latency in a embed.
-        embedping = discord.Embed(
-            description=f"<:Check:845178458426179605> **Pogbot's latency is {round(self.bot.latency * 100)}ms**",
-            color=0x08d5f7)
-        # Edit the original message
-        await ctx.send(embed=embedping)
-
-    @commands.command(name='prefix', brief='Responds with the prefix.',
-                      description="Responds with Pogbot's command prefix.")
-    async def prefix(self, ctx):
-        justprefix = await get_prefix(self.bot, ctx.message)
-        await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
-                         color=0x08d5f7)
 
     @commands.command(name='setup', brief='Walks you through setup.',
                       description='Walks you through, and lists setup options for Pogbot.')
@@ -399,4 +322,4 @@ class Config(commands.Cog, name="config"):
 
 
 def setup(bot):
-    bot.add_cog(Config(bot))
+    bot.add_cog(Setup(bot))
