@@ -128,7 +128,7 @@ class Commands(commands.Cog, name="Commands"):
                                  (f'**Created:**', time, True)],
                          color=0x08d5f7)
 
-    @commands.command(name='whois', aliases=['info'], brief='Responds with information on a user.',
+    @commands.command(name='whois', aliases=['userinfo', 'uinfo'], brief='Responds with information on a user.',
                       description="Responds with the information of a user provided, if none provided, responds "
                                   "with the information of the user that called the command.")
     # Look for a command called whois and collects optional user parameter, so if no user given, user = None.

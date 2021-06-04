@@ -2,9 +2,11 @@ import discord
 from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
-    get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user
+    get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
+    get_welcome_role
 import os
 import requests
+from discord.utils import get
 from math import sqrt
 from pathlib import Path
 
@@ -35,6 +37,24 @@ class Events(commands.Cog):
         welcomecardon = 0
         # Get the welcome card setting(either 0 or 1) from the SQL database
         welcomecardon = get_welcome_card(member.guild.id)
+
+        # Get the dm welcome message from our SQL database by using our function.
+        dm_welcomemessage = get_welcome_dm_message(member.guild.id)
+
+        welcomerole = get_welcome_role(member.guild.id)
+
+        if welcomerole != "None":
+            for g_role in member.guild.roles:
+                if str(welcomerole) in str(g_role.id):
+                    await member.add_roles(g_role)
+
+        # If the message isn't "None" then
+        if dm_welcomemessage != "None":
+            # Replace our wildcards with the appropriate objects.
+            dm_welcomemessage = dm_welcomemessage.replace("%USER%", f"{member.mention}")
+            dm_welcomemessage = dm_welcomemessage.replace("%SERVER%", f"{member.guild}")
+            # Send the welcome message.
+            await member.send(dm_welcomemessage)
 
         if welcomecardon == 1 and welcomemessage != "None":
             # Get the welcome channel from the database and set it to a var named channel.

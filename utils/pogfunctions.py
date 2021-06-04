@@ -1,5 +1,6 @@
 import io
 
+import PIL
 import discord
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageColor
@@ -102,7 +103,6 @@ def create_welcome_card(avatarRequest, user, server):
         Lightcolor = closest_color((8, 213, 247), swatch)
         print(Lightcolor)
 
-
     custombannercolor = get_global_bannercolor(user.id)
     if custombannercolor != "None":
         if custombannercolor == "#FFFFFF":
@@ -128,6 +128,13 @@ def create_welcome_card(avatarRequest, user, server):
             newlayer.putalpha(alpha)
             toplayer = newlayer.copy()
             effectlayer = Image.new('RGBA', effectlayer.size, (255, 0, 0, 0))
+        except PIL.UnidentifiedImageError as exception:
+            alpha = toplayer.getchannel('A')
+            toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
+            toplayer.putalpha(alpha)
+            alpha = effectlayer.getchannel('A')
+            effectlayer = Image.new('RGBA', effectlayer.size, color=Darkcolor)
+            effectlayer.putalpha(alpha)
         except requests.ConnectionError as exception:
             alpha = toplayer.getchannel('A')
             toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
@@ -172,11 +179,12 @@ def create_welcome_card(avatarRequest, user, server):
     else:
         UserFormatted = str(user).upper()
 
+    time_n_date_stamp = user.joined_at.strftime("%b %d, %Y @ %H:%M %p")
     # Set all of our text at specific positions, colors, and with certain fonts.
     draw.text((365, 120), UserFormatted, (255, 255, 255), font=name_font)
     draw.text((365, 170), f"HAS JOINED THE SERVER", (255, 255, 255), font=msg_font)
     draw.text((365, 200), f"ID#{user.id}", (255, 255, 255), font=id_font)
-    draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font)
+    draw.text((365, 225), f"MEMBER#{server.member_count} - {time_n_date_stamp}", (255, 255, 255), font=member_num_font)
 
     # set a var to arr that represents bytes.
     arr = io.BytesIO()
@@ -198,4 +206,3 @@ def closest_color(rgb, colors):
         color_diff = sqrt(abs(r - cr) ** 2 + abs(g - cg) ** 2 + abs(b - cb) ** 2)
         color_diffs.append((color_diff, color))
     return min(color_diffs)[1]
-
