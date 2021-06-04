@@ -23,7 +23,7 @@ class Customize(commands.Cog, name="Customization Commands"):
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
 
-    @commands.command(name='cardbackground', aliases=['cardbg', 'cbg'], brief="Change welcome card background",
+    @commands.command(name='cardbackground', aliases=['cardbg', 'cbg'], brief="Change welcome card background.",
                       description="Allows users to set their welcome card backgrounds to image url or html color. \n "
                                   "**Color** must be HTML color code: e.g. #b3995d"
                                   '**Image** must be a valid url to an image file that ends in .jpg, .png, etc.\n \n'
@@ -56,7 +56,7 @@ class Customize(commands.Cog, name="Customization Commands"):
             await ctx.send(embed=embederror)
 
     @commands.command(name='cardbannercolor', aliases=['cbcolor', 'bannercolor', 'cardbcolor', 'cbc'],
-                      brief="Change welcome card banner color",
+                      brief="Change welcome card banner color.",
                       description="Allows users to set their welcome card banner colors.\n"
                                   "Color must be a HTML color code: e.g. #b3995d")
     async def cbc(self, ctx, *, htmlcolorcode):

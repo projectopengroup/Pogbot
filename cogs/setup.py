@@ -20,9 +20,16 @@ def setup_in_progress(ctx):
     return False
 
 
-class Setup(commands.Cog, name="Setup Command"):
+class Setups(commands.Cog, name="Setup Commands"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name='prefix', brief='Responds with the prefix.',
+                      description="Responds with Pogbot's command prefix.")
+    async def prefix(self, ctx):
+        justprefix = await get_prefix(self.bot, ctx.message)
+        await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
+                         color=0x08d5f7)
 
     @commands.command(name='setup', brief='Walks you through setup.',
                       description='Walks you through, and lists setup options for Pogbot.')
@@ -322,4 +329,4 @@ class Setup(commands.Cog, name="Setup Command"):
 
 
 def setup(bot):
-    bot.add_cog(Setup(bot))
+    bot.add_cog(Setups(bot))
