@@ -1,3 +1,5 @@
+import platform
+
 import discord
 import requests
 from discord.ext import commands
@@ -82,6 +84,24 @@ class Commands(commands.Cog, name="Commands"):
         # Creates a discord embed with the elements: title (Which gets the user's tag),
         # description (Which gets the user's id), and color (which is the bot's color).
         await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
+                         color=0x08d5f7)
+
+    @commands.command(name='botinfo', aliases=['binfo'], brief='Responds with information about the bot.',
+                      description="Responds with information about the bot and it's hosting environment.")
+    # Look for a command called whois and collects optional user parameter, so if no user given, user = None.
+    async def botinfo(self, ctx):
+        # Creates and sends an embed with various user info by adding them as fields. When getting dates, the format
+        # as to be converted so that it is easier to read.
+        await send_embed(ctx, title=f"**Pogbot's Info**", thumbnail=self.bot.user.avatar_url,
+                         fields=[(f'**Python Version:**', platform.python_version(), True),
+                                 (f'**Operating System:**', platform.system(), True),
+                                 (f'**OS Version:**', platform.release(), True),
+                                 (f'**OS Details:**', platform.platform(), True),
+                                 (f'**Created by:**',
+                                  "[Project Open Group, a community project.](https://github.com/projectopengroup)",
+                                  True),
+                                 (f'**Pogbot is:**',
+                                  "[Open Source](https://github.com/projectopengroup/pogbot)", True)],
                          color=0x08d5f7)
 
     @commands.command(name='whois', aliases=['info'], brief='Responds with information on a user.',

@@ -26,7 +26,7 @@ class Config(commands.Cog, name="Setup"): #, hidden=True):
 
     @commands.command(name='setup', brief='Walks you through setup.',
                       description='Walks you through, and lists setup options for Pogbot.')
-    #@commands.check(setup_in_progress)
+    # @commands.check(setup_in_progress)
     # Look for a command called setup
     async def setup(self, ctx):
         if setup_in_progress(ctx):

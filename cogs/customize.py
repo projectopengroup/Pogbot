@@ -24,8 +24,8 @@ class Customize(commands.Cog, name="Customization"):
         await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
 
     @commands.command(name='cardbackground', aliases=['cardbg', 'cbg'], brief="Change welcome card background.",
-                      description="Allows users to set their welcome card backgrounds to image url or html color. \n "
-                                  "**Color** must be HTML color code: e.g. #b3995d"
+                      description="Allows users to set their welcome card backgrounds to image url or html color. \n"
+                                  "**Color** must be HTML color code: e.g. #b3995d \n"
                                   '**Image** must be a valid url to an image file that ends in .jpg, .png, etc.\n \n'
                                   "Suggested size: \n Width: 1000 "
                                   " Height: 370")
