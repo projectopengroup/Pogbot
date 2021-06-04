@@ -124,7 +124,7 @@ class Commands(commands.Cog, name="Commands"):
                                   str(list_of_bots).replace("'", "").replace(']', '').replace('[', ''), True),
                                  (f'**Region**', len(server.region), True),
                                  (f'**Verification Level**', len(server.verification_level), True),
-                                 (f'**Region**', len(server.region), True),
+                                 (f'**Bot Count**', len(list_of_bots), True),
                                  (f'**Created:**', time, True)],
                          color=0x08d5f7)
 
