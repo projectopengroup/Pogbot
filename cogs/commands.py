@@ -1,4 +1,5 @@
 import platform
+import re
 
 import discord
 import requests
@@ -88,10 +89,7 @@ class Commands(commands.Cog, name="Commands"):
 
     @commands.command(name='botinfo', aliases=['binfo'], brief='Responds with information about the bot.',
                       description="Responds with information about the bot and it's hosting environment.")
-    # Look for a command called whois and collects optional user parameter, so if no user given, user = None.
     async def botinfo(self, ctx):
-        # Creates and sends an embed with various user info by adding them as fields. When getting dates, the format
-        # as to be converted so that it is easier to read.
         await send_embed(ctx, title=f"**Pogbot's Info**", thumbnail=self.bot.user.avatar_url,
                          fields=[(f'**Python Version:**', platform.python_version(), True),
                                  (f'**Operating System:**', platform.system(), True),
@@ -102,6 +100,32 @@ class Commands(commands.Cog, name="Commands"):
                                   True),
                                  (f'**Pogbot is:**',
                                   "[Open Source](https://github.com/projectopengroup/pogbot)", True)],
+                         color=0x08d5f7)
+
+    @commands.command(name='serverinfo', aliases=['sinfo'], brief='Responds with information about the discord server.',
+                      description="Responds with information about the discord server it's ran in.")
+    async def serverinfo(self, ctx):
+        server = ctx.message.guild
+        time = str(server.created_at)
+        time = time.split(" ")
+        time = time[0]
+
+        list_of_bots = [bot.mention for bot in server.members if bot.bot]
+
+        await send_embed(ctx, title=f"**{server} Info**", thumbnail=server.icon_url,
+                         fields=[(f'**Server Owner**', f"{server.owner}", True),
+                                 (f'**Owner ID:**', server.owner.id, True),
+                                 (f'**Server ID:**', server.id, True),
+                                 (f'**Highest Role:**', server.roles[-2], True),
+                                 (f'**Member Count:**', server.member_count, True),
+                                 (f'**Channel Count:**', len(server.channels), True),
+                                 (f'**Role Count**', len(server.roles), True),
+                                 (f'**Bots**',
+                                  str(list_of_bots).replace("'", "").replace(']', '').replace('[', ''), True),
+                                 (f'**Region**', len(server.region), True),
+                                 (f'**Verification Level**', len(server.verification_level), True),
+                                 (f'**Region**', len(server.region), True),
+                                 (f'**Created:**', time, True)],
                          color=0x08d5f7)
 
     @commands.command(name='whois', aliases=['info'], brief='Responds with information on a user.',
@@ -145,7 +169,8 @@ class Commands(commands.Cog, name="Commands"):
         request = requests.get(url=f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={arg}')
         await ctx.send(request.url)
 
-    @commands.command(name='contributors', aliases=['contrib', 'contribs'], brief='Responds with a list of contributors.',
+    @commands.command(name='contributors', aliases=['contrib', 'contribs'],
+                      brief='Responds with a list of contributors.',
                       description="Responds with a full list of project contributors.")
     async def contributors(self, ctx):
         contribs = "__**Leads**: Mag#7777, h3resjonny#0741, TheOneCheetah#3764, and Stu__\n \n" \
