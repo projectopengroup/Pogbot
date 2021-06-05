@@ -30,9 +30,6 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
     # Look for a command called setup
     async def setup(self, ctx):
         if setup_in_progress(ctx):
-            inwelcomesetup = False
-            bothsetup = False
-            textsetup = False
             # Check if the user using the setup command has administrator:
             if ctx.author.guild_permissions.administrator:
                 # Sending a message embed that says running setup.
@@ -86,125 +83,269 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
 
                         # Look for wel in lowercase message.
                         if "wel" in str(reply.content.lower()):
-                            print("Found")
-                            # If found, then form the embed.
-                            embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
-                                                         description="Select the type of welcome message or action you'd "
-                                                                     "like to edit.", color=0x08d5f7,
-                                                         thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                         fields=[('Respond with',
-                                                                  "**channel**, **dm**, **role** or **back**", True)])
-                            # Edit the message.
-                            await pogsetupid.edit(embed=embededit)
-                            await reply.delete()
-                            reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
-                            inwelcomesetup = True
-
-                            if "channel" in str(reply.content.lower()):
+                            while True:
                                 # If found, then form the embed.
-                                embededit = await send_embed(ctx, send_option=2, title=f"**Channel Welcome Setup**",
-                                                             description=f"**{ctx.message.channel}** will be set to the"
-                                                                         f" welcome message channel. \n\n"
-                                                                         f"**Choose a type of"
-                                                                         f" welcome message to continue.**",
-                                                             color=0x08d5f7,
+                                embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
+                                                             description="Select the type of welcome message or action "
+                                                                         "you'd like to edit.", color=0x08d5f7,
                                                              thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                             fields=[('Respond with', "**image**, **text**, **both**, "
-                                                                                      "or **disable**",
+                                                             fields=[('Respond with',
+                                                                      "**channel**, **dm**, **role** or **back**",
                                                                       True)])
                                 # Edit the message.
                                 await pogsetupid.edit(embed=embededit)
                                 await reply.delete()
                                 reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
 
-                                if "disable" in str(reply.content.lower()):
-                                    # If found, then form the embed.
-                                    set_welcome_card(0, reply.guild.id)
-                                    set_welcome_channel(0, reply.guild.id)
-                                    reset_welcome_message(reply.guild.id)
-                                    embededit = discord.Embed(
-                                        description=f'<:Check:845178458426179605> **Reset welcome '
-                                                    f'messages for channels and disabled them.**',
-                                        color=0x08d5f7)
-                                    # Edit the message.
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
-                                    break
-
-                                elif "image" in str(reply.content.lower()):
-                                    set_welcome_card(1, reply.guild.id)
-                                    set_welcome_channel(reply.channel.id, reply.guild.id)
-                                    embededit = discord.Embed(
-                                        description=f'<:Check:845178458426179605> **{ctx.message.channel} set'
-                                                    f' to welcome message channel.**',
-                                        color=0x08d5f7)
-
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
-                                    inwelcomesetup = False
-                                    break
-                                elif "text" in str(reply.content.lower()):
-                                    embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
-                                                                 description=f"**Respond with the text you'd like to use"
-                                                                             f" for the welcome message.**",
-                                                                 color=0x08d5f7,
-                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                                 fields=[('Wildcards:', "%USER%, %SERVER%", True),
-                                                                         ('Example:',
-                                                                          "Hey %USER%, glad you're here, welcome to"
-                                                                          " %SERVER%!", True)])
-                                    # Edit the message.
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
-                                    textreply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
-                                    textsetup = True
-                                    inwelcomesetup = False
-                                    if textreply:
-                                        set_welcome_channel(textreply.channel.id, textreply.guild.id)
-                                        set_welcome_message(str(textreply.content), textreply.guild.id)
+                                if "channel" in str(reply.content.lower()):
+                                    while True:
+                                        # If found, then form the embed.
                                         embededit = await send_embed(ctx, send_option=2,
-                                                                     title=f"**{textreply.guild}'s welcome message has "
-                                                                           f"been set.**",
-                                                                     description=f"Channel: {textreply.channel} \n"
-                                                                                 f"Message:{textreply.content}",
-                                                                     color=0x08d5f7)
+                                                                     title=f"**Channel Welcome Setup**",
+                                                                     description=f"**{ctx.message.channel}** will be "
+                                                                                 f"set to the welcome message channel. "
+                                                                                 f"\n\n**Choose a type of"
+                                                                                 f" welcome message to continue.**",
+                                                                     color=0x08d5f7,
+                                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                     fields=[('Respond with',
+                                                                              "**image**, **text**, **both**, "
+                                                                              "**disable**, or **back**", True)])
+                                        # Edit the message.
                                         await pogsetupid.edit(embed=embededit)
-                                        set_welcome_card(0, reply.guild.id)
-                                        await textreply.delete()
-                                        await self.bot.wait_for('message', timeout=5, check=checkAuthor)
-                                        textsetup = False
-                                        break
-                                elif "both" in str(reply.content.lower()):
-                                    embededit = await send_embed(ctx, send_option=2, title=f"**Welcome Message Setup**",
-                                                                 description=f"**Respond with the text you'd like to use for "
-                                                                             f"the welcome message.**", color=0x08d5f7,
-                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                                 fields=[('Wildcards:', "%USER%, %SERVER%", True),
-                                                                         ('Example:',
-                                                                          "Hey %USER%, glad you're here, welcome to"
-                                                                          " %SERVER%!", True)])
-                                    # Edit the message.
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
-                                    bothsetup = True
-                                    bothreply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
-                                    inwelcomesetup = False
-                                    if bothreply:
-                                        set_welcome_message(str(bothreply.content), bothreply.guild.id)
-                                        set_welcome_card(1, bothreply.guild.id)
-                                        set_welcome_channel(bothreply.channel.id, bothreply.guild.id)
+                                        await reply.delete()
+                                        reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                                        if "disable" in str(reply.content.lower()):
+                                            # If found, then form the embed.
+                                            set_welcome_card(0, reply.guild.id)
+                                            set_welcome_channel(0, reply.guild.id)
+                                            reset_welcome_message(reply.guild.id)
+                                            embededit = discord.Embed(
+                                                description=f'<:Check:845178458426179605> **Reset welcome '
+                                                            f'messages for channels and disabled them.**',
+                                                color=0x08d5f7)
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+
+                                        elif "image" in str(reply.content.lower()):
+                                            set_welcome_card(1, reply.guild.id)
+                                            set_welcome_channel(reply.channel.id, reply.guild.id)
+                                            embededit = discord.Embed(
+                                                description=f'<:Check:845178458426179605> **{ctx.message.channel} set'
+                                                            f' to welcome message channel.**',
+                                                color=0x08d5f7)
+
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        elif "text" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         title=f"**Welcome Message Setup**",
+                                                                         description=f"**Respond with the text you'd "
+                                                                                     f"like to use for the welcome "
+                                                                                     f"message.**",
+                                                                         color=0x08d5f7,
+                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                         fields=[
+                                                                             ('Wildcards:', "%USER%, %SERVER%", True),
+                                                                             ('Example:',
+                                                                              "Hey %USER%, glad you're here, welcome to"
+                                                                              " %SERVER%!", True)])
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            textreply = await self.bot.wait_for('message', timeout=60,
+                                                                                check=checkAuthor)
+                                            if textreply:
+                                                set_welcome_channel(textreply.channel.id, textreply.guild.id)
+                                                set_welcome_message(str(textreply.content), textreply.guild.id)
+                                                embededit = await send_embed(ctx, send_option=2,
+                                                                             title=f"**{textreply.guild}'s welcome "
+                                                                                   f"message has been set.**",
+                                                                             description=f"Channel: {textreply.channel}"
+                                                                                         f"\nMessage: "
+                                                                                         f"{textreply.content}",
+                                                                             color=0x08d5f7)
+                                                await pogsetupid.edit(embed=embededit)
+                                                set_welcome_card(0, reply.guild.id)
+                                                await textreply.delete()
+                                                await self.bot.wait_for('message', timeout=5, check=checkAuthor)
+                                                current_users.remove(ctx.guild.id)
+                                                return
+                                        elif "both" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         title=f"**Welcome Message Setup**",
+                                                                         description=f"**Respond with the text you'd "
+                                                                                     f"like to use for "
+                                                                                     f"the welcome message.**",
+                                                                         color=0x08d5f7,
+                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                         fields=[
+                                                                             ('Wildcards:', "%USER%, %SERVER%", True),
+                                                                             ('Example:',
+                                                                              "Hey %USER%, glad you're here, welcome to"
+                                                                              " %SERVER%!", True)])
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            bothreply = await self.bot.wait_for('message', timeout=60,
+                                                                                check=checkAuthor)
+                                            if bothreply:
+                                                set_welcome_message(str(bothreply.content), bothreply.guild.id)
+                                                set_welcome_card(1, bothreply.guild.id)
+                                                set_welcome_channel(bothreply.channel.id, bothreply.guild.id)
+                                                embededit = await send_embed(ctx, send_option=2,
+                                                                             title=f"**{bothreply.guild}'s welcome "
+                                                                                   f"message has been set.**",
+                                                                             description=f"Channel: {bothreply.channel}"
+                                                                                         f"\nMessage: "
+                                                                                         f"{bothreply.content}",
+                                                                             color=0x08d5f7)
+                                                await pogsetupid.edit(embed=embededit)
+                                                await bothreply.delete()
+                                                await self.bot.wait_for('message', timeout=5, check=checkAuthor)
+                                                current_users.remove(ctx.guild.id)
+                                                return
+                                        elif "back" in str(reply.content.lower()):
+                                            break
+
+                                elif "role" in str(reply.content.lower()):
+                                    while True:
+                                        # If found, then form the embed.
                                         embededit = await send_embed(ctx, send_option=2,
-                                                                     title=f"**{bothreply.guild}'s welcome message has "
-                                                                           f"been set.**",
-                                                                     description=f"Channel: {bothreply.channel} \n"
-                                                                                 f"Message:{bothreply.content}",
-                                                                     color=0x08d5f7)
+                                                                     title=f"**Welcome Role Setup**",
+                                                                     description=f"Choose an option to hand out roles "
+                                                                                 f"when members join the server.\n\n"
+                                                                                 f"**Respond with an option to continue"
+                                                                                 f".**",
+                                                                     color=0x08d5f7,
+                                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                     fields=[
+                                                                         ('Respond with',
+                                                                          "**set**, **remove**, or **back**", True)])
+                                        # Edit the message.
                                         await pogsetupid.edit(embed=embededit)
-                                        await bothreply.delete()
-                                        await self.bot.wait_for('message', timeout=5, check=checkAuthor)
-                                        bothsetup = False
-                                        break
-                                else:
+                                        await reply.delete()
+                                        reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                                        if "set" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         title=f"**Welcome Role Setup**",
+                                                                         description=f"**Respond with the name or ID "
+                                                                                     f"for the role you'd like to hand "
+                                                                                     f"out to users on join.**",
+                                                                         color=0x08d5f7,
+                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                            if reply:
+                                                FoundRole = False
+                                                for g_role in ctx.guild.roles:
+                                                    if reply.content in str(g_role.name):
+                                                        set_welcome_role(g_role.id, reply.guild.id)
+                                                        embededit = await send_embed(ctx, send_option=2,
+                                                                                     title=f"**{reply.guild}'s welcome "
+                                                                                           f"role setting has been set."
+                                                                                           f"**",
+                                                                                     description=f"Role: {g_role.name}"
+                                                                                                 f"\nID: {g_role.id}",
+                                                                                     color=0x08d5f7)
+                                                        await pogsetupid.edit(embed=embededit)
+                                                        await reply.delete()
+                                                        FoundRole = True
+                                                if not FoundRole:
+                                                    embededit = await send_embed(ctx, send_option=2,
+                                                                                 description=f"<:Pogbot_X:850089728018874368> "
+                                                                                             f"**Cannot find that role.**",
+                                                                                 color=0x08d5f7)
+                                                    await pogsetupid.edit(embed=embededit)
+                                                    await reply.delete()
+                                                FoundRole = False
+                                                current_users.remove(ctx.guild.id)
+                                                return
+
+                                        elif "remove" in str(reply.content.lower()):
+                                            set_welcome_role("None", reply.guild.id)
+                                            embededit = discord.Embed(
+                                                description=f'<:Check:845178458426179605> **Removed welcome role '
+                                                            f'settings and disabled them.**',
+                                                color=0x08d5f7)
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        elif "back" in str(reply.content.lower()):
+                                            break
+                                elif "dm" in str(reply.content.lower()):
+                                    while True:
+                                        # If found, then form the embed.
+                                        embededit = await send_embed(ctx, send_option=2,
+                                                                     title=f"**Direct Message Welcome Setup**",
+                                                                     description=f"**Send a custom message to "
+                                                                                 "members when they join.\n\n"
+                                                                                 "**Respond with an option to continue.",
+                                                                     color=0x08d5f7,
+                                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                     fields=[
+                                                                         ('Respond with',
+                                                                          "**set**, **remove**, or **back**", True)])
+                                        # Edit the message.
+                                        await pogsetupid.edit(embed=embededit)
+                                        await reply.delete()
+                                        reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                                        if "set" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         title=f"**Direct Message Welcome Setup**",
+                                                                         description=f"**Respond with the text you'd like to "
+                                                                                     f"use for the welcome message.**",
+                                                                         color=0x08d5f7,
+                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                         fields=[
+                                                                             ('Wildcards:', "%USER%, %SERVER%", True),
+                                                                             ('Example:',
+                                                                              "Hey %USER%, thanks for joining "
+                                                                              "%SERVER%! Have a look around, we hop"
+                                                                              "e you enjoy your stay with us!",
+                                                                              True)])
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                            if reply:
+                                                set_welcome_dm_message(reply.content, reply.guild.id)
+                                                embededit = await send_embed(ctx, send_option=2,
+                                                                             title=f"**{reply.guild}'s direct message "
+                                                                                   f"setting has been set.**",
+                                                                             description=f"Message:{reply.content}",
+                                                                             color=0x08d5f7)
+                                                await pogsetupid.edit(embed=embededit)
+                                                await reply.delete()
+                                                current_users.remove(ctx.guild.id)
+                                                return
+
+                                        if "remove" in str(reply.content.lower()):
+                                            set_welcome_dm_message("None", reply.guild.id)
+                                            embededit = discord.Embed(
+                                                description=f'<:Check:845178458426179605> **Removed direct welcome '
+                                                            f'messages for new members and disabled them.**',
+                                                color=0x08d5f7)
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        elif "back" in str(reply.content.lower()):
+                                            break
+                                elif "back" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**",
                                                                  color=0x08d5f7,
                                                                  thumbnail='https://i.imgur.com/rYKYpDw.png',
@@ -219,143 +360,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                                                          ])
                                     await pogsetupid.edit(embed=embededit)
                                     await reply.delete()
-                                    inwelcomesetup = False
-
-                            elif "role" in str(reply.content.lower()):
-                                # If found, then form the embed.
-                                embededit = await send_embed(ctx, send_option=2,
-                                                             title=f"**Welcome Role Setup**",
-                                                             description=f"Choose an option to hand out roles "
-                                                                         f"when members join the server.\n\n"
-                                                                         "**Respond with an option to continue.**",
-                                                             color=0x08d5f7,
-                                                             thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                             fields=[
-                                                                 ('Respond with',
-                                                                  "**set** or **remove**", True)])
-                                # Edit the message.
-                                await pogsetupid.edit(embed=embededit)
-                                await reply.delete()
-                                reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
-
-                            if "set" in str(reply.content.lower()):
-                                embededit = await send_embed(ctx, send_option=2,
-                                                             title=f"**Welcome Role Setup**",
-                                                             description=f"**Respond with the name or ID for the role "
-                                                                         f"you'd like to hand out to users on join.**",
-                                                             color=0x08d5f7,
-                                                             thumbnail='https://i.imgur.com/rYKYpDw.png')
-                                # Edit the message.
-                                await pogsetupid.edit(embed=embededit)
-                                await reply.delete()
-                                setreply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
-                                if setreply:
-                                    FoundRole = False
-                                    for g_role in ctx.guild.roles:
-                                        if setreply.content in str(g_role.name):
-                                            set_welcome_role(g_role.id, setreply.guild.id)
-                                            embededit = await send_embed(ctx, send_option=2,
-                                                                     title=f"**{setreply.guild}'s welcome role "
-                                                                           f"setting has been set.**",
-                                                                     description=f"Role: {g_role.name} \n"
-                                                                                 f"ID: {g_role.id}",
-                                                                     color=0x08d5f7)
-                                            await pogsetupid.edit(embed=embededit)
-                                            await setreply.delete()
-                                            textsetup = False
-                                            FoundRole = True
-                                    if FoundRole != True:
-                                        embededit = await send_embed(ctx, send_option=2,
-                                                                 title=f"<:Pogbot_X:850089728018874368> **Cannot find "
-                                                                       f"that role.**",
-                                                                 color=0x08d5f7)
-                                        await pogsetupid.edit(embed=embededit)
-                                        await setreply.delete()
-                                    FoundRole = False
                                     break
-
-                            if "remove" in str(reply.content.lower()):
-                                set_welcome_role("None", setreply.guild.id)
-                                embededit = discord.Embed(
-                                    description=f'<:Check:845178458426179605> **Removed welcome role settings '
-                                                f'and disabled them.**',
-                                    color=0x08d5f7)
-                                # Edit the message.
-                                await pogsetupid.edit(embed=embededit)
-                                await reply.delete()
-                                break
-                            elif "dm" in str(reply.content.lower()):
-                                # If found, then form the embed.
-                                embededit = await send_embed(ctx, send_option=2,
-                                                             title=f"**Direct Message Welcome Setup**",
-                                                             description=f"**Send a custom message to "
-                                                                         "members when they join.\n\n"
-                                                                         "**Respond with an option to continue.",
-                                                             color=0x08d5f7,
-                                                             thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                             fields=[
-                                                                 ('Respond with',
-                                                                  "**set** or **remove**", True)])
-                                # Edit the message.
-                                await pogsetupid.edit(embed=embededit)
-                                await reply.delete()
-                                reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
-
-                                if"set" in str(reply.content.lower()):
-                                    embededit = await send_embed(ctx, send_option=2,
-                                                                 title=f"**Direct Message Welcome Setup**",
-                                                                 description=f"**Respond with the text you'd like to "
-                                                                             f"use for the welcome message.**",
-                                                                 color=0x08d5f7,
-                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                                 fields=[
-                                                                     ('Wildcards:', "%USER%, %SERVER%", True),
-                                                                     ('Example:', "Hey %USER%, thanks for joining "
-                                                                                  "%SERVER%! Have a look around, we hop"
-                                                                                  "e you enjoy your stay with us!",
-                                                                      True)])
-                                    # Edit the message.
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
-                                    setreply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
-                                    if setreply:
-                                        set_welcome_dm_message(setreply.content, setreply.guild.id)
-                                        embededit = await send_embed(ctx, send_option=2,
-                                                                     title=f"**{setreply.guild}'s direct message "
-                                                                           f"setting has been set.**",
-                                                                     description=f"Message:{setreply.content}",
-                                                                     color=0x08d5f7)
-                                        await pogsetupid.edit(embed=embededit)
-                                        await setreply.delete()
-                                        textsetup = False
-                                        break
-
-                                if "remove" in str(reply.content.lower()):
-
-                                    set_welcome_dm_message("None", reply.guild.id)
-                                    embededit = discord.Embed(
-                                        description=f'<:Check:845178458426179605> **Removed direct welcome '
-                                                    f'messages for new members and disabled them.**',
-                                        color=0x08d5f7)
-                                    # Edit the message.
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
-                                    break
-                            else:
-                                embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**",
-                                                             color=0x08d5f7,
-                                                             thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                             description="Respond with any menu option to proceed.",
-                                                             fields=[('Settings', 'Basic server settings.', True),
-                                                                     ('Moderator', "Moderator settings.", True),
-                                                                     ('Reactions', "Setup role reactions.", True),
-                                                                     ('Commands', "Configure custom commands.", True),
-                                                                     ('Logs', "Enable event logs.", True),
-                                                                     ('Switcher', "Turn on/off commands.", True)
-                                                                     ])
-                                await pogsetupid.edit(embed=embededit)
-                                await reply.delete()
-                                inwelcomesetup = False
 
                         # Look for pre in lowercase message
                         if "pre" in str(reply.content.lower()):
