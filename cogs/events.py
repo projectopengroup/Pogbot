@@ -130,9 +130,12 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members editing messages.
     async def on_message_edit(self, before, after):
-        if "Direct Message" in str(before.channel):
+        if isinstance(before.author, discord.member.User):
+            print(f"Non-Member Event Detected: {before.author}")
+            return
+        if isinstance(before.channel, discord.channel.DMChannel):
             print("Direct Message Detected..")
-        else:
+        if isinstance(before.author, discord.member.Member):
             EditChannelID = get_log_item(before.author.guild.id, "Edit")
             if EditChannelID != 0:
                 if before.content != "":
@@ -162,37 +165,45 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members deleting messages.
     async def on_message_delete(self, message):
-        DeleteChannelID = get_log_item(message.author.guild.id, "Delete")
-        if DeleteChannelID != 0:
-            if message.content != "":
-                channel = self.bot.get_channel(DeleteChannelID)
+        if isinstance(message.author, discord.member.User):
+            print(f"Non-Member Event Detected: {message.author}")
+            return
+        if isinstance(message.channel, discord.channel.DMChannel):
+            print("Direct Message Detected..")
+        if isinstance(message.author, discord.member.Member):
+            DeleteChannelID = get_log_item(message.author.guild.id, "Delete")
+            if DeleteChannelID != 0:
+                if message.content != "":
+                    channel = self.bot.get_channel(DeleteChannelID)
 
-                MessageFormatted = message.clean_content
-                if len(str(MessageFormatted)) > 1300:
-                    MessageFormatted = MessageFormatted[1300]
+                    MessageFormatted = message.clean_content
+                    if len(str(MessageFormatted)) > 1300:
+                        MessageFormatted = MessageFormatted[1300]
 
-                await send_embed(channel, send_option=0, author=message.author,
-                                 author_pfp=message.author.avatar_url, color=0xff6e6e,
-                                 description=f"Message by {message.author.mention}\n**Deleted** "
-                                             f"in {message.channel.mention}",
-                                 fields=[('Message', f"{MessageFormatted}", True),
-                                         ('Author ID', f"{message.author.id}", False),
-                                         ('Message ID', f"{message.id}", True)],
-                                 timestamp=(datetime.utcnow()),
-                                 footer=f"Deleted")
+                    await send_embed(channel, send_option=0, author=message.author,
+                                     author_pfp=message.author.avatar_url, color=0xff6e6e,
+                                     description=f"Message by {message.author.mention}\n**Deleted** "
+                                                 f"in {message.channel.mention}",
+                                     fields=[('Message', f"{MessageFormatted}", True),
+                                             ('Author ID', f"{message.author.id}", False),
+                                             ('Message ID', f"{message.id}", True)],
+                                     timestamp=(datetime.utcnow()),
+                                     footer=f"Deleted")
 
         print(f'Message Deleted: Author: {message.author} Message: {message.clean_content}.')
 
     @commands.Cog.listener()
     # Look for incoming messages in DMs and in Chat.
     async def on_message(self, msg):
-
+        if isinstance(msg.author, discord.member.User):
+            print(f"Non-Member Event Detected: {msg.author}")
+            return
         # Check if the message author is a bot.
         if msg.author.bot:
             # if it is a bot then return the code from here without going further.
             return
         check_global_user(msg.author.id)
-        check_log_item(msg.author.guild.id)
+
         # Check if the message channel contains the word direct message
         if "Direct Message" in str(msg.channel):
 
@@ -221,6 +232,7 @@ class Events(commands.Cog):
             return
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
+        check_log_item(msg.author.guild.id)
         # image = requests.get(msg.author.avatar_url, stream=True)
         # welcomecardfolder = Path("img/card_welcomes/")
         # avatar = welcomecardfolder / "avatar.png"
