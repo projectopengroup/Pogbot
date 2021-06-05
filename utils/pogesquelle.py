@@ -39,10 +39,10 @@ async def get_prefix(client, message):
             # Format new empty values for the row, with the exception of the server ID. This is default for a server.
             # It will only run this once, because only once will it not find the prefix, because we set it here.
             prefs_query = f"""INSERT INTO servers
-                                     (ServerID, Prefix, MutedRole, ModRoles, EditLogs, DeleteLogs, JoinLogs, LeaveLogs, 
-                                     WarnLogs, KickLogs, BanLogs, MuteLogs, Welcome, WelcomeDM, WelcomeRole, WelcomeCard, WelcomeChannel)
+                                     (ServerID, Prefix, MutedRole, ModRoles, 
+                                     Welcome, WelcomeDM, WelcomeRole, WelcomeCard, WelcomeChannel)
                                       VALUES 
-                                     ('{message.guild.id}', '!', 'None', 'None', 0, 0, 0, 0, 0, 0, 0, 0, 'None', 
+                                     ('{message.guild.id}', '!', 'None', 'None', 'None', 
                                      'None', 'None', 0, 0) """
             # Execute our query
             cur.execute(prefs_query)

@@ -88,6 +88,313 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                             await reply.delete()
                             reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
 
+                        # Look for logs in lowercase message.
+                        if "log" in str(reply.content.lower()):
+                            while True:
+                                # If found, then form the embed.
+                                embededit = await send_embed(ctx, send_option=2, title=f"**Event Log Setup**",
+                                                             description="Select the type of event log you'd like to "
+                                                                         "display in this channel.", color=0x08d5f7,
+                                                             thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                             fields=[('Respond with',
+                                                                      "**all**, **server**, **moderator**, "
+                                                                      "**message**, **role**, **voice**"
+                                                                      " or **back**",
+                                                                      True)])
+                                # Edit the message.
+                                await pogsetupid.edit(embed=embededit)
+                                await reply.delete()
+                                reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+
+                                if "all" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
+                                                                 description="This will enable **all** logs on this "
+                                                                             "channel:\n\n "
+                                                                             "__Server Actions__\n"
+                                                                             "Joins\n"
+                                                                             "Leaves\n"
+                                                                             "Nickname Changes\n"
+                                                                             "Invite Information\n"
+                                                                             "Channels Made\n"
+                                                                             "Channels Deleted\n\n"
+
+                                                                             "__Moderator Actions__\n"
+                                                                             "Bans\n"
+                                                                             "Unbans\n"
+                                                                             "Kicks\n"
+                                                                             "Warns\n"
+                                                                             "Mutes\n\n"
+
+                                                                             "__Message Actions__\n"
+                                                                             "Edits\n"
+                                                                             "Deletes\n"
+                                                                             "Bulk Deletes\n\n"
+
+                                                                             "__Role Actions__\n"
+                                                                             "Roles Made\n"
+                                                                             "Roles Deleted\n"
+                                                                             "Roles Updated\n"
+                                                                             "Roles Given\n"
+                                                                             "Roles Removed\n\n"
+
+                                                                             "__Voice Actions__\n"
+                                                                             "Joined VC\n"
+                                                                             "Left VC\n"
+                                                                             "Moved VC\n\n"
+
+                                                                 , color=0x08d5f7,
+
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 fields=[('Respond with',
+                                                                          "**enable**, **disable**, or **back**",
+                                                                          True)])
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+
+                                    reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+                                    if reply:
+                                        if "enable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Set all '
+                                                                                     f'event logs to this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        if "disable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Removed all '
+                                                                                     f'event logs from this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+
+                                if "server" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
+                                                                 description="This will enable **server** logs on this "
+                                                                             "channel:\n\n "
+                                                                             "__Server Actions__\n"
+                                                                             "Joins\n"
+                                                                             "Leaves\n"
+                                                                             "Nickname Changes\n"
+                                                                             "Invite Information\n"
+                                                                             "Channels Made\n"
+                                                                             "Channels Deleted\n\n"
+                                                                 , color=0x08d5f7,
+
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 fields=[('Respond with',
+                                                                          "**enable**, **disable**, or **back**",
+                                                                          True)])
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+
+                                    reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+                                    if reply:
+                                        if "enable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Set server '
+                                                                                     f'event logs to this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        if "disable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Removed server '
+                                                                                     f'event logs from this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                if "moderator" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
+                                                                 description="This will enable **moderator** logs on "
+                                                                             "this "
+                                                                             "channel:\n\n "
+                                                                             "__Moderator Actions__\n"
+                                                                             "Bans\n"
+                                                                             "Unbans\n"
+                                                                             "Kicks\n"
+                                                                             "Warns\n"
+                                                                             "Mutes\n\n"
+                                                                 , color=0x08d5f7,
+
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 fields=[('Respond with',
+                                                                          "**enable**, **disable**, or **back**",
+                                                                          True)])
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+
+                                    reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+                                    if reply:
+                                        if "enable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Set moderator '
+                                                                                     f'event logs to this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        if "disable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Removed moderator '
+                                                                                     f'event logs from this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                if "message" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
+                                                                 description="This will enable **message** logs on "
+                                                                             "this channel:\n\n "
+                                                                             "__Message Actions__\n"
+                                                                             "Edits\n"
+                                                                             "Deletes\n"
+                                                                             "Bulk Deletes\n\n"
+                                                                 , color=0x08d5f7,
+
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 fields=[('Respond with',
+                                                                          "**enable**, **disable**, or **back**",
+                                                                          True)])
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+
+                                    reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+                                    if reply:
+                                        if "enable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Set message '
+                                                                                     f'event logs to this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        if "disable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Removed message '
+                                                                                     f'event logs from this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                if "role" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
+                                                                 description="This will enable **role** logs on this "
+                                                                             "channel:\n\n "
+                                                                             "__Role Actions__\n"
+                                                                             "Roles Made\n"
+                                                                             "Roles Deleted\n"
+                                                                             "Roles Updated\n"
+                                                                             "Roles Given\n"
+                                                                             "Roles Removed\n\n"
+                                                                 , color=0x08d5f7,
+
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 fields=[('Respond with',
+                                                                          "**enable**, **disable**, or **back**",
+                                                                          True)])
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+
+                                    reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+                                    if reply:
+                                        if "enable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Set role '
+                                                                                     f'event logs to this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        if "disable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Removed role '
+                                                                                     f'event logs from this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                if "voice" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
+                                                                 description="This will enable **voice** logs on this "
+                                                                             "channel:\n\n "
+                                                                             "__Voice Actions__\n"
+                                                                             "Joined VC\n"
+                                                                             "Left VC\n"
+                                                                             "Moved VC\n\n"
+                                                                 , color=0x08d5f7,
+
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 fields=[('Respond with',
+                                                                          "**enable**, **disable**, or **back**",
+                                                                          True)])
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+
+                                    reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
+                                    if reply:
+                                        if "enable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Set voice '
+                                                                                     f'event logs to this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                        if "disable" in str(reply.content.lower()):
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         description=f'<:Check:845178458426179605'
+                                                                                     f'> **Removed voice '
+                                                                                     f'event logs from this channel.**',
+                                                                         color=0x08d5f7)
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            current_users.remove(ctx.guild.id)
+                                            return
+                                elif "back" in str(reply.content.lower()):
+                                    # If it's found then form our embed.
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**",
+                                                                 color=0x08d5f7,
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 description="Respond with any menu option to proceed.",
+                                                                 fields=[('Settings', 'Basic server settings.', True),
+                                                                         ('Moderator', "Moderator settings.", True),
+                                                                         ('Reactions', "Setup role reactions.", True),
+                                                                         ('Commands', "Configure custom commands.",
+                                                                          True),
+                                                                         ('Logs', "Enable event logs.", True),
+                                                                         ('Switcher', "Turn on/off commands.", True)])
+                                    # Edit the original message.
+                                    await pogsetupid.edit(embed=embededit)
+                                    # Delete the message.
+                                    await reply.delete()
+                                    break
                         # Look for wel in lowercase message.
                         if "wel" in str(reply.content.lower()):
                             while True:
