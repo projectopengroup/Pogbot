@@ -29,6 +29,21 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members joining.
     async def on_member_join(self, member):
+        check_log_item(member.guild.id)
+        JoinChannelID = get_log_item(member.guild.id, "Join")
+        if JoinChannelID != 0:
+            if member != "":
+                channel = self.bot.get_channel(JoinChannelID)
+                membercreated = str(member.created_at.strftime("%b %d, %Y"))
+
+                await send_embed(channel, send_option=0, author=f"{member} joined.",
+                                 author_pfp=member.avatar_url, color=0x6eff90,
+                                 description=f"**Join event by** {member.mention}",
+                                 fields=[('User', f"{member}", False),
+                                         ('User ID', f"{member.id}", False),
+                                         ('Account Created', f"{membercreated}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Joined")
         # Print to terminal when a member joins.
         print(f'{member} joined.')
         check_global_user(member.id)
@@ -92,40 +107,80 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members leaving.
     async def on_member_remove(self, member):
+        check_log_item(member.guild.id)
+        LeaveChannelID = get_log_item(member.guild.id, "Leave")
+        if LeaveChannelID != 0:
+            if member != "":
+                channel = self.bot.get_channel(LeaveChannelID)
+                membercreated = str(member.created_at.strftime("%b %d, %Y"))
+                g_roles = member.roles
+                g_roles = [f"{role.mention}\n" for role in g_roles]
+                g_roles_str = ''.join(g_roles)
+                await send_embed(channel, send_option=0, author=f"{member} left.",
+                                 author_pfp=member.avatar_url, color=0xff6e6e,
+                                 description=f"**Leave event by** {member.mention}",
+                                 fields=[('User', f"{member}", False),
+                                         ('User ID', f"{member.id}", False),
+                                         ('Roles', f"{str(g_roles_str)}", False),
+                                         ('Account Created', f"{membercreated}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Left")
         print(f'{member} left.')
 
     @commands.Cog.listener()
     # Look for members editing messages.
     async def on_message_edit(self, before, after):
-        EditChannelID = get_log_item(before.author.guild.id, "Edit")
-        if EditChannelID != 0:
-            if before.content != "":
-                channel = self.bot.get_channel(EditChannelID)
-                msgbefore = before.clean_content
-                msgafter = after.clean_content
+        if "Direct Message" in str(before.channel):
+            print("Direct Message Detected..")
+        else:
+            EditChannelID = get_log_item(before.author.guild.id, "Edit")
+            if EditChannelID != 0:
+                if before.content != "":
+                    channel = self.bot.get_channel(EditChannelID)
+                    msgbefore = before.clean_content
+                    msgafter = after.clean_content
 
-                if len(str(msgbefore)) > 450:
-                    msgbefore = f"**Truncated**:{before.clean_content[0:450]}..."
+                    if len(str(msgbefore)) > 450:
+                        msgbefore = f"**Truncated**:{before.clean_content[0:450]}..."
 
-                if len(str(msgafter)) > 450:
-                    msgafter = f"**Truncated**:{after.clean_content[0:450]}..."
+                    if len(str(msgafter)) > 450:
+                        msgafter = f"**Truncated**:{after.clean_content[0:450]}..."
 
-                embededited = await send_embed(channel, send_option=0, author=before.author,
-                                               author_pfp=before.author.avatar_url, color=0x08d5f7,
-                                               description=f"Message by {before.author.mention}\nEdited "
-                                                           f"in {before.channel.mention} [Jump to message]({after.jump_url})",
-                                               fields=[('Before', f"{msgbefore}", True),
-                                                       ('After', f"{msgafter}", True),
-                                                       ('Author ID', f"{after.author.id}", False),
-                                                       ('Message ID', f"{after.id}", True)],
-                                               timestamp=after.edited_at,
-                                               footer=f"Edited")
+                    await send_embed(channel, send_option=0, author=before.author,
+                                     author_pfp=before.author.avatar_url, color=0xfff56e,
+                                     description=f"Message by {before.author.mention}\n**Edited** "
+                                                 f"in {before.channel.mention} [Jump to message]({after.jump_url})",
+                                     fields=[('Before', f"{msgbefore}", True),
+                                             ('After', f"{msgafter}", True),
+                                             ('Author ID', f"{after.author.id}", False),
+                                             ('Message ID', f"{after.id}", True)],
+                                     timestamp=after.edited_at,
+                                     footer=f"Edited")
 
         print(f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
 
     @commands.Cog.listener()
     # Look for members deleting messages.
     async def on_message_delete(self, message):
+        DeleteChannelID = get_log_item(message.author.guild.id, "Delete")
+        if DeleteChannelID != 0:
+            if message.content != "":
+                channel = self.bot.get_channel(DeleteChannelID)
+
+                MessageFormatted = message.clean_content
+                if len(str(MessageFormatted)) > 1300:
+                    MessageFormatted = MessageFormatted[1300]
+
+                await send_embed(channel, send_option=0, author=message.author,
+                                 author_pfp=message.author.avatar_url, color=0xff6e6e,
+                                 description=f"Message by {message.author.mention}\n**Deleted** "
+                                             f"in {message.channel.mention}",
+                                 fields=[('Message', f"{MessageFormatted}", True),
+                                         ('Author ID', f"{message.author.id}", False),
+                                         ('Message ID', f"{message.id}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Deleted")
+
         print(f'Message Deleted: Author: {message.author} Message: {message.clean_content}.')
 
     @commands.Cog.listener()
