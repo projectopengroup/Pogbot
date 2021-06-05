@@ -3,12 +3,13 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
-    get_welcome_role, check_log_item
+    get_welcome_role, check_log_item, get_log_item
 import os
 import requests
 from discord.utils import get
 from math import sqrt
 from pathlib import Path
+from datetime import datetime
 
 
 class Events(commands.Cog):
@@ -96,6 +97,30 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members editing messages.
     async def on_message_edit(self, before, after):
+        EditChannelID = get_log_item(before.author.guild.id, "Edit")
+        if EditChannelID != 0:
+            if before.content != "":
+                channel = self.bot.get_channel(EditChannelID)
+                msgbefore = before.clean_content
+                msgafter = after.clean_content
+
+                if len(str(msgbefore)) > 450:
+                    msgbefore = f"**Truncated**:{before.clean_content[0:450]}..."
+
+                if len(str(msgafter)) > 450:
+                    msgafter = f"**Truncated**:{after.clean_content[0:450]}..."
+
+                embededited = await send_embed(channel, send_option=0, author=before.author,
+                                               author_pfp=before.author.avatar_url, color=0x08d5f7,
+                                               description=f"Message by {before.author.mention}\nEdited "
+                                                           f"in {before.channel.mention} [Jump to message]({after.jump_url})",
+                                               fields=[('Before', f"{msgbefore}", True),
+                                                       ('After', f"{msgafter}", True),
+                                                       ('Author ID', f"{after.author.id}", False),
+                                                       ('Message ID', f"{after.id}", True)],
+                                               timestamp=after.edited_at,
+                                               footer=f"Edited")
+
         print(f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
 
     @commands.Cog.listener()

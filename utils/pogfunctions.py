@@ -23,7 +23,8 @@ from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get
 # send_option = 2 create the embed, but only return the embed, not send it, so the embed object is stored in a variable
 # that can be used later.
 async def send_embed(ctx, send_option=0, title=None, description=None, author=None, author_pfp=None,
-                     color=discord.Colour.default(), footer=None, thumbnail=None, image=None, url=None, fields=None):
+                     color=discord.Colour.default(), timestamp=None, footer=None, thumbnail=None, image=None, url=None,
+                     fields=None):
     if title is None and description is None:
         print("[Error]: Error creating embed. No title or description specified.")
     else:
@@ -42,6 +43,8 @@ async def send_embed(ctx, send_option=0, title=None, description=None, author=No
         # added to the embed.
         if image is not None:
             new_embed.set_image(url=image)
+        if timestamp is not None:
+            new_embed.timestamp = timestamp
         if footer is not None:
             new_embed.set_footer(text=footer)
         if thumbnail is not None:
@@ -179,12 +182,11 @@ def create_welcome_card(avatarRequest, user, server):
     else:
         UserFormatted = str(user).upper()
 
-    time_n_date_stamp = user.joined_at.strftime("%b %d, %Y @ %H:%M %p")
     # Set all of our text at specific positions, colors, and with certain fonts.
     draw.text((365, 120), UserFormatted, (255, 255, 255), font=name_font)
     draw.text((365, 170), f"HAS JOINED THE SERVER", (255, 255, 255), font=msg_font)
     draw.text((365, 200), f"ID#{user.id}", (255, 255, 255), font=id_font)
-    draw.text((365, 225), f"MEMBER#{server.member_count} - {time_n_date_stamp}", (255, 255, 255), font=member_num_font)
+    draw.text((365, 225), f"MEMBER#{server.member_count}", (255, 255, 255), font=member_num_font)
 
     # set a var to arr that represents bytes.
     arr = io.BytesIO()
