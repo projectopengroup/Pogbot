@@ -119,7 +119,7 @@ class Events(commands.Cog):
                 # https://discord.com/api/oauth2/authorize?client_id=843272975771631616&permissions=0&scope=bot
                 await send_embed(msg.channel, send_option=0, title=f"**Click here to add Pogbot to your server**",
                                  url="https://discord.com/api/oauth2/authorize?client_id=843272975771631616"
-                                     "&permissions=0&scope=bot",
+                                     "&permissions=4294967287&scope=bot",
                                  description="The default prefix is ! \n Run the command !setup once added to "
                                              "get started.", color=0x08d5f7)
             # If any of the IDs match Mag, Cheetah, or Jonny then
