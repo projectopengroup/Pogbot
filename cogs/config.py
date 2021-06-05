@@ -24,6 +24,13 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
     def __init__(self, bot):
         self.bot = bot
 
+    def is_int(self, value):
+        try:
+            int(value)
+            return True
+        except ValueError:
+            return False
+
     @commands.command(name='setup', brief='Walks you through setup.',
                       description='Walks you through, and lists setup options for Pogbot.')
     # @commands.check(setup_in_progress)
@@ -246,28 +253,36 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
                                             if reply:
-                                                FoundRole = False
-                                                for g_role in ctx.guild.roles:
-                                                    if reply.content in str(g_role.name):
-                                                        set_welcome_role(g_role.id, reply.guild.id)
-                                                        embededit = await send_embed(ctx, send_option=2,
-                                                                                     title=f"**{reply.guild}'s welcome "
-                                                                                           f"role setting has been set."
-                                                                                           f"**",
-                                                                                     description=f"Role: {g_role.name}"
-                                                                                                 f"\nID: {g_role.id}",
-                                                                                     color=0x08d5f7)
-                                                        await pogsetupid.edit(embed=embededit)
-                                                        await reply.delete()
-                                                        FoundRole = True
-                                                if not FoundRole:
+                                                g_role = discord.utils.get(ctx.guild.roles, name=reply.content)
+                                                if not g_role and self.is_int(reply.content):
+                                                    g_role = discord.utils.get(ctx.guild.roles, id=int(reply.content))
+                                                if not g_role and "@&" in reply.content:
+                                                    extra, role_id = reply.content.split("&")
+                                                    if ">" in role_id:
+                                                        role_id, end = role_id.split(">")
+                                                        if self.is_int(role_id):
+                                                            g_role = discord.utils.get(ctx.guild.roles, id=int(role_id))
+                                                if not g_role:
                                                     embededit = await send_embed(ctx, send_option=2,
                                                                                  description=f"<:Pogbot_X:850089728018874368> "
                                                                                              f"**Cannot find that role.**",
                                                                                  color=0x08d5f7)
                                                     await pogsetupid.edit(embed=embededit)
                                                     await reply.delete()
-                                                FoundRole = False
+                                                    current_users.remove(ctx.guild.id)
+                                                    return
+
+                                                set_welcome_role(g_role.id, reply.guild.id)
+                                                embededit = await send_embed(ctx, send_option=2,
+                                                                             title=f"**{reply.guild}'s welcome "
+                                                                                   f"role setting has been set."
+                                                                                   f"**",
+                                                                             description=f"Role: {g_role.name}"
+                                                                                         f"\nID: {g_role.id}",
+                                                                             color=0x08d5f7)
+                                                await pogsetupid.edit(embed=embededit)
+                                                await reply.delete()
+
                                                 current_users.remove(ctx.guild.id)
                                                 return
 
