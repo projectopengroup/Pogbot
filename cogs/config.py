@@ -88,6 +88,120 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                             await reply.delete()
                             reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
 
+                        if "react" in str(reply.content.lower()):
+                            while True:
+                                # If found, then form the embed.
+                                embededit = await send_embed(ctx, send_option=2, title=f"**Reaction Role Setup**",
+                                                             description="**Set up reaction roles for your server "
+                                                                         "members.** Respond with a reaction role "
+                                                                         "option to continue.",
+                                                             color=0x08d5f7,
+                                                             thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                             fields=[('Respond with',
+                                                                      "**create**, **delete**, or **back**", True)])
+                                # Edit the message.
+                                await pogsetupid.edit(embed=embededit)
+                                await reply.delete()
+
+                                reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                if "create" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2,
+                                                                 title=f"**Reaction Role Setup**",
+                                                                 description="Type the reaction role text that you "
+                                                                             "would like to display in this channel",
+                                                                 color=0x08d5f7,
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 fields=[('Example: ',
+                                                                          "React to <:Check:845178458426179605> to get "
+                                                                          "the ServerPings role, "
+                                                                          "<:Shaka:843035933460267018> to get the "
+                                                                          "EventPings role, and "
+                                                                          "<:Pogbot:845176348661383188> to get the "
+                                                                          "GiveawayPings role!",
+                                                                          True)])
+                                    # Edit the message.
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+
+                                    rr_text = ""
+                                    rr_emotes_roles = []
+
+                                    reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                    if reply:
+                                        rr_text = reply.content
+                                        while True:
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         title=f"**Reaction Role Setup**",
+                                                                         description="**Respond with the name or ID "
+                                                                                     f"for the role you'd like to hand "
+                                                                                     f"out to users when they react "
+                                                                                     f"with the indicated emote, or "
+                                                                                     f"respond Done to finish the "
+                                                                                     f"setup.**",
+                                                                         color=0x08d5f7,
+                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                            if "done" in str(reply.content.lower()):
+                                                await reply.delete()
+                                                await pogsetupid.delete()
+                                                break
+                                            rr_role = reply.content
+
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         title=f"**Reaction Role Setup**",
+                                                                         description="**Respond with an emote to "
+                                                                                     "associate with that role.**",
+                                                                         color=0x08d5f7,
+                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
+                                            await reply.delete()
+                                            reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                            rr_emote = reply.content
+                                            rr_emotes_roles.append((rr_role, rr_emote))
+                                        rr_msg = await send_embed(ctx, send_option=1, description=rr_text,
+                                                                  color=0x08d5f7)
+                                        for emote in rr_emotes_roles:
+                                            await rr_msg.add_reaction(emote[1])
+                                        current_users.remove(ctx.guild.id)
+                                        return
+
+                                elif "delete" in str(reply.content.lower()):
+                                    embededit = await send_embed(ctx, send_option=2,
+                                                                 title=f"**Reaction Role Setup**",
+                                                                 description="Respond with the message id of the "
+                                                                             "reaction role you would like to delete.",
+                                                                 color=0x08d5f7,
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                    # Edit the message.
+                                    await pogsetupid.edit(embed=embededit)
+                                    await reply.delete()
+                                    reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+
+                                    current_users.remove(ctx.guild.id)
+                                    return
+                                elif "back" in str(reply.content.lower()):
+                                    # If it's found then form our embed.
+                                    embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**",
+                                                                 color=0x08d5f7,
+                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                 description="Respond with any menu option to proceed.",
+                                                                 fields=[('Settings', 'Basic server settings.', True),
+                                                                         ('Moderator', "Moderator settings.", True),
+                                                                         ('Reactions', "Setup role reactions.", True),
+                                                                         ('Commands', "Configure custom commands.",
+                                                                          True),
+                                                                         ('Logs', "Enable event logs.", True),
+                                                                         ('Switcher', "Turn on/off commands.", True)])
+                                    # Edit the original message.
+                                    await pogsetupid.edit(embed=embededit)
+                                    # Delete the message.
+                                    await reply.delete()
+                                    break
+
                         # Look for logs in lowercase message.
                         if "log" in str(reply.content.lower()):
                             while True:
@@ -165,7 +279,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                        if "disable" in str(reply.content.lower()):
+                                        elif "disable" in str(reply.content.lower()):
                                             set_all_log_items(ctx.guild.id, "0")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
@@ -176,7 +290,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                if "server" in str(reply.content.lower()):
+                                elif "server" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **server** logs on this "
                                                                              "channel or disable **server** "
@@ -215,7 +329,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                        if "disable" in str(reply.content.lower()):
+                                        elif "disable" in str(reply.content.lower()):
                                             set_log_item(ctx.guild.id, "0", "Join")
                                             set_log_item(ctx.guild.id, "0", "Leave")
                                             set_log_item(ctx.guild.id, "0", "NickChanged")
@@ -231,7 +345,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                if "moderator" in str(reply.content.lower()):
+                                elif "moderator" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **moderator** logs on "
                                                                              "this channel or disable **moderator**"
@@ -268,7 +382,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                        if "disable" in str(reply.content.lower()):
+                                        elif "disable" in str(reply.content.lower()):
                                             set_log_item(ctx.guild.id, "0", "Ban")
                                             set_log_item(ctx.guild.id, "0", "Unban")
                                             set_log_item(ctx.guild.id, "0", "Kick")
@@ -283,7 +397,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                if "message" in str(reply.content.lower()):
+                                elif "message" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **message** logs on "
                                                                              "this channel or disable **message** "
@@ -316,7 +430,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                        if "disable" in str(reply.content.lower()):
+                                        elif "disable" in str(reply.content.lower()):
                                             set_log_item(ctx.guild.id, '0', "Edit")
                                             set_log_item(ctx.guild.id, '0', "Delete")
                                             set_log_item(ctx.guild.id, '0', "BulkDelete")
@@ -329,7 +443,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                if "role" in str(reply.content.lower()):
+                                elif "role" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **role** logs on this "
                                                                              "channel or disable **role** logs on"
@@ -366,7 +480,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                        if "disable" in str(reply.content.lower()):
+                                        elif "disable" in str(reply.content.lower()):
                                             set_log_item(ctx.guild.id, "0", "RoleMade")
                                             set_log_item(ctx.guild.id, "0", "RoleDelete")
                                             set_log_item(ctx.guild.id, "0",  "RoleUpdated")
@@ -381,7 +495,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                if "voice" in str(reply.content.lower()):
+                                elif "voice" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **voice** logs on this "
                                                                              "channel or disable **voice logs on "
@@ -414,7 +528,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-                                        if "disable" in str(reply.content.lower()):
+                                        elif "disable" in str(reply.content.lower()):
                                             set_log_item(ctx.guild.id, "0", "JoinVC")
                                             set_log_item(ctx.guild.id, "0", "LeaveVC")
                                             set_log_item(ctx.guild.id, "0", "MovedVC")
@@ -454,7 +568,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                                                          "you'd like to edit.", color=0x08d5f7,
                                                              thumbnail='https://i.imgur.com/rYKYpDw.png',
                                                              fields=[('Respond with',
-                                                                      "**channel**, **dm**, **role** or **back**",
+                                                                      "**channel**, **dm**, **role**, or **back**",
                                                                       True)])
                                 # Edit the message.
                                 await pogsetupid.edit(embed=embededit)
