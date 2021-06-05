@@ -8,7 +8,7 @@ from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_prefix, set_welcome_message, \
     set_welcome_dm_message, set_welcome_role, set_welcome_card, \
     set_welcome_channel, reset_welcome_message, set_global_welcomeimg, \
-    set_global_bannercolor, set_global_bgcolor, check_global_user
+    set_global_bannercolor, set_global_bgcolor, check_global_user, set_log_item, set_all_log_items
 
 current_users = set()
 
@@ -109,7 +109,8 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                 if "all" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **all** logs on this "
-                                                                             "channel:\n\n "
+                                                                             "channel or disable **all** logs on "
+                                                                             "**all** channels:\n\n"
                                                                              "__Server Actions__\n"
                                                                              "Joins\n"
                                                                              "Leaves\n"
@@ -154,6 +155,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                     reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
                                     if reply:
                                         if "enable" in str(reply.content.lower()):
+                                            set_all_log_items(ctx.guild.id, ctx.channel.id)
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Set all '
@@ -164,20 +166,21 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             current_users.remove(ctx.guild.id)
                                             return
                                         if "disable" in str(reply.content.lower()):
+                                            set_all_log_items(ctx.guild.id, "0")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Removed all '
-                                                                                     f'event logs from this channel.**',
+                                                                                     f'event logs from all channels.**',
                                                                          color=0x08d5f7)
                                             await pogsetupid.edit(embed=embededit)
                                             await reply.delete()
                                             current_users.remove(ctx.guild.id)
                                             return
-
                                 if "server" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **server** logs on this "
-                                                                             "channel:\n\n "
+                                                                             "channel or disable **server** "
+                                                                             "logs on all channels:\n\n"
                                                                              "__Server Actions__\n"
                                                                              "Joins\n"
                                                                              "Leaves\n"
@@ -197,6 +200,12 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                     reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
                                     if reply:
                                         if "enable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Join")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Leave")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "NickChanged")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Invites")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "ChanMade")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "ChanDelete")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Set server '
@@ -207,10 +216,16 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             current_users.remove(ctx.guild.id)
                                             return
                                         if "disable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, "0", "Join")
+                                            set_log_item(ctx.guild.id, "0", "Leave")
+                                            set_log_item(ctx.guild.id, "0", "NickChanged")
+                                            set_log_item(ctx.guild.id, "0", "Invites")
+                                            set_log_item(ctx.guild.id, "0", "ChanMade")
+                                            set_log_item(ctx.guild.id, "0", "ChanDelete")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Removed server '
-                                                                                     f'event logs from this channel.**',
+                                                                                     f'event logs from all channels.**',
                                                                          color=0x08d5f7)
                                             await pogsetupid.edit(embed=embededit)
                                             await reply.delete()
@@ -219,8 +234,8 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                 if "moderator" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **moderator** logs on "
-                                                                             "this "
-                                                                             "channel:\n\n "
+                                                                             "this channel or disable **moderator**"
+                                                                             "logs on all channels:\n\n"
                                                                              "__Moderator Actions__\n"
                                                                              "Bans\n"
                                                                              "Unbans\n"
@@ -239,6 +254,11 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                     reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
                                     if reply:
                                         if "enable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Ban")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Unban")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Kick")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Warn")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Mute")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Set moderator '
@@ -249,10 +269,15 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             current_users.remove(ctx.guild.id)
                                             return
                                         if "disable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, "0", "Ban")
+                                            set_log_item(ctx.guild.id, "0", "Unban")
+                                            set_log_item(ctx.guild.id, "0", "Kick")
+                                            set_log_item(ctx.guild.id, "0", "Warn")
+                                            set_log_item(ctx.guild.id, "0", "Mute")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Removed moderator '
-                                                                                     f'event logs from this channel.**',
+                                                                                     f'event logs from all channels.**',
                                                                          color=0x08d5f7)
                                             await pogsetupid.edit(embed=embededit)
                                             await reply.delete()
@@ -261,7 +286,8 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                 if "message" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **message** logs on "
-                                                                             "this channel:\n\n "
+                                                                             "this channel or disable **message** "
+                                                                             "logs on all channels:\n\n"
                                                                              "__Message Actions__\n"
                                                                              "Edits\n"
                                                                              "Deletes\n"
@@ -278,6 +304,9 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                     reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
                                     if reply:
                                         if "enable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Edit")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "Delete")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "BulkDelete")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Set message '
@@ -288,10 +317,13 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             current_users.remove(ctx.guild.id)
                                             return
                                         if "disable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, '0', "Edit")
+                                            set_log_item(ctx.guild.id, '0', "Delete")
+                                            set_log_item(ctx.guild.id, '0', "BulkDelete")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Removed message '
-                                                                                     f'event logs from this channel.**',
+                                                                                     f'event logs from all channels.**',
                                                                          color=0x08d5f7)
                                             await pogsetupid.edit(embed=embededit)
                                             await reply.delete()
@@ -300,7 +332,8 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                 if "role" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **role** logs on this "
-                                                                             "channel:\n\n "
+                                                                             "channel or disable **role** logs on"
+                                                                             "all channels:\n\n"
                                                                              "__Role Actions__\n"
                                                                              "Roles Made\n"
                                                                              "Roles Deleted\n"
@@ -319,6 +352,11 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                     reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
                                     if reply:
                                         if "enable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "RoleMade")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "RoleDelete")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "RoleUpdated")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "RoleGiven")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "RoleRemoved")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Set role '
@@ -329,10 +367,15 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             current_users.remove(ctx.guild.id)
                                             return
                                         if "disable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, "0", "RoleMade")
+                                            set_log_item(ctx.guild.id, "0", "RoleDelete")
+                                            set_log_item(ctx.guild.id, "0",  "RoleUpdated")
+                                            set_log_item(ctx.guild.id, "0",  "RoleGiven")
+                                            set_log_item(ctx.guild.id, "0", "RoleRemoved")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Removed role '
-                                                                                     f'event logs from this channel.**',
+                                                                                     f'event logs from all channels.**',
                                                                          color=0x08d5f7)
                                             await pogsetupid.edit(embed=embededit)
                                             await reply.delete()
@@ -341,7 +384,8 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                 if "voice" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Logs Setup**",
                                                                  description="This will enable **voice** logs on this "
-                                                                             "channel:\n\n "
+                                                                             "channel or disable **voice logs on "
+                                                                             "all channels:\n\n"
                                                                              "__Voice Actions__\n"
                                                                              "Joined VC\n"
                                                                              "Left VC\n"
@@ -358,6 +402,9 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                     reply = await self.bot.wait_for('message', timeout=20, check=checkAuthor)
                                     if reply:
                                         if "enable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "JoinVC")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "LeaveVC")
+                                            set_log_item(ctx.guild.id, ctx.channel.id, "MovedVC")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Set voice '
@@ -368,10 +415,13 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             current_users.remove(ctx.guild.id)
                                             return
                                         if "disable" in str(reply.content.lower()):
+                                            set_log_item(ctx.guild.id, "0", "JoinVC")
+                                            set_log_item(ctx.guild.id, "0", "LeaveVC")
+                                            set_log_item(ctx.guild.id, "0", "MovedVC")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
                                                                                      f'> **Removed voice '
-                                                                                     f'event logs from this channel.**',
+                                                                                     f'event logs from all channels.**',
                                                                          color=0x08d5f7)
                                             await pogsetupid.edit(embed=embededit)
                                             await reply.delete()

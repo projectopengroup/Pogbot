@@ -247,6 +247,82 @@ def get_welcome_channel(serverid):
     return data
 
 
+def check_log_item(serverid):
+    conn = sqlite3.connect('prefs.db')
+    conn.text_factory = str
+    cur = conn.cursor()
+    cur.execute(f'SELECT ServerID FROM logs WHERE ServerID={serverid}')
+    data = cur.fetchone()
+    Serverd = data
+    # Join Leave Ban Unban Edit Delete BulkDelete ChanMade ChanDelete RoleMade RoleDelete RoleUpdated RoleGiven
+    # RoleRemoved NickChanged ModCmdUsed JoinVC LeaveVC MovedVC Invites Mute Kick Warn 23
+    if str(Serverd) == "None":
+        prefs_query = f"""INSERT INTO logs
+                                 (ServerID, 'Join', Leave, Ban, Unban, Edit, 'Delete', BulkDelete, ChanMade, ChanDelete, 
+                                 RoleMade, RoleDelete, RoleUpdated, RoleGiven, RoleRemoved, NickChanged, ModCmdUsed, 
+                                 JoinVC, LeaveVC, MovedVC, Invites, Mute, Kick, Warn)
+                                  VALUES 
+                                 ('{serverid}', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) """
+        cur.execute(prefs_query)
+        conn.commit()
+        conn.close()
+
+
+def get_log_item(serverid, logitem):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    # Join Leave Ban Unban Edit Delete BulkDelete ChanMade ChanDelete RoleMade RoleDelete RoleUpdated RoleGiven
+    # RoleRemoved NickChanged JoinVC LeaveVC MovedVC Invites Mute Kick Warn
+    cur.execute(f"SELECT '{logitem}' FROM logs WHERE ServerID={serverid}")
+    data = cur.fetchone()
+    data = data[0]
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_log_item(serverid, channelid, logitem):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    # Join Leave Ban Unban Edit Delete BulkDelete ChanMade ChanDelete RoleMade RoleDelete RoleUpdated RoleGiven
+    # RoleRemoved NickChanged JoinVC LeaveVC MovedVC Invites Mute Kick Warn
+    cur.execute(f"UPDATE logs SET '{logitem}' = '{channelid}' WHERE ServerID = '{serverid}'")
+    conn.commit()
+    conn.close()
+
+
+def set_all_log_items(serverid, channelid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    # Join Leave Ban Unban Edit Delete BulkDelete ChanMade ChanDelete RoleMade RoleDelete RoleUpdated RoleGiven
+    # RoleRemoved NickChanged JoinVC LeaveVC MovedVC Invites Mute Kick Warn
+    cur.execute(f"UPDATE logs SET 'Join' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Leave' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Ban' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Unban' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Edit' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Delete' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'BulkDelete' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'ChanMade' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'ChanDelete' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'RoleMade' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'RoleDelete' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'RoleUpdated' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'RoleGiven' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'RoleRemoved' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'NickChanged' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'JoinVC' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'LeaveVC' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'MovedVC' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Invites' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Mute' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Kick' = '{channelid}' WHERE ServerID = '{serverid}'")
+    cur.execute(f"UPDATE logs SET 'Warn' = '{channelid}' WHERE ServerID = '{serverid}'")
+
+    conn.commit()
+    conn.close()
+
+
 # Global user settings start here, please keep the other settings out of this half of the file ###########
 # GLOBAL USER SETTINGS ###################################################################################
 def check_global_user(userid):
@@ -261,7 +337,7 @@ def check_global_user(userid):
                                  (UserID, WelcomeImage, UserDarkColor, UserLightColor, ProfileImage, NicknameHistory, 
                                  Currency, Blacklisted)
                                   VALUES 
-                                 ('{userid}', 'None', 'None', 'None', 'None', 'None', '0', 0) """
+                                 ('{userid}', 'None', 'None', 'None', 'None', 'None', 0, 0) """
         cur.execute(prefs_query)
         conn.commit()
         conn.close()
@@ -322,3 +398,5 @@ def get_global_welcomeimg(userid):
     conn.commit()
     conn.close()
     return data
+# Global user settings end here, please keep the other settings out of this half of the file ###########
+# GLOBAL USER SETTINGS ###################################################################################

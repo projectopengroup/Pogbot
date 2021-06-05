@@ -3,7 +3,7 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
-    get_welcome_role
+    get_welcome_role, check_log_item
 import os
 import requests
 from discord.utils import get
@@ -112,6 +112,7 @@ class Events(commands.Cog):
             # if it is a bot then return the code from here without going further.
             return
         check_global_user(msg.author.id)
+        check_log_item(msg.author.guild.id)
         # Check if the message channel contains the word direct message
         if "Direct Message" in str(msg.channel):
 
