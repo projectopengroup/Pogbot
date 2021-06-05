@@ -40,8 +40,7 @@ async def get_prefix(client, message):
             # It will only run this once, because only once will it not find the prefix, because we set it here.
             prefs_query = f"""INSERT INTO servers
                                      (ServerID, Prefix, MutedRole, ModRoles, EditLogs, DeleteLogs, JoinLogs, LeaveLogs, 
-                                     WarnLogs, KickLogs, BanLogs, MuteLogs, Welcome, WelcomeDM, WelcomeRole, 
-                                     WelcomeCard, WelcomeChannel)
+                                     WarnLogs, KickLogs, BanLogs, MuteLogs, Welcome, WelcomeDM, WelcomeRole, WelcomeCard, WelcomeChannel)
                                       VALUES 
                                      ('{message.guild.id}', '!', 'None', 'None', 0, 0, 0, 0, 0, 0, 0, 0, 'None', 
                                      'None', 'None', 0, 0) """
