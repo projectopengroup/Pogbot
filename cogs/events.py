@@ -141,7 +141,7 @@ class Events(commands.Cog):
                     nickname = after.nick
                     if "None" in str(nickname):
                         nickname = "Removed Nickname"
-                    await send_embed(channel, send_option=0, author=f"{before} changed nicknames.",
+                    await send_embed(channel, send_option=0, author=f"{before} changed nickname.",
                                      author_pfp=before.avatar_url, color=0xb9ff6e,
                                      description=f"**Nickname event for** {before.mention}",
                                      fields=[('User', f"{before}", False),
@@ -167,20 +167,21 @@ class Events(commands.Cog):
     async def on_user_update(self, before, after):
         if before.name != after.name:
             for g_guild in before.mutual_guilds:
-                NickChannelID = get_log_item(g_guild.id, "NickChanged")
-                if NickChannelID != 0:
-                    if before != "":
-                        channel = self.bot.get_channel(NickChannelID)
-                        membercreated = str(before.created_at.strftime("%b %d, %Y"))
-                        await send_embed(channel, send_option=0, author=f"{before} changed usernames.",
-                                         author_pfp=before.avatar_url, color=0xfa7a2f,
-                                         description=f"**Username event for** {before.mention}",
-                                         fields=[('User before', f"{before.name}\n{before}", True),
-                                                 ('**User now**', f"**{after.name}**\n**{after}**", True),
-                                                 ('User ID', f"{before.id}", False),
-                                                 ('Account Created', f"{membercreated}", True)],
-                                         timestamp=(datetime.utcnow()),
-                                         footer=f"Changed Username")
+                if g_guild.id != 0:
+                    NickChannelID = get_log_item(g_guild.id, "NickChanged")
+                    if NickChannelID != 0:
+                        if before != "":
+                            channel = self.bot.get_channel(NickChannelID)
+                            membercreated = str(before.created_at.strftime("%b %d, %Y"))
+                            await send_embed(channel, send_option=0, author=f"{before} changed username.",
+                                             author_pfp=before.avatar_url, color=0xfa7a2f,
+                                             description=f"**Username event for** {before.mention}",
+                                             fields=[('User before', f"{before.name}\n{before}", True),
+                                                     ('**User now**', f"**{after.name}**\n**{after}**", True),
+                                                     ('User ID', f"{before.id}", False),
+                                                     ('Account Created', f"{membercreated}", True)],
+                                             timestamp=(datetime.utcnow()),
+                                             footer=f"Changed Username")
                 print(f"[{before} changed username to {after}")
             if before.avatar != after.avatar:
                 return

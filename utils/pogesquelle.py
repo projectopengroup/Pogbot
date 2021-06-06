@@ -275,7 +275,10 @@ def get_log_item(serverid, logitem):
     # RoleRemoved NickChanged JoinVC LeaveVC MovedVC Invites Mute Kick Warn
     cur.execute(f"SELECT `{logitem}` FROM logs WHERE ServerID={serverid}")
     data = cur.fetchone()
-    data = data[0]
+    if data:
+        data = data[0]
+    else:
+        data = 0
     conn.commit()
     conn.close()
     return data
