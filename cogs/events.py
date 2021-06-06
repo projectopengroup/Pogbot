@@ -256,39 +256,38 @@ class Events(commands.Cog):
     async def on_message(self, msg):
         if isinstance(msg.author, discord.member.User):
             print(f"Non-Member Event Detected: {msg.author}")
+            # Check if the message channel contains the word direct message
+            if "Direct Message" in str(msg.channel):
+
+                if "add" in msg.content:
+                    # https://discord.com/api/oauth2/authorize?client_id=843272975771631616&permissions=0&scope=bot
+                    await send_embed(msg.channel, send_option=0, title=f"**Click here to add Pogbot to your server**",
+                                     url="https://discord.com/api/oauth2/authorize?client_id=843272975771631616"
+                                         "&permissions=4294967287&scope=bot",
+                                     description="The default prefix is ! \n Run the command !setup once added to "
+                                                 "get started.", color=0x08d5f7)
+                # If any of the IDs match Mag, Cheetah, or Jonny then
+                if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
+                    # Look for the text "reboot" in the message
+                    if "reboot" in msg.content:
+                        # reboot has been found so go ahead and run the update command, and then quit the script.
+                        print("Reboot Command Accepted.")
+                        # go back a dir.
+                        os.system('cd ..')
+                        os.system('bash run.sh')
+                        quit()
+                # Print incoming direct messages to terminal.
+                print(f'{msg.channel} - {msg.author} : {msg.content}')
+
+                # Ensure that we process our commands, as on_message overrides and stops command execution.
+                # await bot.process_commands(msg)
+                return
             return
         # Check if the message author is a bot.
         if msg.author.bot:
             # if it is a bot then return the code from here without going further.
             return
         check_global_user(msg.author.id)
-
-        # Check if the message channel contains the word direct message
-        if "Direct Message" in str(msg.channel):
-
-            if "add" in msg.content:
-                # https://discord.com/api/oauth2/authorize?client_id=843272975771631616&permissions=0&scope=bot
-                await send_embed(msg.channel, send_option=0, title=f"**Click here to add Pogbot to your server**",
-                                 url="https://discord.com/api/oauth2/authorize?client_id=843272975771631616"
-                                     "&permissions=4294967287&scope=bot",
-                                 description="The default prefix is ! \n Run the command !setup once added to "
-                                             "get started.", color=0x08d5f7)
-            # If any of the IDs match Mag, Cheetah, or Jonny then
-            if str(msg.author.id) == "421781675727388672" or "171238557417996289" or "293362579709886465":
-                # Look for the text "reboot" in the message
-                if "reboot" in msg.content:
-                    # reboot has been found so go ahead and run the update command, and then quit the script.
-                    print("Reboot Command Accepted.")
-                    # go back a dir.
-                    os.system('cd ..')
-                    os.system('bash run.sh')
-                    quit()
-            # Print incoming direct messages to terminal.
-            print(f'{msg.channel} - {msg.author} : {msg.content}')
-
-            # Ensure that we process our commands, as on_message overrides and stops command execution.
-            # await bot.process_commands(msg)
-            return
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
         check_log_item(msg.author.guild.id)
