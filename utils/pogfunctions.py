@@ -208,3 +208,8 @@ def closest_color(rgb, colors):
         color_diff = sqrt(abs(r - cr) ** 2 + abs(g - cg) ** 2 + abs(b - cb) ** 2)
         color_diffs.append((color_diff, color))
     return min(color_diffs)[1]
+
+
+def diff_lists(before, after):
+    b, a = set(before), set(after)
+    return list(a - b), list(b - a), list(a & b)

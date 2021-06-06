@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils.pogfunctions import send_embed, create_welcome_card
+from utils.pogfunctions import send_embed, create_welcome_card, diff_lists
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
     get_welcome_role, check_log_item, get_log_item
@@ -126,6 +126,64 @@ class Events(commands.Cog):
                                  timestamp=(datetime.utcnow()),
                                  footer=f"Left")
         print(f'{member} left.')
+
+    @commands.Cog.listener()
+    # Look for members leaving.
+    async def on_member_update(self, before, after):
+        user = before
+        if before.nick != after.nick:
+            check_log_item(before.guild.id)
+            NickChannelID = get_log_item(before.guild.id, "NickChanged")
+            if NickChannelID != 0:
+                if before != "":
+                    channel = self.bot.get_channel(NickChannelID)
+                    membercreated = str(before.created_at.strftime("%b %d, %Y"))
+                    nickname = after.nick
+                    if "None" in str(nickname):
+                        nickname = "Removed Nickname"
+                    await send_embed(channel, send_option=0, author=f"{before} changed nicknames.",
+                                     author_pfp=before.avatar_url, color=0xb9ff6e,
+                                     description=f"**Nickname event for** {before.mention}",
+                                     fields=[('User', f"{before}", False),
+                                             ('**Nickname**', f"**{nickname}**", False),
+                                             ('User ID', f"{before.id}", False),
+                                             ('Account Created', f"{membercreated}", True)],
+                                     timestamp=(datetime.utcnow()),
+                                     footer=f"Changed Nickname")
+            print(f"[{before.guild}]{user} changed nickname from {before.nick} to {after.nick}")
+        if before.roles != after.roles:
+            ldiff = diff_lists(before.roles, after.roles)
+            if ldiff[0]:
+                print(f"{user} role was added: {ldiff[0]}")
+            if ldiff[1]:
+                print(f"{user} role was removed: {ldiff[1]}")
+        if before.activity != after.activity:
+            return
+        if before.status != after.status:
+            return
+
+    @commands.Cog.listener()
+    # Look for members leaving.
+    async def on_user_update(self, before, after):
+        if before.name != after.name:
+            for g_guild in before.mutual_guilds:
+                NickChannelID = get_log_item(g_guild.id, "NickChanged")
+                if NickChannelID != 0:
+                    if before != "":
+                        channel = self.bot.get_channel(NickChannelID)
+                        membercreated = str(before.created_at.strftime("%b %d, %Y"))
+                        await send_embed(channel, send_option=0, author=f"{before} changed usernames.",
+                                         author_pfp=before.avatar_url, color=0xfa7a2f,
+                                         description=f"**Username event for** {before.mention}",
+                                         fields=[('User before', f"{before.name}\n{before}", True),
+                                                 ('**User now**', f"**{after.name}**\n**{after}**", True),
+                                                 ('User ID', f"{before.id}", False),
+                                                 ('Account Created', f"{membercreated}", True)],
+                                         timestamp=(datetime.utcnow()),
+                                         footer=f"Changed Username")
+                print(f"[{before} changed username to {after}")
+            if before.avatar != after.avatar:
+                return
 
     @commands.Cog.listener()
     # Look for members editing messages.
