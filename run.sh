@@ -10,6 +10,7 @@ rm -rf ./cogs/madden.py
 rm -rf ./cogs/moderator.py
 rm -rf ./cogs/music.py
 rm -rf ./cogs/config.py
+rm -rf ./cogs/commanderrorhandler.py
 rm -rf ./utils/pogesquelle.py
 rm -rf ./utils/pogfunctions.py
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/index.py
@@ -23,6 +24,7 @@ wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/cogs/madden.
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/cogs/moderator.py
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/cogs/music.py
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/cogs/config.py
+wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/cogs/commanderrorhandler.py
 cd ..
 cd utils
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/utils/pogesquelle.py
