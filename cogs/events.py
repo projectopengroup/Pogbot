@@ -149,7 +149,6 @@ class Events(commands.Cog):
                                  timestamp=(datetime.utcnow()),
                                  footer=f"Role updated")
 
-
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
         print(f'{role} was deleted.')
@@ -172,7 +171,6 @@ class Events(commands.Cog):
                                          ('Permissions', f"{role.permissions}", True)],
                                  timestamp=(datetime.utcnow()),
                                  footer=f"Role deleted")
-
 
     @commands.Cog.listener()
     # Look for members leaving.
@@ -224,8 +222,44 @@ class Events(commands.Cog):
         if before.roles != after.roles:
             ldiff = diff_lists(before.roles, after.roles)
             if ldiff[0]:
+                RolesAddedID = get_log_item(before.guild.id, "RoleGiven")
+                if RolesAddedID != 0:
+                    if before != "":
+                        channel = self.bot.get_channel(RolesAddedID)
+                        RoleName = str(ldiff[0])
+                        RoleID = str(ldiff[0])
+                        RoleName = RoleName.split("name='")[1].split("'>")[0]
+                        RoleID = RoleID.split("Role id=")[1].split(" name=")[0]
+                        RoleMention = discord.utils.get(before.guild.roles, name=RoleName)
+                        await send_embed(channel, send_option=0, author=f"{before} received a role.",
+                                         author_pfp=before.avatar_url, color=0x7aff97,
+                                         description=f"**Role** {RoleMention.mention} was given.",
+                                         fields=[('Role', f"{RoleName}", True),
+                                                 ('ID', f"{RoleID}", True),
+                                                 ('User', f"{before}", False),
+                                                 ('UserID', f"{before.id}", True)],
+                                         timestamp=(datetime.utcnow()),
+                                         footer=f"Role received")
                 print(f"{user} role was added: {ldiff[0]}")
             if ldiff[1]:
+                RolesRemovedID = get_log_item(before.guild.id, "RoleRemoved")
+                if RolesRemovedID != 0:
+                    if before != "":
+                        channel = self.bot.get_channel(RolesRemovedID)
+                        RoleName = str(ldiff[1])
+                        RoleID = str(ldiff[1])
+                        RoleName = RoleName.split("name='")[1].split("'>")[0]
+                        RoleID = RoleID.split("Role id=")[1].split(" name=")[0]
+                        RoleMention = discord.utils.get(before.guild.roles, name=RoleName)
+                        await send_embed(channel, send_option=0, author=f"{before} lost a role.",
+                                         author_pfp=before.avatar_url, color=0xffce7a,
+                                         description=f"**Role** {RoleMention.mention} was removed.",
+                                         fields=[('Role', f"{RoleName}", True),
+                                                 ('ID', f"{RoleID}", True),
+                                                 ('User', f"{before}", False),
+                                                 ('UserID', f"{before.id}", True)],
+                                         timestamp=(datetime.utcnow()),
+                                         footer=f"Role removed")
                 print(f"{user} role was removed: {ldiff[1]}")
         if before.activity != after.activity:
             return
@@ -359,7 +393,8 @@ class Events(commands.Cog):
                                          timestamp=after.edited_at,
                                          footer=f"Edited")
 
-            print(f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
+            print(
+                f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
 
     @commands.Cog.listener()
     # Look for members deleting messages.
