@@ -177,7 +177,7 @@ class Events(commands.Cog):
                                              author_pfp=before.avatar_url, color=0xfa7a2f,
                                              description=f"**Username event for** {before.mention}",
                                              fields=[('User before', f"{before}", True),
-                                                     ('**User now**', f"**{after}**", True),
+                                                     ('User now', f"**{after}**", True),
                                                      ('User ID', f"{before.id}", False),
                                                      ('Account Created', f"{membercreated}", True)],
                                              timestamp=(datetime.utcnow()),
