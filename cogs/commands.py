@@ -151,14 +151,30 @@ class Commands(commands.Cog, name="Commands"):
         if username == nickname:
             nickname = "None"
 
+        # Get's user's status
+        userStatus = str(user.status).title()
+        if userStatus == "Dnd":
+            userStatus = "Do not disturb"
+
+        # Gets user's roles, excludes the @everyone role, and puts it in a string
+        foundRoles = []
+        for role in user.roles:
+            if role.name != "@everyone":
+                foundRoles.append(role.mention)
+
+        foundRoles.reverse()
+        userRoles = " ".join(foundRoles)
+
         # Creates and sends an embed with various user info by adding them as fields. When getting dates, the format
         # as to be converted so that it is easier to read.
-        await send_embed(ctx, title=f"**{username}**", thumbnail=user.avatar_url,
+        await send_embed(ctx, author=f"{username}", author_pfp=user.avatar_url, thumbnail=user.avatar_url,
                          fields=[(f'**Username:**', usernameFull, True), (f'**Nickname:**', nickname, True),
                                  (f'**User ID:**', str(user.id), True),
                                  (f'**Registered:**', str(user.created_at.strftime("%b %d, %Y")), True),
                                  (f'**Joined Server:**', str(user.joined_at.strftime("%b %d, %Y")), True),
-                                 (f'**Is Bot:**', isBot, True)],
+                                 (f'**Is Bot:**', isBot, True),
+                                 (f'**Status:**', userStatus, True),
+                                 (f'**Roles:**', userRoles, True)],
                          color=0x08d5f7)
 
     @commands.command(name='qr', brief='Responds with a QR code.',

@@ -25,7 +25,7 @@ from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get
 async def send_embed(ctx, send_option=0, title=None, description=None, author=None, author_pfp=None,
                      color=discord.Colour.default(), timestamp=None, footer=None, thumbnail=None, image=None, url=None,
                      fields=None):
-    if title is None and description is None:
+    if title is None and description is None and author is None:
         print("[Error]: Error creating embed. No title or description specified.")
     else:
         # Initializes new_embed variable
