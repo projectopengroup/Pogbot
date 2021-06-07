@@ -174,7 +174,56 @@ class Events(commands.Cog):
                                  footer=f"Role deleted")
 
     @commands.Cog.listener()
-    # Look for members leaving.
+    async def on_voice_state_update(self, member, before, after):
+        print(f'{member} {before.channel} - {after.channel}')
+        if str(before.channel) == "None":
+            print(f"Joined VC to {after.channel}")
+            JoinVCChannelID = get_log_item(member.guild.id, "JoinVC")
+            if JoinVCChannelID != 0:
+                if member != "":
+                    channel = self.bot.get_channel(JoinVCChannelID)
+                    await send_embed(channel, send_option=0, author=f"{member} joined a voice channel.",
+                                     author_pfp=member.avatar_url, color=0x42f595,
+                                     description=f"**{member.mention}** joined voice channel {after.channel.mention}.",
+                                     fields=[('Channel', f"{after.channel}", True),
+                                             ('ID', f"{after.channel.id}", True)],
+                                     timestamp=(datetime.utcnow()),
+                                     footer=f"Joined voice")
+            return
+        if str(after.channel) == "None":
+            print(f"{member} left VC")
+            LeftVCChannelID = get_log_item(member.guild.id, "LeaveVC")
+            if LeftVCChannelID != 0:
+                if member != "":
+                    channel = self.bot.get_channel(LeftVCChannelID)
+                    await send_embed(channel, send_option=0, author=f"{member} left voice.",
+                                     author_pfp=member.avatar_url, color=0xf54242,
+                                     description=f"**{member.mention}** left voice channel {before.channel.mention}.",
+                                     fields=[('Channel', f"{before.channel}", True),
+                                             ('ID', f"{before.channel.id}", True)],
+                                     timestamp=(datetime.utcnow()),
+                                     footer=f"Left voice")
+            return
+        if after.channel != before.channel:
+            print(f"User Moved Channels to {after.channel}")
+            MovedVCChannelID = get_log_item(member.guild.id, "MovedVC")
+            if MovedVCChannelID != 0:
+                if member != "":
+                    channel = self.bot.get_channel(MovedVCChannelID)
+                    await send_embed(channel, send_option=0, author=f"{member} moved in voice.",
+                                     author_pfp=member.avatar_url, color=0xffd64f,
+                                     description=f"**{member.mention}** moved from voice "
+                                                 f"channel {before.channel.mention} to {after.channel.mention}.",
+                                     fields=[('Came from', f"{before.channel}", False),
+                                             ('ID', f"{before.channel.id}", True),
+                                             ('Went to', f"{after.channel}", False),
+                                             ('ID', f"{after.channel.id}", True)],
+                                     timestamp=(datetime.utcnow()),
+                                     footer=f"Moved voice")
+            return
+
+
+    @commands.Cog.listener()
     async def on_member_remove(self, member):
         check_log_item(member.guild.id)
         LeaveChannelID = get_log_item(member.guild.id, "Leave")
