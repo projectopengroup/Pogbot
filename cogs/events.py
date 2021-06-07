@@ -105,6 +105,76 @@ class Events(commands.Cog):
             return
 
     @commands.Cog.listener()
+    async def on_guild_role_create(self, role):
+        check_log_item(role.guild.id)
+        RolesCreateChannelID = get_log_item(role.guild.id, "RoleMade")
+        if RolesCreateChannelID != 0:
+            if role != "":
+                channel = self.bot.get_channel(RolesCreateChannelID)
+                rolecreated = str(role.created_at.strftime("%b %d, %Y"))
+                await send_embed(channel, send_option=0, author=f"{role.guild} role created.",
+                                 author_pfp=role.guild.icon_url, color=0x5c7aff,
+                                 description=f"**Role** {role.mention} was created.",
+                                 fields=[('Role', f"{role}", True),
+                                         ('ID', f"{role.id}", True),
+                                         ('Color', f"{role.color}", True),
+                                         ('Managed', f"{role.managed}", True),
+                                         ('Position', f"{role.position}", True),
+                                         ('Tags', f"{role.tags}", True),
+                                         ('Mentionable', f"{role.mentionable}", True),
+                                         ('Permissions Wrap', f"{role.permissions}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Role created")
+        print(f'{role} was created.')
+
+    @commands.Cog.listener()
+    async def on_guild_role_update(self, before, after):
+        print(f'{after} was updated.')
+        check_log_item(before.guild.id)
+        RolesUpdateChannelID = get_log_item(before.guild.id, "RoleUpdated")
+        if RolesUpdateChannelID != 0:
+            if before != "":
+                channel = self.bot.get_channel(RolesUpdateChannelID)
+                await send_embed(channel, send_option=0, author=f"{before.guild} role updated.",
+                                 author_pfp=before.guild.icon_url, color=0xfff959,
+                                 description=f"**Role** {after.mention} was updated.",
+                                 fields=[('Role', f"{after}", True),
+                                         ('ID', f"{after.id}", True),
+                                         ('Color', f"{after.color}", True),
+                                         ('Managed', f"{after.managed}", True),
+                                         ('Position', f"{after.position}", True),
+                                         ('Tags', f"{after.tags}", True),
+                                         ('Mentionable', f"{after.mentionable}", True),
+                                         ('Permissions Wrap', f"{after.permissions}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Role updated")
+
+
+    @commands.Cog.listener()
+    async def on_guild_role_delete(self, role):
+        print(f'{role} was deleted.')
+        check_log_item(role.guild.id)
+        RolesDeleteChannelID = get_log_item(role.guild.id, "RoleDelete")
+        if RolesDeleteChannelID != 0:
+            if role != "":
+                channel = self.bot.get_channel(RolesDeleteChannelID)
+                rolecreated = str(role.created_at.strftime("%b %d, %Y"))
+                await send_embed(channel, send_option=0, author=f"{role.guild} role deleted.",
+                                 author_pfp=role.guild.icon_url, color=0xff5c5c,
+                                 description=f"**Role** **{role}** was deleted.",
+                                 fields=[('Role', f"{role}", True),
+                                         ('ID', f"{role.id}", True),
+                                         ('Color', f"{role.color}", True),
+                                         ('Managed', f"{role.managed}", True),
+                                         ('Position', f"{role.position}", True),
+                                         ('Tags', f"{role.tags}", True),
+                                         ('Mentionable', f"{role.mentionable}", True),
+                                         ('Permissions', f"{role.permissions}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Role deleted")
+
+
+    @commands.Cog.listener()
     # Look for members leaving.
     async def on_member_remove(self, member):
         check_log_item(member.guild.id)
