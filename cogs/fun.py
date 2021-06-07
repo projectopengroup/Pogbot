@@ -34,16 +34,43 @@ class Fun(commands.Cog, name="Fun Stuff"):
     @commands.command(name='joke', aliases=['jokes'], brief='Tells a joke.', description='Tells a random joke.')
     # Look for a command called joke
     async def joke(self, ctx, joke_type="Any"):
+        # Chooses a random api. If the user specified a programming joke, then it only chooses randomly from the APIs
+        # that have programming jokes (which are the first 2)
         if "pro" in joke_type:
-            joke_type = "Programming"
+            api_choice = random.randint(0, 1)
         else:
-            joke_type = "Any"
-        request = requests.get(url=f'https://v2.jokeapi.dev/joke/{joke_type}?blacklistFlags=political,racist,sexist')
-        joke = request.json()
-        if "joke" in joke:
-            await send_embed(ctx, title=str(joke["joke"]), color=0x08d5f7)
-        else:
-            await send_embed(ctx, title=str(joke["setup"]), description=str(joke["delivery"]), color=0x08d5f7)
+            api_choice = random.randint(0, 3)
+
+        # Finds the chosen api, gets a random joke, and sends it.
+        if api_choice == 0:
+            if "pro" in joke_type:
+                joke_type = "Programming"
+            else:
+                joke_type = "Any"
+            request = requests.get(url=f'https://v2.jokeapi.dev/joke/{joke_type}?blacklistFlags=political,racist,sexist')
+            joke = request.json()
+            if "joke" in joke:
+                await send_embed(ctx, description=str(joke["joke"]), color=0x08d5f7)
+            else:
+                await send_embed(ctx, title=str(joke["setup"]), description=str(joke["delivery"]), color=0x08d5f7)
+        elif api_choice == 1:
+            if "pro" in joke_type:
+                request = requests.get(url='https://official-joke-api.appspot.com/jokes/programming/random')
+                joke = request.json()
+                await send_embed(ctx, title=str(joke[0]["setup"]), description=str(joke[0]["punchline"]), color=0x08d5f7)
+            else:
+                request = requests.get(url='https://official-joke-api.appspot.com/random_joke')
+                joke = request.json()
+                await send_embed(ctx, title=str(joke["setup"]), description=str(joke["punchline"]), color=0x08d5f7)
+        elif api_choice == 2:
+            request = requests.get(url='https://yomomma-api.herokuapp.com/jokes')
+            joke = request.json()
+            await send_embed(ctx, description=str(joke["joke"]), color=0x08d5f7)
+        elif api_choice == 3:
+            print("This one.")
+            request = requests.get(url='https://icanhazdadjoke.com/', headers={"Accept": "application/json"})
+            joke = request.json()
+            await send_embed(ctx, description=str(joke["joke"]), color=0x08d5f7)
 
     @commands.command(name='idea', aliases=['bored', 'activity'], brief='Suggests an activity.',
                       description="Suggests an activity for you to do when you're bored.")
