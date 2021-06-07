@@ -129,25 +129,26 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before, after):
-        print(f'{after} was updated.')
-        check_log_item(before.guild.id)
-        RolesUpdateChannelID = get_log_item(before.guild.id, "RoleUpdated")
-        if RolesUpdateChannelID != 0:
-            if before != "":
-                channel = self.bot.get_channel(RolesUpdateChannelID)
-                await send_embed(channel, send_option=0, author=f"{before.guild} role updated.",
-                                 author_pfp=before.guild.icon_url, color=0xfff959,
-                                 description=f"**Role** {after.mention} was updated.",
-                                 fields=[('Role', f"{after}", True),
-                                         ('ID', f"{after.id}", True),
-                                         ('Color', f"{after.color}", True),
-                                         ('Managed', f"{after.managed}", True),
-                                         ('Position', f"{after.position}", True),
-                                         ('Tags', f"{after.tags}", True),
-                                         ('Mentionable', f"{after.mentionable}", True),
-                                         ('Permissions Wrap', f"{after.permissions}", True)],
-                                 timestamp=(datetime.utcnow()),
-                                 footer=f"Role updated")
+        if after.position == before.position:
+            print(f'{after} was updated.')
+            check_log_item(before.guild.id)
+            RolesUpdateChannelID = get_log_item(before.guild.id, "RoleUpdated")
+            if RolesUpdateChannelID != 0:
+                if before != "":
+                    channel = self.bot.get_channel(RolesUpdateChannelID)
+                    await send_embed(channel, send_option=0, author=f"{before.guild} role updated.",
+                                     author_pfp=before.guild.icon_url, color=0xfff959,
+                                     description=f"**Role** {after.mention} was updated.",
+                                     fields=[('Role', f"{after}", True),
+                                             ('ID', f"{after.id}", True),
+                                             ('Color', f"{after.color}", True),
+                                             ('Managed', f"{after.managed}", True),
+                                             ('Position', f"{after.position}", True),
+                                             ('Tags', f"{after.tags}", True),
+                                             ('Mentionable', f"{after.mentionable}", True),
+                                             ('Permissions Wrap', f"{after.permissions}", True)],
+                                     timestamp=(datetime.utcnow()),
+                                     footer=f"Role updated")
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
