@@ -258,37 +258,38 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members editing messages.
     async def on_message_edit(self, before, after):
-        if isinstance(before.author, discord.member.User):
-            print(f"Non-Member Event Detected: {before.author}")
-            return
-        if isinstance(before.channel, discord.channel.DMChannel):
-            print("Direct Message Detected..")
-        if isinstance(before.author, discord.member.Member):
-            EditChannelID = get_log_item(before.author.guild.id, "Edit")
-            if EditChannelID != 0:
-                if before.content != "":
-                    channel = self.bot.get_channel(EditChannelID)
-                    msgbefore = before.clean_content
-                    msgafter = after.clean_content
+        if before.clean_content != after.clean_content:
+            if isinstance(before.author, discord.member.User):
+                print(f"Non-Member Event Detected: {before.author}")
+                return
+            if isinstance(before.channel, discord.channel.DMChannel):
+                print("Direct Message Detected..")
+            if isinstance(before.author, discord.member.Member):
+                EditChannelID = get_log_item(before.author.guild.id, "Edit")
+                if EditChannelID != 0:
+                    if before.content != "":
+                        channel = self.bot.get_channel(EditChannelID)
+                        msgbefore = before.clean_content
+                        msgafter = after.clean_content
 
-                    if len(str(msgbefore)) > 450:
-                        msgbefore = f"**Truncated**:{before.clean_content[0:450]}..."
+                        if len(str(msgbefore)) > 450:
+                            msgbefore = f"**Truncated**:{before.clean_content[0:450]}..."
 
-                    if len(str(msgafter)) > 450:
-                        msgafter = f"**Truncated**:{after.clean_content[0:450]}..."
+                        if len(str(msgafter)) > 450:
+                            msgafter = f"**Truncated**:{after.clean_content[0:450]}..."
 
-                    await send_embed(channel, send_option=0, author=before.author,
-                                     author_pfp=before.author.avatar_url, color=0xfff56e,
-                                     description=f"Message by {before.author.mention}\n**Edited** "
-                                                 f"in {before.channel.mention} [Jump to message]({after.jump_url})",
-                                     fields=[('Before', f"{msgbefore}", True),
-                                             ('After', f"{msgafter}", True),
-                                             ('Author ID', f"{after.author.id}", False),
-                                             ('Message ID', f"{after.id}", True)],
-                                     timestamp=after.edited_at,
-                                     footer=f"Edited")
+                        await send_embed(channel, send_option=0, author=before.author,
+                                         author_pfp=before.author.avatar_url, color=0xfff56e,
+                                         description=f"Message by {before.author.mention}\n**Edited** "
+                                                     f"in {before.channel.mention} [Jump to message]({after.jump_url})",
+                                         fields=[('Before', f"{msgbefore}", True),
+                                                 ('After', f"{msgafter}", True),
+                                                 ('Author ID', f"{after.author.id}", False),
+                                                 ('Message ID', f"{after.id}", True)],
+                                         timestamp=after.edited_at,
+                                         footer=f"Edited")
 
-        print(f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
+            print(f'Message Edited: Author: {before.author} Original: {before.clean_content} New: {after.clean_content}.')
 
     @commands.Cog.listener()
     # Look for members deleting messages.
