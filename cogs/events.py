@@ -140,7 +140,7 @@ class Events(commands.Cog):
                     membercreated = str(before.created_at.strftime("%b %d, %Y"))
                     nickname = after.nick
                     if "None" in str(nickname):
-                        nickname = "Removed Nickname"
+                        nickname = "None"
                     await send_embed(channel, send_option=0, author=f"{before} changed nickname.",
                                      author_pfp=before.avatar_url, color=0xb9ff6e,
                                      description=f"**Nickname event for** {before.mention}",
@@ -185,6 +185,75 @@ class Events(commands.Cog):
                 print(f"[{before} changed username to {after}")
             if before.avatar != after.avatar:
                 return
+
+    @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        check_log_item(channel.guild.id)
+        ChanCreateID = get_log_item(channel.guild.id, "ChanMade")
+        if ChanCreateID != 0:
+            if channel != "":
+                sendchannel = self.bot.get_channel(ChanCreateID)
+                await send_embed(sendchannel, send_option=0, author=f"{channel.guild} channel created.",
+                                 author_pfp=channel.guild.icon_url, color=0x976eff,
+                                 description=f"**Channel** {channel.mention} was created.",
+                                 fields=[('Name', f"{channel}", True),
+                                         ('ID', f"{channel.id}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Channel created")
+        print(f'{channel} created.')
+
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel):
+        check_log_item(channel.guild.id)
+        ChanDeleteID = get_log_item(channel.guild.id, "ChanDelete")
+        if ChanDeleteID != 0:
+            if channel != "":
+                sendchannel = self.bot.get_channel(ChanDeleteID)
+
+                await send_embed(sendchannel, send_option=0, author=f"{channel.guild} channel deleted.",
+                                 author_pfp=channel.guild.icon_url, color=0xfc4128,
+                                 description=f"Channel **{channel.mention}** was deleted.",
+                                 fields=[('Name', f"{channel}", True),
+                                         ('ID', f"{channel.id}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Channel deleted")
+        print(f'{channel} deleted.')
+
+    @commands.Cog.listener()
+    async def on_invite_create(self, invite):
+        check_log_item(invite.guild.id)
+        INVCreateID = get_log_item(invite.guild.id, "Invites")
+        if INVCreateID != 0:
+            if invite != "":
+                sendchannel = self.bot.get_channel(INVCreateID)
+                await send_embed(sendchannel, send_option=0, author=f"{invite.guild} invite created.",
+                                 author_pfp=invite.guild.icon_url, color=0xf5f547,
+                                 description=f"**Invite** {invite.code} was created.",
+                                 fields=[('Created by', f"{invite.inviter}", True),
+                                         ('Max Uses', f"{invite.max_uses}", True),
+                                         ('Channel', f"{invite.channel.mention}", True),
+                                         ('Max Age', f"{invite.max_age}", True),
+                                         ('Temporary', f"{invite.temporary}", True),
+                                         ('Invite Code', f"{invite.code}", True)],
+                                 timestamp=invite.created_at,
+                                 footer=f"Invite created")
+        print(f'invite {invite.code} created.')
+
+    @commands.Cog.listener()
+    async def on_invite_delete(self, invite):
+        check_log_item(invite.guild.id)
+        INVDeleteID = get_log_item(invite.guild.id, "Invites")
+        if INVDeleteID != 0:
+            if invite != "":
+                sendchannel = self.bot.get_channel(INVDeleteID)
+                await send_embed(sendchannel, send_option=0, author=f"{invite.guild} invite deleted.",
+                                 author_pfp=invite.guild.icon_url, color=0xfc4128,
+                                 description=f"**Invite** {invite.code} was deleted.",
+                                 fields=[('Channel', f"{invite.channel.mention}", True),
+                                         ('Invite Code', f"{invite.code}", True)],
+                                 timestamp=datetime.utcnow(),
+                                 footer=f"Invite deleted")
+        print(f'invite {invite.code} created.')
 
     @commands.Cog.listener()
     # Look for members editing messages.
