@@ -4,6 +4,7 @@ import sys
 from discord.ext import commands
 
 from utils.pogfunctions import send_embed
+from utils.pogesquelle import get_prefix
 
 
 class CommandErrorHandler(commands.Cog):
@@ -56,11 +57,27 @@ class CommandErrorHandler(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
         if isinstance(error, commands.MissingRequiredArgument):
-            errorsend = await send_embed(ctx, send_option=2,
+            justprefix = await get_prefix(self.bot, ctx.message)
+            if error.param.name == 'text_to_echo':
+                await send_embed(ctx, send_option=0,
+                                 description=f"<:Pogbot_X:850089728018874368> "
+                                             f"**you must provide text for me to echo."
+                                             f"**\nTry ```{justprefix[2]}echo hello world.```",
+                                 color=0x08d5f7)
+                return
+
+            if error.param.name == "text_or_url":
+                await send_embed(ctx, send_option=0,
+                                 description=f"<:Pogbot_X:850089728018874368> "
+                                             f"**you must provide me a url or some text."
+                                             f"**\nTry ```{justprefix[2]}qr https://google.com```",
+                                 color=0x08d5f7)
+                return
+
+            await send_embed(ctx, send_option=0,
                                          description=f"<:Pogbot_X:850089728018874368> "
                                                      f"**you must provide an argument.**",
                                          color=0x08d5f7)
-            await ctx.send(embed=errorsend)
 
 
 def setup(bot):

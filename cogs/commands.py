@@ -44,12 +44,12 @@ class Commands(commands.Cog, name="Commands"):
         # Sends the link to the bot codeck page when the codeck command is used.
         await ctx.send("https://open.codecks.io/pog")
 
-    @commands.command(name='echo', brief='Responds with the argument provided.',
+    @commands.command(name='echo', brief='Responds with the text provided.',
                       description="Replies with the same text argument that's provided by the user.")
     # Look for a command called echo
-    async def echo(self, ctx, *, arg):
+    async def echo(self, ctx, *, text_to_echo):
         # Send an echo of the keyword-only argument.
-        await ctx.send(arg)
+        await ctx.send(text_to_echo)
 
     @commands.command(name='icon', brief="Responds with Pogbot's avatar.", description="Responds with Pogbot's avatar.")
     # Look for a command called icon.
@@ -179,10 +179,9 @@ class Commands(commands.Cog, name="Commands"):
 
     @commands.command(name='qr', brief='Responds with a QR code.',
                       description="Responds with a QR code of the data provided.")
-    # Look for a command called echo
-    async def qr(self, ctx, *, arg):
+    async def qr(self, ctx, *, text_or_url):
         # Send an echo of the keyword-only argument.
-        request = requests.get(url=f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={arg}')
+        request = requests.get(url=f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={text_or_url}')
         await ctx.send(request.url)
 
     @commands.command(name='contributors', aliases=['contrib', 'contribs'],
