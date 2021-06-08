@@ -6,6 +6,11 @@ from utils.pogfunctions import send_embed
 
 
 # https://github.com/public-apis/public-apis
+# https://gist.github.com/Soheab/332ba85f8989648449c71bdc8ef32368
+
+# ENDPOINTS
+# https://normal-api.ml/
+# https://frenchnoodles.xyz/api/endpoints
 
 class Fun(commands.Cog, name="Fun Stuff"):
     def __init__(self, bot):

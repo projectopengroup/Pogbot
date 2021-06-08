@@ -48,7 +48,7 @@ class CommandErrorHandler(commands.Cog):
             if ctx.command.qualified_name == 'tag list':
                 errorsend = await send_embed(ctx, send_option=2,
                                              description=f"<:Pogbot_X:850089728018874368> "
-                                                         f"**that member cannot be found. Try again.**",
+                                                         f"**That member cannot be found. Try again.**",
                                              color=0x08d5f7)
                 await ctx.send(embed=errorsend)
 
@@ -61,22 +61,22 @@ class CommandErrorHandler(commands.Cog):
             if error.param.name == 'text_to_echo':
                 await send_embed(ctx, send_option=0,
                                  description=f"<:Pogbot_X:850089728018874368> "
-                                             f"**you must provide text for me to echo."
-                                             f"**\nTry ```{justprefix[2]}echo hello world.```",
+                                             f"**You must provide text for me to echo."
+                                             f"\nTry ```{justprefix[2]}echo hello world.```",
                                  color=0x08d5f7)
                 return
 
             if error.param.name == "text_or_url":
                 await send_embed(ctx, send_option=0,
                                  description=f"<:Pogbot_X:850089728018874368> "
-                                             f"**you must provide me a url or some text."
-                                             f"**\nTry ```{justprefix[2]}qr https://google.com```",
+                                             f"**You must provide me a url or some text."
+                                             f"\nTry ```{justprefix[2]}qr https://google.com```",
                                  color=0x08d5f7)
                 return
 
             await send_embed(ctx, send_option=0,
                                          description=f"<:Pogbot_X:850089728018874368> "
-                                                     f"**you must provide an argument.**",
+                                                     f"**You must provide an argument.**",
                                          color=0x08d5f7)
 
 
