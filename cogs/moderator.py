@@ -1,13 +1,39 @@
+from datetime import datetime
+
 import discord
 from discord.ext import commands
 
 from utils.pogfunctions import send_embed
-from utils.pogesquelle import get_prefix
+from utils.pogesquelle import get_prefix, get_log_item
 
 
 class Moderator(commands.Cog, name="Moderator"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def purge(self, ctx, amount: int):
+        embedpurge = discord.Embed(description=f'<:Check:845178458426179605> **Purged {amount} messages...**',
+                                 color=0x08d5f7)
+
+        await ctx.channel.purge(limit=amount + 1)
+        purgemsg = await ctx.send(embed=embedpurge)
+        await purgemsg.delete()
+        DeleteChannelID = get_log_item(ctx.author.guild.id, "BulkDelete")
+        if DeleteChannelID != 0:
+            channel = self.bot.get_channel(DeleteChannelID)
+            await send_embed(channel, send_option=0, author=ctx.author,
+                             author_pfp=ctx.author.avatar_url_as(format="png"), color=0xff6e6e,
+                             description=f"{ctx.author.mention} **purged {amount} messages** "
+                                         f"in {ctx.channel.mention}",
+                             fields=[('Messages Purged', f"{amount}", True),
+                                     ('User ', f"{ctx.author}", False),
+                                     ('User ID', f"{ctx.author.id}", False),
+                                     ('Channel', f"{ctx.channel}", True),
+                                     ('Channel ID', f"{ctx.channel.id}", True)],
+                             timestamp=(datetime.utcnow()),
+                             footer=f"Purge")
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
