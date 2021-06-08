@@ -11,7 +11,8 @@ class Moderator(commands.Cog, name="Moderator"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name='purge', aliases=['clean', 'clear'], brief='Deletes messages in bulk.',
+                      description="Deletes the number of messages you'd like to clear.")
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, amount: int):
         embedpurge = discord.Embed(description=f'<:Check:845178458426179605> **Purged {amount} messages...**',
@@ -35,7 +36,8 @@ class Moderator(commands.Cog, name="Moderator"):
                              timestamp=(datetime.utcnow()),
                              footer=f"Purge")
 
-    @commands.command()
+    @commands.command(name='ban', aliases=['bannish', 'votedofftheisland'], brief='Bans a user.',
+                      description="Bans a user from the discord server.")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, user: discord.User = None, *, reason=None):
         if user is None:
