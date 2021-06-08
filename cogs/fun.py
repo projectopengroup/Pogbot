@@ -31,6 +31,16 @@ class Fun(commands.Cog, name="Fun Stuff"):
         await send_embed(ctx, title="Dogs", description='Random dog picture', image=f'{url}',
                          color=0x08d5f7)
 
+    @commands.command(name='fox', aliases=['foxes'], brief='Responds with a picture of a fox.',
+                      description="Responds with a picture of a random fox.")
+    # Look for a command called cat
+    async def fox(self, ctx):
+
+        request = requests.get(url='https://randomfox.ca/floof/', headers={"Accept": "application/json"})
+        fox = request.json()
+        await send_embed(ctx, title="Foxes", description='Random fox picture', image=fox["image"],
+                         color=0x08d5f7)
+
     @commands.command(name='joke', aliases=['jokes'], brief='Tells a joke.', description='Tells a random joke.')
     # Look for a command called joke
     async def joke(self, ctx, joke_type="Any"):
