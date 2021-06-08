@@ -1,4 +1,4 @@
-import aiohttp
+
 import requests
 import random
 from discord.ext import commands
@@ -13,32 +13,40 @@ class Fun(commands.Cog, name="Fun Stuff"):
 
     @commands.command(name='cat', aliases=['cats'], brief='Responds with a picture of a cat.',
                       description="Responds with a picture of a random cat.")
-    # Look for a command called cat
     async def cat(self, ctx):
-        async with aiohttp.ClientSession() as session:
-            request = await session.get('https://thecatapi.com/api/images/get')
-            url = request.url
-        await send_embed(ctx, title="Cats", description='Random cat picture', image=f'{url}',
+
+        request = requests.get(url='https://thecatapi.com/api/images/get',
+                                   headers={"Accept": "application/json", 'Connection': 'close'})
+        await send_embed(ctx, title="Cats", description='Random cat picture', image=f'{request.url}',
                          color=0x08d5f7)
 
     @commands.command(name='dog', aliases=['dogs'], brief='Responds with a picture of a dog.',
                       description="Responds with a picture of a random dog.")
-    # Look for a command called cat
     async def dog(self, ctx):
-        async with aiohttp.ClientSession() as session:
-            request = await session.get('https://thedogapi.com/api/images/get')
-            url = request.url
-        await send_embed(ctx, title="Dogs", description='Random dog picture', image=f'{url}',
+
+        request = requests.get(url='https://thedogapi.com/api/images/get',
+                                        headers={"Accept": "application/json",
+                                                 'Connection': 'close'})
+        await send_embed(ctx, title="Dogs", description='Random dog picture', image=f'{request.url}',
                          color=0x08d5f7)
 
     @commands.command(name='fox', aliases=['foxes'], brief='Responds with a picture of a fox.',
                       description="Responds with a picture of a random fox.")
-    # Look for a command called cat
     async def fox(self, ctx):
-
-        request = requests.get(url='https://randomfox.ca/floof/', headers={"Accept": "application/json"})
+        request = requests.get(url='https://randomfox.ca/floof/', headers={"Accept": "application/json",
+                                                                           'Connection': 'close'})
         fox = request.json()
         await send_embed(ctx, title="Foxes", description='Random fox picture', image=fox["image"],
+                         color=0x08d5f7)
+
+    @commands.command(name='duck', aliases=['ducks'], brief='Responds with a picture of a duck.',
+                      description="Responds with a picture of a random duck.")
+    # Look for a command called cat
+    async def duck(self, ctx):
+        request = requests.get(url='https://random-d.uk/api/random', headers={"Accept": "application/json",
+                                                                              'Connection': 'close'})
+        duck = request.json()
+        await send_embed(ctx, title="Ducks", description='Random duck picture', image=duck["url"],
                          color=0x08d5f7)
 
     @commands.command(name='joke', aliases=['jokes'], brief='Tells a joke.', description='Tells a random joke.')
@@ -57,7 +65,10 @@ class Fun(commands.Cog, name="Fun Stuff"):
                 joke_type = "Programming"
             else:
                 joke_type = "Any"
-            request = requests.get(url=f'https://v2.jokeapi.dev/joke/{joke_type}?blacklistFlags=political,racist,sexist')
+            request = requests.get(
+                url=f'https://v2.jokeapi.dev/joke/{joke_type}?blacklistFlags=political,racist,sexist',
+                headers={"Accept": "application/json",
+                         'Connection': 'close'})
             joke = request.json()
             if "joke" in joke:
                 await send_embed(ctx, description=str(joke["joke"]), color=0x08d5f7)
@@ -65,20 +76,27 @@ class Fun(commands.Cog, name="Fun Stuff"):
                 await send_embed(ctx, title=str(joke["setup"]), description=str(joke["delivery"]), color=0x08d5f7)
         elif api_choice == 1:
             if "pro" in joke_type:
-                request = requests.get(url='https://official-joke-api.appspot.com/jokes/programming/random')
+                request = requests.get(url='https://official-joke-api.appspot.com/jokes/programming/random',
+                                       headers={"Accept": "application/json",
+                                                'Connection': 'close'})
                 joke = request.json()
-                await send_embed(ctx, title=str(joke[0]["setup"]), description=str(joke[0]["punchline"]), color=0x08d5f7)
+                await send_embed(ctx, title=str(joke[0]["setup"]), description=str(joke[0]["punchline"]),
+                                 color=0x08d5f7)
             else:
-                request = requests.get(url='https://official-joke-api.appspot.com/random_joke')
+                request = requests.get(url='https://official-joke-api.appspot.com/random_joke',
+                                       headers={"Accept": "application/json",
+                                                'Connection': 'close'})
                 joke = request.json()
                 await send_embed(ctx, title=str(joke["setup"]), description=str(joke["punchline"]), color=0x08d5f7)
         elif api_choice == 2:
-            request = requests.get(url='https://yomomma-api.herokuapp.com/jokes')
+            request = requests.get(url='https://yomomma-api.herokuapp.com/jokes', headers={"Accept": "application/json",
+                                                                                           'Connection': 'close'})
             joke = request.json()
             await send_embed(ctx, description=str(joke["joke"]), color=0x08d5f7)
         elif api_choice == 3:
             print("This one.")
-            request = requests.get(url='https://icanhazdadjoke.com/', headers={"Accept": "application/json"})
+            request = requests.get(url='https://icanhazdadjoke.com/', headers={"Accept": "application/json",
+                                                                               'Connection': 'close'})
             joke = request.json()
             await send_embed(ctx, description=str(joke["joke"]), color=0x08d5f7)
 
@@ -86,7 +104,8 @@ class Fun(commands.Cog, name="Fun Stuff"):
                       description="Suggests an activity for you to do when you're bored.")
     # Look for a command called activity
     async def idea(self, ctx):
-        request = requests.get(url=f'https://www.boredapi.com/api/activity')
+        request = requests.get(url=f'https://www.boredapi.com/api/activity', headers={"Accept": "application/json",
+                                                                                      'Connection': 'close'})
         activity = request.json()
         link = activity['link']
         if not link:
