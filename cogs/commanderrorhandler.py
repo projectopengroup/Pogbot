@@ -61,7 +61,7 @@ class CommandErrorHandler(commands.Cog):
             if error.param.name == 'text_to_echo':
                 await send_embed(ctx, send_option=0,
                                  description=f"<:Pogbot_X:850089728018874368> "
-                                             f"**You must provide text for me to echo."
+                                             f"**You must provide text for me to echo.**"
                                              f"\nTry ```{justprefix[2]}echo hello world.```",
                                  color=0x08d5f7)
                 return
@@ -69,7 +69,7 @@ class CommandErrorHandler(commands.Cog):
             if error.param.name == "text_or_url":
                 await send_embed(ctx, send_option=0,
                                  description=f"<:Pogbot_X:850089728018874368> "
-                                             f"**You must provide me a url or some text."
+                                             f"**You must provide me a url or some text.**"
                                              f"\nTry ```{justprefix[2]}qr https://google.com```",
                                  color=0x08d5f7)
                 return

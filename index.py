@@ -61,6 +61,13 @@ class HelpFormatted(commands.MinimalHelpCommand):
             embedhelp = embedhelp.set_thumbnail(url="https://i.imgur.com/a9dzSlL.png")
             await destination.send(embed=embedhelp)
 
+    async def send_error_message(self, error):
+        channel = self.get_destination()
+        await send_embed(channel, send_option=0,
+                         description=f"<:Pogbot_X:850089728018874368> "
+                                     f"**{str(error)}**",
+                         color=0x08d5f7)
+
 
 # If we're running from main.
 if __name__ == "__main__":
