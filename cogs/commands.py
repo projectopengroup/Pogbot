@@ -277,7 +277,7 @@ class Commands(commands.Cog, name="Commands"):
                              description=Message,
                              color=0x08d5f7,
                              timestamp=datetime.strptime(TimeStamp, '%Y-%m-%d %H:%M:%S.%f'),
-                             footer=f"Message ID: {MessageID}\nSniped")
+                             footer=f"Message ID: {MessageID}\nDeleted")
 
 
 def setup(bot):
