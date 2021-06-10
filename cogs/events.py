@@ -3,7 +3,7 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, diff_lists
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
-    get_welcome_role, check_log_item, get_log_item
+    get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes
 import os
 import requests
 from discord.utils import get
@@ -492,10 +492,13 @@ class Events(commands.Cog):
         if isinstance(message.channel, discord.channel.DMChannel):
             print("Direct Message Detected..")
         if isinstance(message.author, discord.member.Member):
-            os.environ['LastMsgDeleted'] = str(message.content)
-            os.environ['LastMsgAuthor'] = str(message.author)
-            os.environ['LastMsgAuthorAvatar'] = str(message.author.avatar_url)
-            os.environ['LastMsgID'] = str(message.id)
+            check_snipes(message.author.guild.id)
+            set_db_item(message.author.guild.id, "snipes", message.content, "Message")
+            set_db_item(message.author.guild.id, "snipes", message.id, "MessageID")
+            set_db_item(message.author.guild.id, "snipes", message.author, "Author")
+            set_db_item(message.author.guild.id, "snipes", message.author.avatar_url, "AuthorAvatar")
+            set_db_item(message.author.guild.id, "snipes", datetime.utcnow(), "Timestamp")
+
             DeleteChannelID = get_log_item(message.author.guild.id, "Delete")
             if DeleteChannelID != 0:
                 if message.content != "":

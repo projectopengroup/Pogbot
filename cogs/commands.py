@@ -11,7 +11,7 @@ from datetime import timedelta
 from discord.ext import commands
 from datetime import datetime
 from utils.pogfunctions import send_embed
-from utils.pogesquelle import get_prefix
+from utils.pogesquelle import get_prefix, get_db_item, check_snipes
 
 session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
@@ -260,27 +260,24 @@ class Commands(commands.Cog, name="Commands"):
 
     @commands.command(name="snipe")
     async def snipe(self, ctx):
-        LastAuthorAvatar = None
-        if 'LastMsgAuthorAvatar' in os.environ:
-            LastAuthorAvatar = os.environ['LastMsgAuthorAvatar']
-        LastAuthor = None
-        if 'LastMsgAuthor' in os.environ:
-            LastAuthor = os.environ['LastMsgAuthor']
-        LastMsg = None
-        if 'LastMsgDeleted' in os.environ:
-            LastMsg = os.environ['LastMsgDeleted']
-        LastMsgID = None
-        if 'LastMsgID' in os.environ:
-            LastMsgID = os.environ['LastMsgID']
-        if not LastMsg:
-            await ctx.send("There is no message to snipe!")
-            return
+        # set_db_item(message.author.guild.id, "snipes", message.content, "Message")
+        # set_db_item(message.author.guild.id, "snipes", message.id, "MessageID")
+        # set_db_item(message.author.guild.id, "snipes", message.author, "Author")
+        # set_db_item(message.author.guild.id, "snipes", message.author.avatar_url, "AuthorAvatar")
+        # set_db_item(message.author.guild.id, "snipes", datetime.utcnow(), "Timestamp")
+        check_snipes(ctx.author.guild.id)
+        Message = get_db_item(ctx.author.guild.id, "snipes", "Message")
+        MessageID = get_db_item(ctx.author.guild.id, "snipes", "MessageID")
+        Author = get_db_item(ctx.author.guild.id, "snipes", "Author")
+        AuthorAvatar = get_db_item(ctx.author.guild.id, "snipes", "AuthorAvatar")
+        TimeStamp = get_db_item(ctx.author.guild.id, "snipes", "Timestamp")
 
-        await send_embed(ctx, author=f"{LastAuthor}", author_pfp=LastAuthorAvatar,
-                         description=LastMsg,
-                         color=0x08d5f7,
-                         timestamp=(datetime.utcnow()),
-                         footer=f"Message ID: {LastMsgID}\nSniped")
+        if Message != "None":
+            await send_embed(ctx, author=f"{Author}", author_pfp=AuthorAvatar,
+                             description=Message,
+                             color=0x08d5f7,
+                             timestamp=datetime.strptime(TimeStamp, '%Y-%m-%d %H:%M:%S.%f'),
+                             footer=f"Message ID: {MessageID}\nSniped")
 
 
 def setup(bot):

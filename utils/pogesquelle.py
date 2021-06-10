@@ -326,6 +326,47 @@ def set_all_log_items(serverid, channelid):
     conn.close()
 
 
+def check_snipes(serverid):
+    conn = sqlite3.connect('prefs.db')
+    conn.text_factory = str
+    cur = conn.cursor()
+    cur.execute(f'SELECT ServerID FROM snipes WHERE ServerID={serverid}')
+    data = cur.fetchone()
+    Serverd = data
+    if str(Serverd) == "None":
+        prefs_query = f"""INSERT INTO snipes
+                                 (ServerID, 'Message', 'MessageID', 'Author', 'AuthorAvatar', 'Timestamp')
+                                  VALUES 
+                                 ('{serverid}', 0, 0, 0, 0, 0) """
+        cur.execute(prefs_query)
+        conn.commit()
+        conn.close()
+
+
+def get_db_item(serverid, tablename, itemname):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    # Join Leave Ban Unban Edit Delete BulkDelete ChanMade ChanDelete RoleMade RoleDelete RoleUpdated RoleGiven
+    # RoleRemoved NickChanged JoinVC LeaveVC MovedVC Invites Mute Kick Warn
+    cur.execute(f"SELECT `{itemname}` FROM {tablename} WHERE ServerID={serverid}")
+    data = cur.fetchone()
+    if data:
+        data = data[0]
+    else:
+        data = 0
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_db_item(serverid, tablename, string, itemname):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE {tablename} SET '{itemname}' = '{string}' WHERE ServerID = '{serverid}'")
+    conn.commit()
+    conn.close()
+
+
 # Global user settings start here, please keep the other settings out of this half of the file ###########
 # GLOBAL USER SETTINGS ###################################################################################
 def check_global_user(userid):
