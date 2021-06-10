@@ -13,7 +13,7 @@ class Moderator(commands.Cog, name="Moderator"):
 
     @commands.command(name='kick', aliases=['boot'], brief='Kicks a user.',
                       description="Kicks a user from the server.")
-    @commands.has_permissions(ban_members=True)
+    @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, user: discord.User = None, *, reason=None):
         if user is None:
             justprefix = await get_prefix(self.bot, ctx.message)
