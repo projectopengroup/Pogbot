@@ -12,6 +12,7 @@ from utils.pogesquelle import get_prefix
 
 session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
+
 class Commands(commands.Cog, name="Commands"):
     def __init__(self, bot):
         self.bot = bot

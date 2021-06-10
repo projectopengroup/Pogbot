@@ -222,7 +222,6 @@ class Events(commands.Cog):
                                      footer=f"Moved voice")
             return
 
-
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         check_log_item(member.guild.id)
@@ -339,6 +338,44 @@ class Events(commands.Cog):
                 print(f"[{before} changed username to {after}")
             if before.avatar != after.avatar:
                 return
+
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, member):
+        check_log_item(guild.id)
+        BanChannelID = get_log_item(guild.id, "Ban")
+        if BanChannelID != 0:
+            if member != "":
+                channel = self.bot.get_channel(BanChannelID)
+                membercreated = str(member.created_at.strftime("%b %d, %Y"))
+                banevent = await guild.audit_logs().find(banpredicate)
+                await send_embed(channel, send_option=0, author=f"{member} was banned.",
+                                 author_pfp=member.avatar_url_as(format="png"), color=0x000000,
+                                 description=f"{member.mention} was banned.",
+                                 fields=[('User', f"{member}", True),
+                                         ('User ID', f"{member.id}", True),
+                                         ('Account Created', f"{membercreated}", True),
+                                         ('Reason', f"{banevent.reason}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Ban")
+        print(f'{member} banned.')
+
+    @commands.Cog.listener()
+    async def on_member_unban(self, guild, member):
+        check_log_item(guild.id)
+        BanChannelID = get_log_item(guild.id, "Unban")
+        if BanChannelID != 0:
+            if member != "":
+                channel = self.bot.get_channel(BanChannelID)
+                membercreated = str(member.created_at.strftime("%b %d, %Y"))
+                await send_embed(channel, send_option=0, author=f"{member} was unbanned.",
+                                 author_pfp=member.avatar_url_as(format="png"), color=0xFFFFFF,
+                                 description=f"{member.mention} was unbanned.",
+                                 fields=[('User', f"{member}", True),
+                                         ('User ID', f"{member.id}", True),
+                                         ('Account Created', f"{membercreated}", True)],
+                                 timestamp=(datetime.utcnow()),
+                                 footer=f"Unban")
+        print(f'{member} unbanned.')
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
@@ -522,6 +559,10 @@ class Events(commands.Cog):
         # file = open(avatar, "wb")
         # file.write(image.content)
         # file.close()
+
+
+def banpredicate(event):
+        return event.action is discord.AuditLogAction.ban
 
 
 def setup(bot):
