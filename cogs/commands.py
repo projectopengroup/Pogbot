@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from datetime import timedelta, datetime
 from discord.ext import commands
 from utils.pogfunctions import send_embed
-from utils.pogesquelle import get_prefix, get_db_item, check_snipes
+from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64
 
 session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
@@ -277,6 +277,9 @@ class Commands(commands.Cog, name="Commands"):
         Author = get_db_item(ctx.author.guild.id, "snipes", "Author")
         AuthorAvatar = get_db_item(ctx.author.guild.id, "snipes", "AuthorAvatar")
         TimeStamp = get_db_item(ctx.author.guild.id, "snipes", "Timestamp")
+
+        Author = decodebase64(Author)
+        Message = decodebase64(Message)
 
         if Message != "None":
             await send_embed(ctx, author=f"{Author}", author_pfp=AuthorAvatar,
