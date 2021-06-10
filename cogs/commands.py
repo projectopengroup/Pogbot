@@ -3,10 +3,14 @@ import re
 
 import discord
 import requests
+import requests_cache
+from bs4 import BeautifulSoup
+from datetime import timedelta
 from discord.ext import commands
 from utils.pogfunctions import send_embed
 from utils.pogesquelle import get_prefix
 
+session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
 class Commands(commands.Cog, name="Commands"):
     def __init__(self, bot):
@@ -196,6 +200,59 @@ class Commands(commands.Cog, name="Commands"):
                    "**ravenig#8429** -> Coder. Code contributions. (main check and run.sh). \n **Jaycon#4073** -> " \
                    "Coder. Code contributions. (icon command). "
         await send_embed(ctx, title="**Pogbot's Contributors**", description=contribs, color=0x08d5f7)
+
+    @commands.command(name='covid', aliases=['coviddata', 'covid19', 'coronavirus', 'covid19data'],
+                      brief='Responds with covid data.',
+                      decription='Responds with covid data based on specified country.')
+    async def covid(self, ctx, *, country=None):
+        request = None
+        possible_us = ["us", "usa", "u.s", "u.s.", "u.s.a", "u.s.a.", "united states", "unitedstates", "united-states",
+                       "united states of america", "unitedstatesofamerica", "united-states-of-america"]
+        possible_uk = ["uk", "u.k", "u.k.", "united kingdom", "unitedkingdom", "united-kingdom"]
+        other_available_countries = ["brazil", "germany", "mexico", "canada", "india", "spain", "france", "italy"]
+
+        not_found = False
+
+        if country is not None:
+            country = country.lower()
+
+        if country is None:
+            country = "Global"
+            request = session.get(url=f'https://www.nytimes.com/interactive/2021/world/covid-cases.html')
+        elif country in possible_uk:
+            country = "U.K."
+            request = session.get(url=f'https://www.nytimes.com/interactive/2021/world/united-kingdom-covid-cases.html')
+        elif country in other_available_countries:
+            request = session.get(url=f'https://www.nytimes.com/interactive/2021/world/{country}-covid-cases.html')
+            country = country.capitalize()
+        elif country in possible_us:
+            country = "U.S."
+            request = session.get(url=f'https://www.nytimes.com/interactive/2021/us/covid-cases.html')
+        else:
+            await send_embed(ctx, description="<:Pogbot_X:850089728018874368> **Country Not Found**", color=0x08d5f7)
+            not_found = True
+
+        if not not_found:
+            soup = BeautifulSoup(request.text, 'html.parser')
+            covid_data = soup.find_all('td')
+            if country == "U.S.":
+                await send_embed(ctx, title=f"{country} Covid-19 Statistics", color=0x08d5f7,
+                                 fields=[(f"**Total Cases:**", covid_data[3].get_text(), True),
+                                         (f"**Avg. Cases:**", covid_data[1].get_text(), True),
+                                         (f"**14 Day Change:**", covid_data[2].get_text(), True),
+                                         (f"**Total Deaths:**", covid_data[15].get_text(), True),
+                                         (f"**Avg Deaths:**", covid_data[13].get_text(), True),
+                                         (f"**14 Day Change:**", covid_data[14].get_text(), True)],
+                                 footer="Data via nytimes", thumbnail="https://i.imgur.com/kYANkld.jpg")
+            else:
+                await send_embed(ctx, title=f"{country} Covid-19 Statistics", color=0x08d5f7,
+                                 fields=[(f"**Total Cases:**", covid_data[3].get_text(), True),
+                                         (f"**Avg. Cases:**", covid_data[1].get_text(), True),
+                                         (f"**14 Day Change:**", covid_data[2].get_text(), True),
+                                         (f"**Total Deaths:**", covid_data[7].get_text(), True),
+                                         (f"**Avg Deaths:**", covid_data[5].get_text(), True),
+                                         (f"**14 Day Change:**", covid_data[6].get_text(), True)],
+                                 footer="Data via nytimes", thumbnail="https://i.imgur.com/kYANkld.jpg")
 
 
 def setup(bot):
