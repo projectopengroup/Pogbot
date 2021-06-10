@@ -5,11 +5,10 @@ import re
 import discord
 import requests
 import requests_cache
-
+import json
 from bs4 import BeautifulSoup
-from datetime import timedelta
+from datetime import timedelta, datetime
 from discord.ext import commands
-from datetime import datetime
 from utils.pogfunctions import send_embed
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes
 
@@ -209,54 +208,66 @@ class Commands(commands.Cog, name="Commands"):
                       brief='Responds with covid data.',
                       decription='Responds with covid data based on specified country.')
     async def covid(self, ctx, *, country=None):
-        request = None
         possible_us = ["us", "usa", "u.s", "u.s.", "u.s.a", "u.s.a.", "united states", "unitedstates", "united-states",
                        "united states of america", "unitedstatesofamerica", "united-states-of-america"]
         possible_uk = ["uk", "u.k", "u.k.", "united kingdom", "unitedkingdom", "united-kingdom"]
-        other_available_countries = ["brazil", "germany", "mexico", "canada", "india", "spain", "france", "italy"]
-
-        not_found = False
-
-        if country is not None:
-            country = country.lower()
+        possible_skorea = ["s. korea", "s.korea", "south korea", "southkorea"]
 
         if country is None:
-            country = "Global"
-            request = session.get(url=f'https://www.nytimes.com/interactive/2021/world/covid-cases.html')
-        elif country in possible_uk:
-            country = "U.K."
-            request = session.get(url=f'https://www.nytimes.com/interactive/2021/world/united-kingdom-covid-cases.html')
-        elif country in other_available_countries:
-            request = session.get(url=f'https://www.nytimes.com/interactive/2021/world/{country}-covid-cases.html')
-            country = country.capitalize()
-        elif country in possible_us:
-            country = "U.S."
-            request = session.get(url=f'https://www.nytimes.com/interactive/2021/us/covid-cases.html')
+            country = "World"
+        elif country.lower() in possible_us:
+            country = "usa"
+        elif country.lower() in possible_uk:
+            country = "uk"
+        elif country.lower() in possible_skorea:
+            country = "s. korea"
+
+        request1 = session.get(url=f'https://www.worldometers.info/coronavirus/#main_table')
+        request2 = session.get(url=f'https://www.worldometers.info/coronavirus/weekly-trends/#weekly_table')
+        soup1 = BeautifulSoup(request1.text, 'html.parser')
+        soup2 = BeautifulSoup(request2.text, 'html.parser')
+
+        covid_data = soup1.find_all(id="main_table_countries_today")
+        covid_change = soup2.find_all(id="main_table_countries_today")
+
+        selected_country = None
+        iter = 0
+        for countries in covid_data[0].find_all('tr'):
+            iter += 1
+            if iter >= 9:
+                data = countries.find_all('td')
+                for value in range(0, len(data)):
+                    data[value] = data[value].get_text()
+                    if data[value] == '':
+                        data[value] = 'N/A'
+                if country.lower() == data[1].lower():
+                    selected_country = {'Country': data[1], 'Total Cases': data[2], 'New Cases': data[3],
+                                        'Total Deaths': data[4],
+                                        'New Deaths': data[5], 'Total Recovered': data[6], 'Active Cases': data[8],
+                                        'Critical Cases': data[9]}
+                    break
+        if selected_country is not None:
+            iter = 0
+            for countries in covid_change[0].find_all('tr'):
+                iter += 1
+                if iter >= 9:
+                    data = countries.find_all('td')
+                    if data[1].get_text() == selected_country['Country']:
+                        selected_country['Case Change'] = data[4].get_text()
+                        selected_country['Death Change'] = data[8].get_text()
+            await send_embed(ctx, title=f"{selected_country['Country']} Covid-19 Statistics", color=0x08d5f7,
+                             fields=[(f"**Total Cases:**", selected_country["Total Cases"], True),
+                                     (f"**New Cases:**", selected_country["New Cases"], True),
+                                     (f"**Weekly Change:**", selected_country["Case Change"], True),
+                                     (f"**Total Recovered:**", selected_country["Total Recovered"], True),
+                                     (f"**Active Cases:**", selected_country["Active Cases"], True),
+                                     (f"**Critical Cases:**", selected_country["Critical Cases"], True),
+                                     (f"**Total Deaths:**", selected_country["Total Deaths"], True),
+                                     (f"**New Deaths:**", selected_country["New Deaths"], True),
+                                     (f"**Weekly Change:**", selected_country["Death Change"], True)],
+                             footer="Data via worldometers.info", thumbnail="https://i.imgur.com/kYANkld.jpg")
         else:
             await send_embed(ctx, description="<:Pogbot_X:850089728018874368> **Country Not Found**", color=0x08d5f7)
-            not_found = True
-
-        if not not_found:
-            soup = BeautifulSoup(request.text, 'html.parser')
-            covid_data = soup.find_all('td')
-            if country == "U.S.":
-                await send_embed(ctx, title=f"{country} Covid-19 Statistics", color=0x08d5f7,
-                                 fields=[(f"**Total Cases:**", covid_data[3].get_text(), True),
-                                         (f"**Avg. Cases:**", covid_data[1].get_text(), True),
-                                         (f"**14 Day Change:**", covid_data[2].get_text(), True),
-                                         (f"**Total Deaths:**", covid_data[15].get_text(), True),
-                                         (f"**Avg Deaths:**", covid_data[13].get_text(), True),
-                                         (f"**14 Day Change:**", covid_data[14].get_text(), True)],
-                                 footer="Data via nytimes", thumbnail="https://i.imgur.com/kYANkld.jpg")
-            else:
-                await send_embed(ctx, title=f"{country} Covid-19 Statistics", color=0x08d5f7,
-                                 fields=[(f"**Total Cases:**", covid_data[3].get_text(), True),
-                                         (f"**Avg. Cases:**", covid_data[1].get_text(), True),
-                                         (f"**14 Day Change:**", covid_data[2].get_text(), True),
-                                         (f"**Total Deaths:**", covid_data[7].get_text(), True),
-                                         (f"**Avg Deaths:**", covid_data[5].get_text(), True),
-                                         (f"**14 Day Change:**", covid_data[6].get_text(), True)],
-                                 footer="Data via nytimes", thumbnail="https://i.imgur.com/kYANkld.jpg")
 
     @commands.command(name="snipe")
     async def snipe(self, ctx):
