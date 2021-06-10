@@ -492,6 +492,10 @@ class Events(commands.Cog):
         if isinstance(message.channel, discord.channel.DMChannel):
             print("Direct Message Detected..")
         if isinstance(message.author, discord.member.Member):
+            os.environ['LastMsgDeleted'] = str(message.content)
+            os.environ['LastMsgAuthor'] = str(message.author)
+            os.environ['LastMsgAuthorAvatar'] = str(message.author.avatar_url)
+            os.environ['LastMsgID'] = str(message.id)
             DeleteChannelID = get_log_item(message.author.guild.id, "Delete")
             if DeleteChannelID != 0:
                 if message.content != "":
@@ -562,7 +566,7 @@ class Events(commands.Cog):
 
 
 def banpredicate(event):
-        return event.action is discord.AuditLogAction.ban
+    return event.action is discord.AuditLogAction.ban
 
 
 def setup(bot):

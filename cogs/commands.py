@@ -1,12 +1,17 @@
+import os
 import platform
 import re
 
 import discord
 import requests
 import requests_cache
+from pip._internal.utils import datetime
+
+import cogs.events
 from bs4 import BeautifulSoup
 from datetime import timedelta
 from discord.ext import commands
+from datetime import datetime
 from utils.pogfunctions import send_embed
 from utils.pogesquelle import get_prefix
 
@@ -254,6 +259,30 @@ class Commands(commands.Cog, name="Commands"):
                                          (f"**Avg Deaths:**", covid_data[5].get_text(), True),
                                          (f"**14 Day Change:**", covid_data[6].get_text(), True)],
                                  footer="Data via nytimes", thumbnail="https://i.imgur.com/kYANkld.jpg")
+
+    @commands.command(name="snipe")
+    async def snipe(self, ctx):
+        LastAuthorAvatar = None
+        if 'LastMsgAuthorAvatar' in os.environ:
+            LastAuthorAvatar = os.environ['LastMsgAuthorAvatar']
+        LastAuthor = None
+        if 'LastMsgAuthor' in os.environ:
+            LastAuthor = os.environ['LastMsgAuthor']
+        LastMsg = None
+        if 'LastMsgDeleted' in os.environ:
+            LastMsg = os.environ['LastMsgDeleted']
+        LastMsgID = None
+        if 'LastMsgID' in os.environ:
+            LastMsgID = os.environ['LastMsgID']
+        if not LastMsg:
+            await ctx.send("There is no message to snipe!")
+            return
+
+        await send_embed(ctx, author=f"{LastAuthor}", author_pfp=LastAuthorAvatar,
+                         description=LastMsg,
+                         color=0x08d5f7,
+                         timestamp=(datetime.utcnow()),
+                         footer=f"Message ID: {LastMsgID}\nSniped")
 
 
 def setup(bot):
