@@ -5,9 +5,7 @@ import re
 import discord
 import requests
 import requests_cache
-from pip._internal.utils import datetime
 
-import cogs.events
 from bs4 import BeautifulSoup
 from datetime import timedelta
 from discord.ext import commands
