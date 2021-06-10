@@ -254,8 +254,6 @@ def check_log_item(serverid):
     cur.execute(f'SELECT ServerID FROM logs WHERE ServerID={serverid}')
     data = cur.fetchone()
     Serverd = data
-    # Join Leave Ban Unban Edit Delete BulkDelete ChanMade ChanDelete RoleMade RoleDelete RoleUpdated RoleGiven
-    # RoleRemoved NickChanged ModCmdUsed JoinVC LeaveVC MovedVC Invites Mute Kick Warn 23
     if str(Serverd) == "None":
         prefs_query = f"""INSERT INTO logs
                                  (ServerID, 'Join', Leave, Ban, Unban, Edit, 'Delete', BulkDelete, ChanMade, ChanDelete, 
@@ -343,11 +341,70 @@ def check_snipes(serverid):
         conn.close()
 
 
+def check_rolereactions(messageid):
+    conn = sqlite3.connect('prefs.db')
+    conn.text_factory = str
+    cur = conn.cursor()
+    cur.execute(f'SELECT MessageID FROM rolereactions WHERE MessageID={messageid}')
+    data = cur.fetchone()
+    Serverd = data
+    if str(Serverd) == "None":
+        prefs_query = f"""INSERT INTO logs
+                                 (MessageID, 'RoleList', 'EmojiList')
+                                  VALUES 
+                                 ('{messageid}', 'None', 'None') """
+        cur.execute(prefs_query)
+        conn.commit()
+        conn.close()
+
+
+def get_roleist(messageid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"SELECT `RoleList` FROM rolereactions WHERE MessageID={messageid}")
+    data = cur.fetchone()
+    if data:
+        data = data[0]
+    else:
+        data = 0
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_rolelist(messageid, rolelist):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE rolereactions SET 'RoleList' = '{rolelist}' WHERE MessageID = '{messageid}'")
+    conn.commit()
+    conn.close()
+
+
+def get_emojilist(messageid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"SELECT `EmojiList` FROM rolereactions WHERE MessageID={messageid}")
+    data = cur.fetchone()
+    if data:
+        data = data[0]
+    else:
+        data = 0
+    conn.commit()
+    conn.close()
+    return data
+
+
+def set_emojilist(messageid, emojilist):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE rolereactions SET 'EmojiList' = '{emojilist}' WHERE MessageID = '{messageid}'")
+    conn.commit()
+    conn.close()
+
+
 def get_db_item(serverid, tablename, itemname):
     conn = sqlite3.connect('prefs.db')
     cur = conn.cursor()
-    # Join Leave Ban Unban Edit Delete BulkDelete ChanMade ChanDelete RoleMade RoleDelete RoleUpdated RoleGiven
-    # RoleRemoved NickChanged JoinVC LeaveVC MovedVC Invites Mute Kick Warn
     cur.execute(f"SELECT `{itemname}` FROM {tablename} WHERE ServerID={serverid}")
     data = cur.fetchone()
     if data:

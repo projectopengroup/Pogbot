@@ -271,11 +271,6 @@ class Commands(commands.Cog, name="Commands"):
 
     @commands.command(name="snipe")
     async def snipe(self, ctx):
-        # set_db_item(message.author.guild.id, "snipes", message.content, "Message")
-        # set_db_item(message.author.guild.id, "snipes", message.id, "MessageID")
-        # set_db_item(message.author.guild.id, "snipes", message.author, "Author")
-        # set_db_item(message.author.guild.id, "snipes", message.author.avatar_url, "AuthorAvatar")
-        # set_db_item(message.author.guild.id, "snipes", datetime.utcnow(), "Timestamp")
         check_snipes(ctx.author.guild.id)
         Message = get_db_item(ctx.author.guild.id, "snipes", "Message")
         MessageID = get_db_item(ctx.author.guild.id, "snipes", "MessageID")
