@@ -349,7 +349,7 @@ def check_rolereactions(messageid):
     data = cur.fetchone()
     Serverd = data
     if str(Serverd) == "None":
-        prefs_query = f"""INSERT INTO logs
+        prefs_query = f"""INSERT INTO rolereactions
                                  (MessageID, 'RoleList', 'EmojiList')
                                   VALUES 
                                  ('{messageid}', 'None', 'None') """
