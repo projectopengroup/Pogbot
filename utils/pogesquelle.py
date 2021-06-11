@@ -263,7 +263,7 @@ def check_log_item(serverid):
                                  ('{serverid}', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) """
         cur.execute(prefs_query)
         conn.commit()
-        conn.close()
+    conn.close()
 
 
 def get_log_item(serverid, logitem):
@@ -338,7 +338,7 @@ def check_snipes(serverid):
                                  ('{serverid}', 0, 0, 0, 0, 0) """
         cur.execute(prefs_query)
         conn.commit()
-        conn.close()
+    conn.close()
 
 
 def check_rolereactions(messageid):
@@ -355,7 +355,7 @@ def check_rolereactions(messageid):
                                  ('{messageid}', 'None', 'None') """
         cur.execute(prefs_query)
         conn.commit()
-        conn.close()
+    conn.close()
 
 
 def get_roleist(messageid):
