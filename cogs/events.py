@@ -3,7 +3,7 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, diff_lists
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
-    get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64
+    get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64, check_rolereactions
 import os
 import requests
 from discord.utils import get
@@ -568,6 +568,14 @@ class Events(commands.Cog):
         # file = open(avatar, "wb")
         # file.write(image.content)
         # file.close()
+
+    @commands.Cog.listener()
+    # Look for incoming messages in DMs and in Chat.
+    async def on_raw_reaction_add(self, payload):
+        if payload.author.bot:
+            # if it is a bot then return the code from here without going further.
+            return
+        print("Added reaction")
 
 
 def banpredicate(event):

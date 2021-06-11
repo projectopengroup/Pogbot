@@ -8,7 +8,8 @@ from utils.pogfunctions import send_embed, create_welcome_card
 from utils.pogesquelle import get_prefix, set_welcome_message, \
     set_welcome_dm_message, set_welcome_role, set_welcome_card, \
     set_welcome_channel, reset_welcome_message, set_global_welcomeimg, \
-    set_global_bannercolor, set_global_bgcolor, check_global_user, set_log_item, set_all_log_items
+    set_global_bannercolor, set_global_bgcolor, check_global_user, set_log_item, set_all_log_items, check_rolereactions, \
+    set_rolelist, set_emojilist
 
 current_users = set()
 
@@ -105,69 +106,143 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
 
                                 reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
                                 if "create" in str(reply.content.lower()):
-                                    embededit = await send_embed(ctx, send_option=2,
-                                                                 title=f"**Reaction Role Setup**",
-                                                                 description="Type the reaction role text that you "
-                                                                             "would like to display in this channel",
-                                                                 color=0x08d5f7,
-                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png',
-                                                                 fields=[('Example: ',
-                                                                          "React to <:Check:845178458426179605> to get "
-                                                                          "the ServerPings role, "
-                                                                          "<:Shaka:843035933460267018> to get the "
-                                                                          "EventPings role, and "
-                                                                          "<:Pogbot:845176348661383188> to get the "
-                                                                          "GiveawayPings role!",
-                                                                          True)])
-                                    # Edit the message.
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
+                                    message_author = "bot"
+                                    while True:
+                                        embededit = await send_embed(ctx, send_option=2,
+                                                                     title=f"**Reaction Role Setup**",
+                                                                     description="Would you like members to react to a "
+                                                                                 "user message or a bot message?",
+                                                                     color=0x08d5f7,
+                                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                     fields=[('Respond with',
+                                                                              "**user**, **bot**, or **back**",
+                                                                              True)])
+                                        # Edit the message.
+                                        await pogsetupid.edit(embed=embededit)
+                                        await reply.delete()
 
-                                    rr_text = ""
-                                    rr_emotes_roles = []
+                                        reply = await self.bot.wait_for('message', timeout=30, check=checkAuthor)
+                                        if "user" in str(reply.content.lower()):
+                                            message_author = "user"
+                                            break
+                                        elif "bot" in str(reply.content.lower()):
+                                            message_author = "bot"
+                                            break
+                                        elif "back" in str(reply.content.lower()):
+                                            break
 
-                                    reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
-                                    if reply:
-                                        rr_text = reply.content
-                                        while True:
-                                            embededit = await send_embed(ctx, send_option=2,
-                                                                         title=f"**Reaction Role Setup**",
-                                                                         description="**Respond with the name or ID "
-                                                                                     f"for the role you'd like to hand "
-                                                                                     f"out to users when they react "
-                                                                                     f"with the indicated emote, or "
-                                                                                     f"respond Done to finish the "
-                                                                                     f"setup.**",
-                                                                         color=0x08d5f7,
-                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png')
-                                            # Edit the message.
-                                            await pogsetupid.edit(embed=embededit)
-                                            await reply.delete()
-                                            reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
-                                            if "done" in str(reply.content.lower()):
+                                    if "back" not in str(reply.content.lower()):
+                                        embededit = await send_embed(ctx, send_option=2,
+                                                                     title=f"**Reaction Role Setup**",
+                                                                     description="Type the reaction role text that you "
+                                                                                 "would like to display in this channel",
+                                                                     color=0x08d5f7,
+                                                                     thumbnail='https://i.imgur.com/rYKYpDw.png',
+                                                                     fields=[('Example: ',
+                                                                              "React to <:Check:845178458426179605> to get "
+                                                                              "the ServerPings role, "
+                                                                              "<:Shaka:843035933460267018> to get the "
+                                                                              "EventPings role, and "
+                                                                              "<:Pogbot:845176348661383188> to get the "
+                                                                              "GiveawayPings role!",
+                                                                              True)])
+                                        # Edit the message.
+                                        await pogsetupid.edit(embed=embededit)
+                                        await reply.delete()
+
+                                        rr_text = ""
+                                        rr_emotes_roles = []
+
+                                        reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                        if reply:
+                                            rr_text = reply.content
+                                            rr_msg = None
+                                            if message_author == "bot":
+                                                rr_msg = await ctx.send(rr_text)
                                                 await reply.delete()
-                                                await pogsetupid.delete()
-                                                break
-                                            rr_role = reply.content
+                                            else:
+                                                rr_msg = reply
 
-                                            embededit = await send_embed(ctx, send_option=2,
-                                                                         title=f"**Reaction Role Setup**",
-                                                                         description="**Respond with an emote to "
-                                                                                     "associate with that role.**",
-                                                                         color=0x08d5f7,
-                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png')
-                                            # Edit the message.
-                                            await pogsetupid.edit(embed=embededit)
-                                            await reply.delete()
-                                            reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
-                                            rr_emote = reply.content
-                                            rr_emotes_roles.append((rr_role, rr_emote))
-                                        rr_msg = await send_embed(ctx, send_option=1, description=rr_text,
-                                                                  color=0x08d5f7)
-                                        for emote in rr_emotes_roles:
-                                            await rr_msg.add_reaction(emote[1])
-                                        current_users.remove(ctx.guild.id)
-                                        return
+                                            while True:
+                                                embededit = await send_embed(ctx, send_option=2,
+                                                                             title=f"**Reaction Role Setup**",
+                                                                             description="**Respond with the name or "
+                                                                                         "ID for the role you'd like to"
+                                                                                         " hand out to users when they"
+                                                                                         " react with the indicated "
+                                                                                         "emote, or respond Done to "
+                                                                                         "finish the setup.**",
+                                                                             color=0x08d5f7,
+                                                                             thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                                # Edit the message.
+                                                await pogsetupid.edit(embed=embededit)
+                                                g_role = None
+                                                while True:
+                                                    reply = await self.bot.wait_for('message', timeout=60,
+                                                                                    check=checkAuthor)
+                                                    if "done" in str(reply.content.lower()):
+                                                        break
+                                                    g_role = discord.utils.get(ctx.guild.roles, name=reply.content)
+                                                    if not g_role and self.is_int(reply.content):
+                                                        g_role = discord.utils.get(ctx.guild.roles,
+                                                                                   id=int(reply.content))
+                                                    if not g_role and "@&" in reply.content:
+                                                        extra, role_id = reply.content.split("&")
+                                                        if ">" in role_id:
+                                                            role_id, end = role_id.split(">")
+                                                            if self.is_int(role_id):
+                                                                g_role = discord.utils.get(ctx.guild.roles,
+                                                                                           id=int(role_id))
+                                                    if not g_role:
+                                                        embededit = await send_embed(ctx, send_option=2,
+                                                                                     description=f"<:Pogbot_X"
+                                                                                                 f":850089728018874368>"
+                                                                                                 f" **Cannot find that "
+                                                                                                 f"role.**",
+                                                                                     color=0x08d5f7)
+                                                        await pogsetupid.edit(embed=embededit)
+                                                        await reply.delete()
+                                                    else:
+                                                        await reply.delete()
+                                                        break
+                                                if "done" in str(reply.content.lower()):
+                                                    await reply.delete()
+                                                    await pogsetupid.delete()
+                                                    break
+                                                rr_role = g_role.id
+                                                embededit = await send_embed(ctx, send_option=2,
+                                                                             title=f"**Reaction Role Setup**",
+                                                                             description="**React to the reaction role "
+                                                                                         "message with an emote you "
+                                                                                         "would like to assign to a "
+                                                                                         "role.**",
+                                                                             color=0x08d5f7,
+                                                                             thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                                # Edit the message.
+                                                await pogsetupid.edit(embed=embededit)
+
+                                                def reaction_check(reaction, user):
+                                                    return reaction.message.id == rr_msg.id and user.id == ctx.author.id
+
+                                                greaction, guser = await self.bot.wait_for('reaction_add', timeout=60,
+                                                                                           check=reaction_check)
+                                                await greaction.remove(guser)
+                                                rr_emote = greaction.emoji
+                                                rr_emotes_roles.append((str(rr_role), str(rr_emote)))
+
+                                            for emote in rr_emotes_roles:
+                                                await rr_msg.add_reaction(emote[1])
+                                            rolelist_string = ""
+                                            emojilist_string = ""
+                                            for role in rr_emotes_roles:
+                                                rolelist_string = rolelist_string + role[0] + "|"
+                                            for emoji in rr_emotes_roles:
+                                                emojilist_string = emojilist_string + emoji[1] + "|"
+                                            check_rolereactions(rr_msg.id)
+                                            set_rolelist(rr_msg.id, rolelist_string)
+                                            set_emojilist(rr_msg.id, emojilist_string)
+                                            current_users.remove(ctx.guild.id)
+                                            return
 
                                 elif "delete" in str(reply.content.lower()):
                                     embededit = await send_embed(ctx, send_option=2,
@@ -483,8 +558,8 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                         elif "disable" in str(reply.content.lower()):
                                             set_log_item(ctx.guild.id, "0", "RoleMade")
                                             set_log_item(ctx.guild.id, "0", "RoleDelete")
-                                            set_log_item(ctx.guild.id, "0",  "RoleUpdated")
-                                            set_log_item(ctx.guild.id, "0",  "RoleGiven")
+                                            set_log_item(ctx.guild.id, "0", "RoleUpdated")
+                                            set_log_item(ctx.guild.id, "0", "RoleGiven")
                                             set_log_item(ctx.guild.id, "0", "RoleRemoved")
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          description=f'<:Check:845178458426179605'
