@@ -3,7 +3,7 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, diff_lists
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
-    get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64, check_rolereactions
+    get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64, check_rolereactions, get_rolelist, get_emojilist
 import os
 import requests
 from discord.utils import get
@@ -572,11 +572,48 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for incoming messages in DMs and in Chat.
     async def on_raw_reaction_add(self, payload):
-        # if payload.author.bot: # THROWING ERROR?
-        # if it is a bot then return the code from here without going further.
-        # return
-        print("Added reaction")
+        if payload.member.bot:
+            # if it is a bot then return the code from here without going further.
+            return
 
+        emojis = get_emojilist(payload.message_id)
+        if emojis == 0:
+            return
+        else:
+            emojilist = emojis.split("|")
+            for emoji in range(0, len(emojilist)):
+                if str(payload.emoji) == emojilist[emoji]:
+                    roles = get_rolelist(payload.message_id)
+                    rolelist = roles.split("|")
+                    role = int(rolelist[emoji])
+                    g_role = discord.utils.get(self.bot.get_guild(payload.guild_id).roles, id=role)
+                    print("Added reaction role.")
+                    await payload.member.add_roles(g_role)
+
+    @commands.Cog.listener()
+    # Look for incoming messages in DMs and in Chat.
+    async def on_raw_reaction_remove(self, payload):
+        # get the server name from the payload
+        guild = self.bot.get_guild(payload.guild_id)
+        # payload.member is not availible for REACTION_REMOVE event type
+        member = guild.get_member(payload.user_id)
+        if member.bot:
+            # if it is a bot then return the code from here without going further.
+            return
+
+        emojis = get_emojilist(payload.message_id)
+        if emojis == 0:
+            return
+        else:
+            emojilist = emojis.split("|")
+            for emoji in range(0, len(emojilist)):
+                if str(payload.emoji) == emojilist[emoji]:
+                    roles = get_rolelist(payload.message_id)
+                    rolelist = roles.split("|")
+                    role = int(rolelist[emoji])
+                    g_role = discord.utils.get(self.bot.get_guild(payload.guild_id).roles, id=role)
+                    print("Removed reaction role.")
+                    await member.remove_roles(g_role)
 
 def banpredicate(event):
     return event.action is discord.AuditLogAction.ban

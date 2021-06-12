@@ -358,7 +358,7 @@ def check_rolereactions(messageid):
     conn.close()
 
 
-def get_roleist(messageid):
+def get_rolelist(messageid):
     conn = sqlite3.connect('prefs.db')
     cur = conn.cursor()
     cur.execute(f"SELECT `RoleList` FROM rolereactions WHERE MessageID={messageid}")

@@ -9,7 +9,7 @@ from utils.pogesquelle import get_prefix, set_welcome_message, \
     set_welcome_dm_message, set_welcome_role, set_welcome_card, \
     set_welcome_channel, reset_welcome_message, set_global_welcomeimg, \
     set_global_bannercolor, set_global_bgcolor, check_global_user, set_log_item, set_all_log_items, check_rolereactions, \
-    set_rolelist, set_emojilist
+    set_rolelist, set_emojilist, get_emojilist, get_rolelist
 
 current_users = set()
 
@@ -245,19 +245,66 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                             return
 
                                 elif "delete" in str(reply.content.lower()):
-                                    embededit = await send_embed(ctx, send_option=2,
-                                                                 title=f"**Reaction Role Setup**",
-                                                                 description="Respond with the message id of the "
-                                                                             "reaction role you would like to delete.",
-                                                                 color=0x08d5f7,
-                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png')
-                                    # Edit the message.
-                                    await pogsetupid.edit(embed=embededit)
-                                    await reply.delete()
-                                    reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                    while True:
+                                        embededit = await send_embed(ctx, send_option=2,
+                                                                     title=f"**Reaction Role Setup**",
+                                                                     description="**Respond with the message id of the "
+                                                                                 "reaction role message you would like "
+                                                                                 "to delete, or type Back to go back.**",
+                                                                     color=0x08d5f7,
+                                                                     thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                        # Edit the message.
+                                        await pogsetupid.edit(embed=embededit)
+                                        await reply.delete()
+                                        reply = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                                        if "back" in str(reply.content.lower()):
+                                            break
 
-                                    current_users.remove(ctx.guild.id)
-                                    return
+                                        if self.is_int(reply.content):
+                                            real_message = get_emojilist(int(reply.content))
+                                            if real_message == 0:
+                                                embededit = await send_embed(ctx, send_option=2,
+                                                                             title=f"**Reaction Role Setup**",
+                                                                             description="<:Pogbot_X:850089728018874368> "
+                                                                                         "**Could not find message**",
+                                                                             color=0x08d5f7,
+                                                                             thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                                # Edit the message.
+                                                await pogsetupid.edit(embed=embededit)
+                                            else:
+                                                rr_msg = await ctx.fetch_message(int(reply.content))
+                                                if rr_msg:
+                                                    await rr_msg.delete()
+                                                    await reply.delete()
+                                                    embededit = await send_embed(ctx, send_option=2,
+                                                                                 title=f"**Reaction Role Setup**",
+                                                                                 description="<:Check:845178458426179605> "
+                                                                                             "**Successfully removed the "
+                                                                                             "reaction role message**",
+                                                                                 color=0x08d5f7,
+                                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                                    # Edit the message.
+                                                    await pogsetupid.edit(embed=embededit)
+                                                    current_users.remove(ctx.guild.id)
+                                                    return
+                                                else:
+                                                    embededit = await send_embed(ctx, send_option=2,
+                                                                                 title=f"**Reaction Role Setup**",
+                                                                                 description="<:Pogbot_X:850089728018874368> "
+                                                                                             "**Could not find message**",
+                                                                                 color=0x08d5f7,
+                                                                                 thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                                    # Edit the message.
+                                                    await pogsetupid.edit(embed=embededit)
+                                        else:
+                                            embededit = await send_embed(ctx, send_option=2,
+                                                                         title=f"**Reaction Role Setup**",
+                                                                         description="<:Pogbot_X:850089728018874368> "
+                                                                                     "**Could not find message**",
+                                                                         color=0x08d5f7,
+                                                                         thumbnail='https://i.imgur.com/rYKYpDw.png')
+                                            # Edit the message.
+                                            await pogsetupid.edit(embed=embededit)
                                 elif "back" in str(reply.content.lower()):
                                     # If it's found then form our embed.
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**",
