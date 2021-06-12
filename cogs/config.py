@@ -271,6 +271,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                                                              thumbnail='https://i.imgur.com/rYKYpDw.png')
                                                 # Edit the message.
                                                 await pogsetupid.edit(embed=embededit)
+                                                await asyncio.sleep(2)
                                             else:
                                                 rr_msg = await ctx.fetch_message(int(reply.content))
                                                 if rr_msg:
@@ -296,6 +297,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                                                                  thumbnail='https://i.imgur.com/rYKYpDw.png')
                                                     # Edit the message.
                                                     await pogsetupid.edit(embed=embededit)
+                                                    await asyncio.sleep(2)
                                         else:
                                             embededit = await send_embed(ctx, send_option=2,
                                                                          title=f"**Reaction Role Setup**",
@@ -305,6 +307,7 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
                                                                          thumbnail='https://i.imgur.com/rYKYpDw.png')
                                             # Edit the message.
                                             await pogsetupid.edit(embed=embededit)
+                                            await asyncio.sleep(2)
                                 elif "back" in str(reply.content.lower()):
                                     # If it's found then form our embed.
                                     embededit = await send_embed(ctx, send_option=2, title=f"**Pogbot Setup**",

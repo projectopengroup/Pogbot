@@ -589,6 +589,9 @@ class Events(commands.Cog):
                     g_role = discord.utils.get(self.bot.get_guild(payload.guild_id).roles, id=role)
                     print("Added reaction role.")
                     await payload.member.add_roles(g_role)
+                    await send_embed(payload.member, title="Role Given",
+                                     description=f"You were given the role `{g_role.name}` in the server "
+                                                 f"`{self.bot.get_guild(payload.guild_id).name}`.", color=0x08d5f7)
 
     @commands.Cog.listener()
     # Look for incoming messages in DMs and in Chat.
@@ -614,6 +617,9 @@ class Events(commands.Cog):
                     g_role = discord.utils.get(self.bot.get_guild(payload.guild_id).roles, id=role)
                     print("Removed reaction role.")
                     await member.remove_roles(g_role)
+                    await send_embed(member, title="Role Removed",
+                                     description=f"The role `{g_role.name}` was removed from you in the server "
+                                                 f"`{guild.name}`.", color=0x08d5f7)
 
 def banpredicate(event):
     return event.action is discord.AuditLogAction.ban
