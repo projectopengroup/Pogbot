@@ -11,6 +11,7 @@ rm -rf ./cogs/moderator.py
 rm -rf ./cogs/music.py
 rm -rf ./cogs/config.py
 rm -rf ./cogs/commanderrorhandler.py
+rm -rf ./utils/gamelogic.py
 rm -rf ./utils/pogesquelle.py
 rm -rf ./utils/pogfunctions.py
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/index.py
@@ -27,6 +28,7 @@ wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/cogs/config.
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/cogs/commanderrorhandler.py
 cd ..
 cd utils
+wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/utils/gamelogic.py
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/utils/pogesquelle.py
 wget https://raw.githubusercontent.com/projectopengroup/Pogbot/main/utils/pogfunctions.py
 cd ..
