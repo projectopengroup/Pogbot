@@ -572,9 +572,9 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for incoming messages in DMs and in Chat.
     async def on_raw_reaction_add(self, payload):
-        if payload.author.bot:
-            # if it is a bot then return the code from here without going further.
-            return
+        # if payload.author.bot: # THROWING ERROR?
+        # if it is a bot then return the code from here without going further.
+        # return
         print("Added reaction")
 
 
