@@ -203,55 +203,68 @@ class Games(commands.Cog, name="Games"):
             return
 
         while True:
-            user_move = await self.bot.wait_for('message', timeout=30, check=checkAuthor)
-            if user_move.content.lower() == "h" or user_move.content.lower() == "hit":
-                drawn_card = random.choice(deck)
-                user_hand.append(drawn_card)
-                deck.remove(drawn_card)
-                if get_total(user_hand) > 21:
-                    await end_game("Lose")
-                    return
-                elif get_total(user_hand) == 21:
-                    await end_game("Win")
-                    return
+            try:
+                user_move = await self.bot.wait_for('message', timeout=30, check=checkAuthor)
+                if user_move.content.lower() == "h" or user_move.content.lower() == "hit":
+                    drawn_card = random.choice(deck)
+                    user_hand.append(drawn_card)
+                    deck.remove(drawn_card)
+                    if get_total(user_hand) > 21:
+                        await end_game("Lose")
+                        return
+                    elif get_total(user_hand) == 21:
+                        await end_game("Win")
+                        return
 
-            elif user_move.content.lower() == "s" or user_move.content.lower() == "stand":
-                while True:
-                    if get_total(dealer_hand) >= 17:
-                        if get_total(dealer_hand) == 17 and ("♠ A" in dealer_hand or "♦ A" in dealer_hand or "♣ A" in dealer_hand or "♥ A" in dealer_hand):
+                elif user_move.content.lower() == "s" or user_move.content.lower() == "stand":
+                    while True:
+                        if get_total(dealer_hand) >= 17:
+                            if get_total(dealer_hand) == 17 and ("♠ A" in dealer_hand or "♦ A" in dealer_hand or "♣ A" in dealer_hand or "♥ A" in dealer_hand):
+                                drawn_card = random.choice(deck)
+                                dealer_hand.append(drawn_card)
+                                deck.remove(drawn_card)
+                                if get_total(dealer_hand) > 21:
+                                    await end_game("Win")
+                                    return
+                            else:
+                                if get_total(dealer_hand) > get_total(user_hand):
+                                    await end_game("Lose")
+                                    return
+                                elif get_total(dealer_hand) < get_total(user_hand):
+                                    await end_game("Win")
+                                    return
+                                elif get_total(dealer_hand) == get_total(user_hand):
+                                    await end_game("Tied")
+                                    return
+                        else:
                             drawn_card = random.choice(deck)
                             dealer_hand.append(drawn_card)
                             deck.remove(drawn_card)
                             if get_total(dealer_hand) > 21:
                                 await end_game("Win")
                                 return
-                        else:
-                            if get_total(dealer_hand) > get_total(user_hand):
-                                await end_game("Lose")
-                                return
-                            elif get_total(dealer_hand) < get_total(user_hand):
-                                await end_game("Win")
-                                return
-                            elif get_total(dealer_hand) == get_total(user_hand):
-                                await end_game("Tied")
-                                return
-                    else:
-                        drawn_card = random.choice(deck)
-                        dealer_hand.append(drawn_card)
-                        deck.remove(drawn_card)
-                        if get_total(dealer_hand) > 21:
-                            await end_game("Win")
-                            return
 
-            new_embed = await send_embed(ctx, send_option=2, author="Blackjack Game", author_pfp=ctx.author.avatar_url,
-                                         description=f"**{ctx.author.display_name}'s Hand**\nCards: "
-                                                     f"{get_cards(user_hand)}\nTotal: "
-                                                     f"`{get_total(user_hand)}`\n"
-                                                     f"**Dealer's Hand**\nCards: "
-                                                     f"`{dealer_hand[0]}`, `?`\nTotal: "
-                                                     f"`?`",
-                                         color=0x08d5f7)
-            await game_embed.edit(embed=new_embed)
+                new_embed = await send_embed(ctx, send_option=2, author="Blackjack Game", author_pfp=ctx.author.avatar_url,
+                                             description=f"**{ctx.author.display_name}'s Hand**\nCards: "
+                                                         f"{get_cards(user_hand)}\nTotal: "
+                                                         f"`{get_total(user_hand)}`\n"
+                                                         f"**Dealer's Hand**\nCards: "
+                                                         f"`{dealer_hand[0]}`, `?`\nTotal: "
+                                                         f"`?`",
+                                             color=0x08d5f7)
+                await game_embed.edit(embed=new_embed)
+            except asyncio.TimeoutError:
+                new_embed = await send_embed(ctx, send_option=2, title=f"You Timed Out", author="Blackjack Game",
+                                             author_pfp=ctx.author.avatar_url,
+                                             description=f"**{ctx.author.display_name}'s Hand**\nCards: "
+                                                         f"{get_cards(user_hand)}\nTotal: "
+                                                         f"`{get_total(user_hand)}`\n"
+                                                         f"**Dealer's Hand**\nCards: "
+                                                         f"{get_cards(dealer_hand)}\nTotal: "
+                                                         f"`{get_total(dealer_hand)}`",
+                                             color=discord.Colour.red())
+                await game_embed.edit(embed=new_embed)
+                return
 
 
 def setup(bot):
