@@ -1,9 +1,13 @@
 import asyncio
+import random
 
 import discord
 from discord.ext import commands
 
 from utils.gamelogic import Connect4Game
+from utils.pogesquelle import get_prefix
+from utils.pogfunctions import send_embed
+
 
 # CONNECT4 CODE © 2017 Benjamin Mintz <bmintz@protonmail.com> MIT Licensed
 
@@ -109,6 +113,145 @@ class Games(commands.Cog, name="Games"):
             await message.clear_reactions()
         except discord.HTTPException:
             pass
+
+    @commands.command(name='blackjack', aliases=['bj'],
+                      brief='Play blackjack.',
+                      decription='Play a game of blackjack against the computer.')
+    async def blackjack(self, ctx):
+        deck = ['♠ A', '♠ 2', '♠ 3', '♠ 4', '♠ 5', '♠ 6', '♠ 7', '♠ 8', '♠ 9', '♠ 10', '♠ J', '♠ Q', '♠ K',
+                '♦ A', '♦ 2', '♦ 3', '♦ 4', '♦ 5', '♦ 6', '♦ 7', '♦ 8', '♦ 9', '♦ 10', '♦ J', '♦ Q', '♦ K',
+                '♣ A', '♣ 2', '♣ 3', '♣ 4', '♣ 5', '♣ 6', '♣ 7', '♣ 8', '♣ 9', '♣ 10', '♣ J', '♣ Q', '♣ K',
+                '♥ A', '♥ 2', '♥ 3', '♥ 4', '♥ 5', '♥ 6', '♥ 7', '♥ 8', '♥ 9', '♥ 10', '♥ J', '♥ Q', '♥ K']
+
+        def get_total(cards):
+            total = 0
+            values = []
+            aces = []
+            for pcard in cards:
+                suit, value = pcard.split(" ")
+                if value != "A":
+                    values.append(value)
+                elif value == "A":
+                    aces.append(value)
+            for value in values:
+                if value == "K" or value == "Q" or value == "J":
+                    total += 10
+                else:
+                    total += int(value)
+            for value in aces:
+                if value == "A" and total <= 10:
+                    total += 11
+                elif value == "A" and total > 10:
+                    total += 1
+            return total
+
+        def get_cards(hand):
+            card_list_string = ""
+            for card in range(0, len(hand)):
+                if card >= (len(hand)-1):
+                    card_list_string += f"`{hand[card]}`"
+                else:
+                    card_list_string += f"`{hand[card]}`, "
+            return card_list_string
+
+        async def end_game(result):
+            embed_color = None
+            if result == "Win":
+                embed_color = discord.Colour.green()
+            elif result == "Lose":
+                embed_color = discord.Colour.red()
+            elif result == "Tied":
+                embed_color = 0x08d5f7
+
+            new_embed = await send_embed(ctx, send_option=2, title=f"You {result}", author="Blackjack Game",
+                                         author_pfp=ctx.author.avatar_url,
+                                         description=f"**{ctx.author.display_name}'s Hand**\nCards: "
+                                                     f"{get_cards(user_hand)}\nTotal: "
+                                                     f"`{get_total(user_hand)}`\n"
+                                                     f"**Dealer's Hand**\nCards: "
+                                                     f"{get_cards(dealer_hand)}\nTotal: "
+                                                     f"`{get_total(dealer_hand)}`",
+                                         color=embed_color)
+            await game_embed.edit(embed=new_embed)
+            return
+
+        def checkAuthor(message):
+            return message.author.id == ctx.author.id and message.guild.id == ctx.guild.id
+
+        user_hand = []
+        dealer_hand = []
+        u_initial_cards = random.sample(deck, 2)
+        for card in u_initial_cards:
+            user_hand.append(card)
+            deck.remove(card)
+        d_initial_cards = random.sample(deck, 2)
+        for card in d_initial_cards:
+            dealer_hand.append(card)
+            deck.remove(card)
+
+        game_embed = await send_embed(ctx, send_option=1, author="Blackjack Game", author_pfp=ctx.author.avatar_url,
+                                      description=f"**{ctx.author.display_name}'s Hand**\nCards: "
+                                                  f"{get_cards(user_hand)}\nTotal: "
+                                                  f"`{get_total(user_hand)}`\n"
+                                                  f"**Dealer's Hand**\nCards: "
+                                                  f"`{dealer_hand[0]}`, `?`\nTotal: "
+                                                  f"`?`",
+                                      color=0x08d5f7)
+
+        if get_total(user_hand) == 21:
+            await end_game("Win")
+            return
+
+        while True:
+            user_move = await self.bot.wait_for('message', timeout=30, check=checkAuthor)
+            if user_move.content.lower() == "h" or user_move.content.lower() == "hit":
+                drawn_card = random.choice(deck)
+                user_hand.append(drawn_card)
+                deck.remove(drawn_card)
+                if get_total(user_hand) > 21:
+                    await end_game("Lose")
+                    return
+                elif get_total(user_hand) == 21:
+                    await end_game("Win")
+                    return
+
+            elif user_move.content.lower() == "s" or user_move.content.lower() == "stand":
+                while True:
+                    if get_total(dealer_hand) >= 17:
+                        if get_total(dealer_hand) == 17 and ("♠ A" in dealer_hand or "♦ A" in dealer_hand or "♣ A" in dealer_hand or "♥ A" in dealer_hand):
+                            drawn_card = random.choice(deck)
+                            dealer_hand.append(drawn_card)
+                            deck.remove(drawn_card)
+                            if get_total(dealer_hand) > 21:
+                                await end_game("Win")
+                                return
+                        else:
+                            if get_total(dealer_hand) > get_total(user_hand):
+                                await end_game("Lose")
+                                return
+                            elif get_total(dealer_hand) < get_total(user_hand):
+                                await end_game("Win")
+                                return
+                            elif get_total(dealer_hand) == get_total(user_hand):
+                                await end_game("Tied")
+                                return
+                    else:
+                        drawn_card = random.choice(deck)
+                        dealer_hand.append(drawn_card)
+                        deck.remove(drawn_card)
+                        if get_total(dealer_hand) > 21:
+                            await end_game("Win")
+                            return
+
+            new_embed = await send_embed(ctx, send_option=2, author="Blackjack Game", author_pfp=ctx.author.avatar_url,
+                                         description=f"**{ctx.author.display_name}'s Hand**\nCards: "
+                                                     f"{get_cards(user_hand)}\nTotal: "
+                                                     f"`{get_total(user_hand)}`\n"
+                                                     f"**Dealer's Hand**\nCards: "
+                                                     f"`{dealer_hand[0]}`, `?`\nTotal: "
+                                                     f"`?`",
+                                         color=0x08d5f7)
+            await game_embed.edit(embed=new_embed)
 
 
 def setup(bot):
