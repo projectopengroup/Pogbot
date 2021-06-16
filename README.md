@@ -7,7 +7,7 @@ This is an open source community ran project. Join the discord for more informat
 
 ## Adding Pogbot
 
-To add Pogbot to your discord server, send a message to Pogbot#0689 with the keyword **add**.
+To add Pogbot to your discord server, [vist this link](https://discord.com/oauth2/authorize?client_id=843272975771631616&permissions=4294967287&scope=bot).
 
 ## Getting Started
 
