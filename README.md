@@ -26,7 +26,7 @@ Once Pogbot is added, run the command !setup to get antiquated with Pogbot.
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)** -> Developer. Foundational code contributions. 
 * **[DJ DeHao(DJ DeHao#4627 on discord)](https://github.com/DJ-DeHao)** -> Coder. Code contributions. (avatar command).
 * **[Gummies(Panda Gummies#2155 on discord)](https://github.com/Gummies351)** -> Coder. Code contributions. (echo command).
-* **[ProgrammingMyLife(ravenig#8429 on discord)](https://github.com/ProgrammingMyLife)** -> Coder. Code contributions. (main check and run.sh).
+* **[ProgrammingMyLife(ravenig#8429 on discord)](https://github.com/ProgrammingMyLife)** -> Coder. Code contributions. (main check, run.sh, meme command).
 * **[Jaycon(Jaycon#4073 on discord)](https://github.com/jaycon2)** -> Coder. Code contributions. (icon command).
 
 ## Would you like to contribute?
