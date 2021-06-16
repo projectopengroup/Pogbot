@@ -163,11 +163,19 @@ class Fun(commands.Cog, name="Fun Stuff"):
         await send_embed(ctx, author_pfp='https://i.imgur.com/3VpCASk.png', author='Magic 8-Ball',
                          description=f'**{random.choice(magic)}**', color=0x08d5f7, footer=f'{question}')
 
+    @commands.command(name='coinflip', aliases=['cf', 'flip'],
+                      brief='Flips a coin.',
+                      description="Flips a coin and responds with heads or tails..")
+    async def coinflip(self, ctx):
+        flip = ["Heads.",
+                "Tails."]
+        await send_embed(ctx, author_pfp='https://i.imgur.com/ytyLEoJ.png', author='Coinflip',
+                         description=f'**{random.choice(flip)}**', color=0x08d5f7)
+
     @commands.command(name="meme", brief="Sends a random meme",
                       description="A simple command that sends you a random meme")
     async def meme(self, ctx):
         response = requests.get("https://meme-api.herokuapp.com/gimme")
-        print(response.text)
         jsondata = response.json()
         title = jsondata['title']
         link = jsondata['postLink']
@@ -179,7 +187,6 @@ class Fun(commands.Cog, name="Fun Stuff"):
         subinfo = requests.get(f"https://www.reddit.com/r/{sub}/about.json", headers={'User-agent': 'Pogbot'})
         subinfoj = subinfo.json()
         icon = subinfoj['data']['icon_img']
-        # <:Upvote:854785750712582154>
         await send_embed(ctx, author_pfp=icon, author=f'{sub}', title=title, image=image, color=0x08d5f7,
                          url=link, fields=[("<:Reddit:854788220310519839> User", f"{author}", True),
                                            ('<:Upvote:854785750712582154> Upvotes', f"{upvotes}", True)])
