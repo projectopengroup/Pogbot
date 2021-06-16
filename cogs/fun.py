@@ -136,6 +136,33 @@ class Fun(commands.Cog, name="Fun Stuff"):
                  "If the shocker don't rock her. \nSpock Her."]
         await send_embed(ctx, title=random.choice(spock), color=0x08d5f7)
 
+    @commands.command(name='8ball', aliases=['eball', '8b', 'eightball', 'magic8', 'magic8ball', 'magiceight'],
+                      brief='Responds with a Magic 8ball response.',
+                      description="Answers your question with a Magic 8ball response..")
+    async def eball(self, ctx, *, question):
+        magic = ["It is certain.",
+                 "It is decidedly so.",
+                 "Without a doubt.",
+                 "Yes definitely.",
+                 "You may rely on it.",
+                 "As I see it, yes.",
+                 "Most likely.",
+                 "Outlook good.",
+                 "Yes.",
+                 "Signs point to yes.",
+                 "Reply hazy try again.",
+                 "Ask again later.",
+                 "Better not tell you now.",
+                 "Cannot predict now.",
+                 "Concentrate and ask again.",
+                 "Don't count on it.",
+                 "My reply is no.",
+                 "My sources say no.",
+                 "Outlook not so good.",
+                 "Very doubtful."]
+        await send_embed(ctx, author_pfp='https://i.imgur.com/3VpCASk.png', author='Magic 8-Ball',
+                         description=f'**{random.choice(magic)}**', color=0x08d5f7, footer=f'{question}')
+
     @commands.command(name="meme", brief="Sends a random meme",
                       description="A simple command that sends you a random meme")
     async def meme(self, ctx):
