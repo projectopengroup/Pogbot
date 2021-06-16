@@ -5,3 +5,4 @@ Pillow
 colorthief
 requests-cache
 beautifulsoup4
+simplejson

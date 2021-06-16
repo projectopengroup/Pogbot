@@ -1,8 +1,8 @@
-
 import requests
 import random
 from discord.ext import commands
 from utils.pogfunctions import send_embed
+import simplejson as json
 
 
 # https://github.com/public-apis/public-apis
@@ -21,7 +21,7 @@ class Fun(commands.Cog, name="Fun Stuff"):
     async def cat(self, ctx):
 
         request = requests.get(url='https://thecatapi.com/api/images/get',
-                                   headers={"Accept": "application/json", 'Connection': 'close'})
+                               headers={"Accept": "application/json", 'Connection': 'close'})
         await send_embed(ctx, title="Cats", description='Random cat picture', image=f'{request.url}',
                          color=0x08d5f7)
 
@@ -30,8 +30,8 @@ class Fun(commands.Cog, name="Fun Stuff"):
     async def dog(self, ctx):
 
         request = requests.get(url='https://thedogapi.com/api/images/get',
-                                        headers={"Accept": "application/json",
-                                                 'Connection': 'close'})
+                               headers={"Accept": "application/json",
+                                        'Connection': 'close'})
         await send_embed(ctx, title="Dogs", description='Random dog picture', image=f'{request.url}',
                          color=0x08d5f7)
 
@@ -136,13 +136,14 @@ class Fun(commands.Cog, name="Fun Stuff"):
                  "**Yo Mama's so fat, even Spock thought she outweighed the needs of the many!**",
                  "If the shocker don't rock her. \nSpock Her."]
         await send_embed(ctx, title=random.choice(spock), color=0x08d5f7)
-    
-    
-    @commands.command(name="meme", brief="Sends a random meme", description="A simple command that sends you a random meme")
+
+    @commands.command(name="meme", brief="Sends a random meme",
+                      description="A simple command that sends you a random meme")
     async def meme(self, ctx):
-      response = requests.get("https://meme-api.herokuapp.com/gimme").text
-      jsondata = json.loads(response)
-      await send_embed(title="A random meme", image=jsondata["url"])
+        response = requests.get("https://meme-api.herokuapp.com/gimme").text
+        jsondata = json.loads(response)
+        await send_embed(ctx, title="A random meme", image=jsondata["url"], color=0x08d5f7)
+
 
 def setup(bot):
     bot.add_cog(Fun(bot))
