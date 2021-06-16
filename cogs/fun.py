@@ -2,7 +2,6 @@ import requests
 import random
 from discord.ext import commands
 from utils.pogfunctions import send_embed
-import simplejson as json
 
 
 # https://github.com/public-apis/public-apis
@@ -140,9 +139,23 @@ class Fun(commands.Cog, name="Fun Stuff"):
     @commands.command(name="meme", brief="Sends a random meme",
                       description="A simple command that sends you a random meme")
     async def meme(self, ctx):
-        response = requests.get("https://meme-api.herokuapp.com/gimme").text
-        jsondata = json.loads(response)
-        await send_embed(ctx, title="A random meme", image=jsondata["url"], color=0x08d5f7, url=jsondata["postlink"])
+        response = requests.get("https://meme-api.herokuapp.com/gimme")
+        print(response.text)
+        jsondata = response.json()
+        title = jsondata['title']
+        link = jsondata['postLink']
+        image = jsondata['url']
+        author = jsondata['author']
+        sub = jsondata['subreddit']
+        upvotes = jsondata['ups']
+
+        subinfo = requests.get(f"https://www.reddit.com/r/{sub}/about.json", headers={'User-agent': 'Pogbot'})
+        subinfoj = subinfo.json()
+        icon = subinfoj['data']['icon_img']
+        # <:Upvote:854785750712582154>
+        await send_embed(ctx, author_pfp=icon, author=f'{sub}', title=title, image=image, color=0x08d5f7,
+                         url=link, fields=[("<:Reddit:854788220310519839> User", f"{author}", True),
+                                           ('<:Upvote:854785750712582154> Upvotes', f"{upvotes}", True)])
 
 
 def setup(bot):
