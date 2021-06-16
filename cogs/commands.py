@@ -288,6 +288,88 @@ class Commands(commands.Cog, name="Commands"):
                              timestamp=datetime.strptime(TimeStamp, '%Y-%m-%d %H:%M:%S.%f'),
                              footer=f"Message ID: {MessageID}\nDeleted")
 
+    @commands.command(name="createpoll", aliases=['newpoll', 'poll', 'makepoll'],
+                      brief='Creates a poll.',
+                      description="Creates a poll embed that members can vote on by reacting to the message.")
+    async def createpoll(self, ctx):
+        createpoll_desc_str = "React with the emotes to perform the desired actions.\n " \
+                              "\n<:OptionA:854536640625508393>" \
+                              " Edit Title\n<:OptionB:854536641519812618> Add Option (Max 10 options)\n" \
+                              "<:OptionC:854536641867415572> Finish\n"
+
+        cp_embed = await send_embed(ctx, send_option=1, title="<:PollIcon:854536641849589780> **Create Poll**",
+                                    description=createpoll_desc_str,
+                                    color=0x08d5f7)
+
+        def reaction_check(reaction, user):
+            return reaction.message.id == cp_embed.id and user.id == ctx.author.id
+
+        def checkAuthor(message):
+            return message.author.id == ctx.author.id and message.guild.id == ctx.guild.id
+
+        await cp_embed.add_reaction('<:OptionA:854536640625508393>')
+        await cp_embed.add_reaction('<:OptionB:854536641519812618>')
+        await cp_embed.add_reaction('<:OptionC:854536641867415572>')
+
+        poll_options = []
+        poll_title = "No Title"
+
+        while True:
+            if len(poll_options) < 10:
+                greaction, guser = await self.bot.wait_for('reaction_add', timeout=60, check=reaction_check)
+                try:
+                    await greaction.remove(guser)
+                except discord.Forbidden:
+                    print("[Error]: MissingPermissions: Unable to remove reaction")
+                if str(greaction.emoji) == "<:OptionA:854536640625508393>":
+                    add_option_embed = await send_embed(ctx, send_option=2,
+                                                        title="<:PollIcon:854536641849589780> **Create Poll**",
+                                                        description="**Edit poll title**\n"
+                                                                    "Respond with the new poll title", color=0x08d5f7)
+                    await cp_embed.edit(embed=add_option_embed)
+                    new_title = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                    try:
+                        await new_title.delete()
+                    except discord.Forbidden:
+                        print("[Error]: MissingPermissions: Unable to delete message")
+                    poll_title = new_title.content
+                elif str(greaction.emoji) == "<:OptionB:854536641519812618>":
+                    add_option_embed = await send_embed(ctx, send_option=2,
+                                                        title="<:PollIcon:854536641849589780> **Create Poll**",
+                                                        description="**Add a new poll option**\n"
+                                                                    "Respond with the option text", color=0x08d5f7)
+                    await cp_embed.edit(embed=add_option_embed)
+                    option = await self.bot.wait_for('message', timeout=60, check=checkAuthor)
+                    try:
+                        await option.delete()
+                    except discord.Forbidden:
+                        print("[Error]: MissingPermissions: Unable to delete message")
+                    poll_options.append(option.content)
+                elif str(greaction.emoji) == "<:OptionC:854536641867415572>":
+                    break
+                menu_embed = await send_embed(ctx, send_option=2,
+                                              title="<:PollIcon:854536641849589780> **Create Poll**",
+                                              description=createpoll_desc_str + f" \n`Added options: {len(poll_options)}`",
+                                              color=0x08d5f7)
+                await cp_embed.edit(embed=menu_embed)
+            else:
+                break
+
+        option_emotes = ["<:OptionA:854536640625508393>", "<:OptionB:854536641519812618>",
+                         "<:OptionC:854536641867415572>", "<:OptionD:854541014059581500>",
+                         "<:OptionE:854541014240460820>", "<:OptionF:854541014668935188>",
+                         "<:OptionG:854541014945234944>", "<:OptionH:854541017109233694>",
+                         "<:OptionI:854541014580461570>", "<:OptionJ:854541014815735809>"]
+        poll_string = ""
+        for p_option in range(0, len(poll_options)):
+            poll_string += option_emotes[p_option] + " " + poll_options[p_option] + "\n"
+
+        await cp_embed.delete()
+        poll_embed = await send_embed(ctx, send_option=1, title="<:PollIcon:854536641849589780> " + poll_title,
+                                      description=poll_string, color=0x08d5f7)
+        for p_option in range(0, len(poll_options)):
+            await poll_embed.add_reaction(option_emotes[p_option])
+
 
 def setup(bot):
     bot.add_cog(Commands(bot))
