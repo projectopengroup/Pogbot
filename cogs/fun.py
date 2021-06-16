@@ -169,8 +169,13 @@ class Fun(commands.Cog, name="Fun Stuff"):
     async def coinflip(self, ctx):
         flip = ["Heads.",
                 "Tails."]
-        await send_embed(ctx, author_pfp='https://i.imgur.com/ytyLEoJ.png', author='Coinflip',
-                         description=f'**{random.choice(flip)}**', color=0x08d5f7)
+        answer = random.choice(flip)
+        if "Heads" in answer:
+            await send_embed(ctx, author_pfp='https://i.imgur.com/ytyLEoJ.png', author=f'{answer}',
+                             color=0x08d5f7)
+        else:
+            await send_embed(ctx, author_pfp='https://i.imgur.com/WsUIEpH.png', author=f'{answer}',
+                             color=0x08d5f7)
 
     @commands.command(name="meme", brief="Sends a random meme",
                       description="A simple command that sends you a random meme")
