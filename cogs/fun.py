@@ -142,7 +142,7 @@ class Fun(commands.Cog, name="Fun Stuff"):
     async def meme(self, ctx):
         response = requests.get("https://meme-api.herokuapp.com/gimme").text
         jsondata = json.loads(response)
-        await send_embed(ctx, title="A random meme", image=jsondata["url"], color=0x08d5f7)
+        await send_embed(ctx, title="A random meme", image=jsondata["url"], color=0x08d5f7, url=jsondata["postlink"])
 
 
 def setup(bot):
