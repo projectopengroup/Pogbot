@@ -136,7 +136,13 @@ class Fun(commands.Cog, name="Fun Stuff"):
                  "**Yo Mama's so fat, even Spock thought she outweighed the needs of the many!**",
                  "If the shocker don't rock her. \nSpock Her."]
         await send_embed(ctx, title=random.choice(spock), color=0x08d5f7)
-
+    
+    
+    @commands.command(name="meme", brief="Sends a random meme", description="A simple command that sends you a random meme")
+    async def meme(self, ctx):
+      response = requests.get("https://meme-api.herokuapp.com/gimme").text
+      jsondata = json.loads(response)
+      await send_embed(title="A random meme", image=jsondata["url"])
 
 def setup(bot):
     bot.add_cog(Fun(bot))
