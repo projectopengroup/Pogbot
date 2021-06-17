@@ -1,15 +1,18 @@
+import random
+
 import discord
 from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, diff_lists
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
-    get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64, check_rolereactions, get_rolelist, get_emojilist
+    get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64, check_rolereactions, \
+    get_rolelist, get_emojilist, check_user, get_db_user_item, set_db_user_item
 import os
 import requests
 from discord.utils import get
 from math import sqrt
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Events(commands.Cog):
@@ -558,16 +561,43 @@ class Events(commands.Cog):
         if msg.author.bot:
             # if it is a bot then return the code from here without going further.
             return
+
         check_global_user(msg.author.id)
+        # Check if user is in user table unique to each server. If not, then creates an entry for that user.
+        check_user(msg.guild.id, msg.author.id)
+        # Gets the user's xp in the server
+        userxp = get_db_user_item(msg.guild.id, msg.author.id, "XP")
+        # Gets the user's level in the server
+        userlvl = get_db_user_item(msg.guild.id, msg.author.id, "Level")
+        # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
+        xplock = get_db_user_item(msg.guild.id, msg.author.id, "XPLockedUntil")
+
+        # Checks if the user is able to earn xp again. If yes, the xp lock is set to 1 minute from now and a random
+        # amount of xp between the range 11 and 18 is given to the user.
+        if xplock == "0" or datetime.strptime(xplock, "%Y-%m-%d %H:%M:%S.%f") < datetime.now():
+            set_db_user_item(msg.guild.id, msg.author.id, "XPLockedUntil", datetime.now()+timedelta(minutes=1))
+            set_db_user_item(msg.guild.id, msg.author.id, "XP", int(userxp)+random.randint(11, 18))
+            # The formula calculates how much xp is needed to reach the next level, and it is unique to each level.
+            # The higher the level the user is at, the more xp that is needed to reach the next level.
+            xp_lvl_up = round(125*(((int(userlvl)+1)/1.24)**1.24))
+            # Gets the users new xp total
+            userxp = get_db_user_item(msg.guild.id, msg.author.id, "XP")
+
+            # Checks to see if the user has enough xp to level up. If yes, the users xp amount is set to the amount the
+            # user went over the required xp to level up. Ex. The user has 100 xp, but only needed 96 xp to level up,
+            # the users xp will be set to 4. The users level is then updated in the db
+            if userxp >= xp_lvl_up:
+                await send_embed(msg.channel, author="Level Up!", author_pfp=msg.author.avatar_url,
+                                 description=f"Keep up the activeness {msg.author.mention}! "
+                                             f"You have leveled up to level {userlvl+1}!",
+                                 color=0x08d5f7)
+                overflow_xp = userxp-xp_lvl_up
+                set_db_user_item(msg.guild.id, msg.author.id, "XP", overflow_xp)
+                set_db_user_item(msg.guild.id, msg.author.id, "Level", userlvl+1)
+
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
         check_log_item(msg.author.guild.id)
-        # image = requests.get(msg.author.avatar_url, stream=True)
-        # welcomecardfolder = Path("img/card_welcomes/")
-        # avatar = welcomecardfolder / "avatar.png"
-        # file = open(avatar, "wb")
-        # file.write(image.content)
-        # file.close()
 
     @commands.Cog.listener()
     # Look for incoming messages in DMs and in Chat.

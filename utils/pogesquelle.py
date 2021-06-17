@@ -401,6 +401,42 @@ def set_emojilist(messageid, emojilist):
     conn.commit()
     conn.close()
 
+def check_user(serverid, userid):
+    conn = sqlite3.connect('prefs.db')
+    conn.text_factory = str
+    cur = conn.cursor()
+    cur.execute(f'SELECT UserID FROM users WHERE ServerID={serverid} and UserID={userid}')
+    data = cur.fetchone()
+    Usered = data
+    if str(Usered) == "None":
+        prefs_query = f"""INSERT INTO users
+                                     (ServerID, UserID, XP, Level, Warnings, XPLockedUntil, 
+                                     MutedUntil)
+                                      VALUES 
+                                     ('{serverid}', '{userid}', 0, 0, 0, '0', '0') """
+        cur.execute(prefs_query)
+        conn.commit()
+        conn.close()
+
+def get_db_user_item(serverid, userid, itemname):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"SELECT `{itemname}` FROM users WHERE ServerID={serverid} and UserID={userid}")
+    data = cur.fetchone()
+    if data:
+        data = data[0]
+    else:
+        data = 0
+    conn.commit()
+    conn.close()
+    return data
+
+def set_db_user_item(serverid, userid, itemname, string):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f"UPDATE users SET '{itemname}'='{string}' WHERE ServerID='{serverid}' and UserID='{userid}'")
+    conn.commit()
+    conn.close()
 
 def get_db_item(serverid, tablename, itemname):
     conn = sqlite3.connect('prefs.db')

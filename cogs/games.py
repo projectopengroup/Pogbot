@@ -251,7 +251,7 @@ class Games(commands.Cog, name="Games"):
                                                          f"**Dealer's Hand**\nCards: "
                                                          f"`{dealer_hand[0]}`, `?`\nTotal: "
                                                          f"`?`",
-                                             color=0x08d5f7, footer="Reply with **hit** or **stand**")
+                                             color=0x08d5f7, footer="Reply with hit or stand")
                 await game_embed.edit(embed=new_embed)
             except asyncio.TimeoutError:
                 new_embed = await send_embed(ctx, send_option=2, title=f"You Timed Out", author="Blackjack Game",
