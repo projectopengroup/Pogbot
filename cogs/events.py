@@ -73,7 +73,10 @@ class Events(commands.Cog):
             dm_welcomemessage = dm_welcomemessage.replace("%USER%", f"{member.mention}")
             dm_welcomemessage = dm_welcomemessage.replace("%SERVER%", f"{member.guild}")
             # Send the welcome message.
-            await member.send(dm_welcomemessage)
+            try:
+                await member.send(dm_welcomemessage)
+            except discord.errors.Forbidden as exception:
+                print(f"{member} has DMS off.")
 
         if welcomecardon == 1 and welcomemessage != "None":
             # Get the welcome channel from the database and set it to a var named channel.
@@ -575,11 +578,11 @@ class Events(commands.Cog):
         # Checks if the user is able to earn xp again. If yes, the xp lock is set to 1 minute from now and a random
         # amount of xp between the range 11 and 18 is given to the user.
         if xplock == "0" or datetime.strptime(xplock, "%Y-%m-%d %H:%M:%S.%f") < datetime.now():
-            set_db_user_item(msg.guild.id, msg.author.id, "XPLockedUntil", datetime.now()+timedelta(minutes=1))
-            set_db_user_item(msg.guild.id, msg.author.id, "XP", int(userxp)+random.randint(11, 18))
+            set_db_user_item(msg.guild.id, msg.author.id, "XPLockedUntil", datetime.now() + timedelta(minutes=1))
+            set_db_user_item(msg.guild.id, msg.author.id, "XP", int(userxp) + random.randint(11, 18))
             # The formula calculates how much xp is needed to reach the next level, and it is unique to each level.
             # The higher the level the user is at, the more xp that is needed to reach the next level.
-            xp_lvl_up = round(125*(((int(userlvl)+1)/1.24)**1.24))
+            xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
             # Gets the users new xp total
             userxp = get_db_user_item(msg.guild.id, msg.author.id, "XP")
 
@@ -589,11 +592,11 @@ class Events(commands.Cog):
             if userxp >= xp_lvl_up:
                 await send_embed(msg.channel, author="Level Up!", author_pfp=msg.author.avatar_url,
                                  description=f"Keep up the activeness {msg.author.mention}! "
-                                             f"You have leveled up to level {userlvl+1}!",
+                                             f"You have leveled up to level {userlvl + 1}!",
                                  color=0x08d5f7)
-                overflow_xp = userxp-xp_lvl_up
+                overflow_xp = userxp - xp_lvl_up
                 set_db_user_item(msg.guild.id, msg.author.id, "XP", overflow_xp)
-                set_db_user_item(msg.guild.id, msg.author.id, "Level", userlvl+1)
+                set_db_user_item(msg.guild.id, msg.author.id, "Level", userlvl + 1)
 
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')
@@ -650,6 +653,7 @@ class Events(commands.Cog):
                     await send_embed(member, title="Role Removed",
                                      description=f"The role `{g_role.name}` was removed from you in the server "
                                                  f"`{guild.name}`.", color=0x08d5f7)
+
 
 def banpredicate(event):
     return event.action is discord.AuditLogAction.ban
