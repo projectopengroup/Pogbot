@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from datetime import timedelta, datetime
 from discord.ext import commands
 from utils.pogfunctions import send_embed
-from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64
+from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item
 
 session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
@@ -370,6 +370,18 @@ class Commands(commands.Cog, name="Commands"):
         for p_option in range(0, len(poll_options)):
             await poll_embed.add_reaction(option_emotes[p_option])
 
+    @commands.command(name="level")
+    async def level(self, ctx):
+        check_user(ctx.guild.id, ctx.author.id)
+        # Gets the user's xp in the server
+        userxp = get_db_user_item(ctx.guild.id, ctx.author.id, "XP")
+        # Gets the user's level in the server
+        userlvl = get_db_user_item(ctx.guild.id, ctx.author.id, "Level")
+        # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
+        xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
+
+        await send_embed(ctx, author=f"{ctx.author.display_name}'s Level Card", author_pfp=ctx.author.avatar_url,
+                         description=f"**XP:** {userxp}/{xp_lvl_up}\n**Level:** {userlvl}", color=0x08d5f7)
 
 def setup(bot):
     bot.add_cog(Commands(bot))
