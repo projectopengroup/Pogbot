@@ -404,7 +404,6 @@ class Commands(commands.Cog, name="Commands"):
 
         sorted_member_list = sorted(MemberList, key=operator.itemgetter(1, 2))
         sorted_member_list.reverse()
-        print(sorted_member_list)
         x = 0
         for i in sorted_member_list:
             x = x + 1
