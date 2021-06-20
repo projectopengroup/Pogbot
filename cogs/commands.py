@@ -9,8 +9,9 @@ import json
 from bs4 import BeautifulSoup
 from datetime import timedelta, datetime
 from discord.ext import commands
-from utils.pogfunctions import send_embed
-from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item
+from utils.pogfunctions import send_embed, create_welcome_card, create_level_card
+from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
+    check_global_user
 
 session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
@@ -384,18 +385,20 @@ class Commands(commands.Cog, name="Commands"):
         for p_option in range(0, len(poll_options)):
             await poll_embed.add_reaction(option_emotes[p_option])
 
-    @commands.command(name="level")
-    async def level(self, ctx):
-        check_user(ctx.guild.id, ctx.author.id)
+    @commands.command(name="level", brief='Displays level card.', description="Displays your level card and rank.")
+    async def level(self, ctx, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+        check_user(ctx.guild.id, user.id)
         # Gets the user's xp in the server
-        userxp = get_db_user_item(ctx.guild.id, ctx.author.id, "XP")
+        userxp = get_db_user_item(ctx.guild.id, user.id, "XP")
         # Gets the user's level in the server
-        userlvl = get_db_user_item(ctx.guild.id, ctx.author.id, "Level")
+        userlvl = get_db_user_item(ctx.guild.id, user.id, "Level")
         # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
         xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
-
-        await send_embed(ctx, author=f"{ctx.author.display_name}'s Level Card", author_pfp=ctx.author.avatar_url,
-                         description=f"**XP:** {userxp}/{xp_lvl_up}\n**Level:** {userlvl}", color=0x08d5f7)
+        avatarRequest = (requests.get(user.avatar_url)).content
+        # Testing create welcome card on message send right now, until we get it done.
+        await ctx.send(file=create_level_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl))
 
 
 def setup(bot):
