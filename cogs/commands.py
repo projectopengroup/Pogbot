@@ -139,11 +139,15 @@ class Commands(commands.Cog, name="Commands"):
                       description="Responds with the information of a user provided, if none provided, responds "
                                   "with the information of the user that called the command.")
     # Look for a command called whois and collects optional user parameter, so if no user given, user = None.
-    async def whois(self, ctx, user: discord.Member = None):
+    async def whois(self, ctx, user: discord.User = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
         # command author.
         if user is None:
             user = ctx.author
+
+        isMember = ctx.guild.get_member(user.id)
+        if isMember is not None:
+            user = ctx.guild.get_member(user.id)
 
         # Checks if the user is a bot and stores it in a variable
         isBot = "No"
@@ -157,20 +161,30 @@ class Commands(commands.Cog, name="Commands"):
         nickname = user.display_name
         if username == nickname:
             nickname = "None"
-
-        # Get's user's status
-        userStatus = str(user.status).title()
-        if userStatus == "Dnd":
-            userStatus = "Do not disturb"
+        try:
+            # Get's user's status
+            userStatus = str(user.status).title()
+            if userStatus == "Dnd":
+                userStatus = "Do not disturb"
+        except AttributeError:
+            userStatus = "None"
 
         # Gets user's roles, excludes the @everyone role, and puts it in a string
         foundRoles = []
-        for role in user.roles:
-            if role.name != "@everyone":
-                foundRoles.append(role.mention)
+        try:
+            for role in user.roles:
+                if role.name != "@everyone":
+                    foundRoles.append(role.mention)
+        except AttributeError:
+            foundRoles.append("None")
 
         foundRoles.reverse()
         userRoles = " ".join(foundRoles)
+
+        try:
+            userJoined = str(user.joined_at.strftime("%b %d, %Y"))
+        except AttributeError:
+            userJoined = "Not in server."
 
         # Creates and sends an embed with various user info by adding them as fields. When getting dates, the format
         # as to be converted so that it is easier to read.
@@ -178,7 +192,7 @@ class Commands(commands.Cog, name="Commands"):
                          fields=[(f'**Username:**', usernameFull, True), (f'**Nickname:**', nickname, True),
                                  (f'**User ID:**', str(user.id), True),
                                  (f'**Registered:**', str(user.created_at.strftime("%b %d, %Y")), True),
-                                 (f'**Joined Server:**', str(user.joined_at.strftime("%b %d, %Y")), True),
+                                 (f'**Joined Server:**', userJoined, True),
                                  (f'**Is Bot:**', isBot, True),
                                  (f'**Status:**', userStatus, True),
                                  (f'**Roles:**', userRoles, True)],
@@ -382,6 +396,7 @@ class Commands(commands.Cog, name="Commands"):
 
         await send_embed(ctx, author=f"{ctx.author.display_name}'s Level Card", author_pfp=ctx.author.avatar_url,
                          description=f"**XP:** {userxp}/{xp_lvl_up}\n**Level:** {userlvl}", color=0x08d5f7)
+
 
 def setup(bot):
     bot.add_cog(Commands(bot))
