@@ -5,6 +5,7 @@ import re
 import discord
 import requests
 import requests_cache
+import operator
 import json
 from bs4 import BeautifulSoup
 from datetime import timedelta, datetime
@@ -398,9 +399,10 @@ class Commands(commands.Cog, name="Commands"):
 
         MemberList = []
         for member in ctx.guild.members:
-            MemberList.append([member.id, get_db_user_item(ctx.guild.id, member.id, "XP")])
-        sorted_member_list = sorted(MemberList, key=lambda x: x[1])
+            MemberList.append([member.id, get_db_user_item(ctx.guild.id, member.id, "Level"),
+                               get_db_user_item(ctx.guild.id, member.id, "XP")])
 
+        sorted_member_list = sorted(MemberList, key=operator.itemgetter(1, 2))
         sorted_member_list.reverse()
 
         x = 0
