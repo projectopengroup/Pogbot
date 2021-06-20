@@ -392,13 +392,28 @@ class Commands(commands.Cog, name="Commands"):
         check_user(ctx.guild.id, user.id)
         # Gets the user's xp in the server
         userxp = get_db_user_item(ctx.guild.id, user.id, "XP")
+
         # Gets the user's level in the server
         userlvl = get_db_user_item(ctx.guild.id, user.id, "Level")
+
+        MemberList = []
+        for member in ctx.guild.members:
+            MemberList.append([member.id, get_db_user_item(ctx.guild.id, member.id, "XP")])
+        sorted_member_list = sorted(MemberList, key=lambda x: x[1])
+
+        sorted_member_list.reverse()
+
+        x = 0
+        for i in sorted_member_list:
+            x = x + 1
+            if i[0] == user.id:
+                rank = x
+
         # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
         xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
         avatarRequest = (requests.get(user.avatar_url)).content
         # Testing create welcome card on message send right now, until we get it done.
-        await ctx.send(file=create_level_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl))
+        await ctx.send(file=create_level_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
 
 
 def setup(bot):

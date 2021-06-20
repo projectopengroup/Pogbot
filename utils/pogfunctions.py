@@ -203,7 +203,7 @@ def create_welcome_card(avatarRequest, user, server):
 
 
 # Card creation for level
-def create_level_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl):
+def create_level_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl, rank):
     # Set a var to the image that was passed into the function and convert it to RGBA.
     avatarlayer = Image.open(io.BytesIO(avatarRequest)).convert("RGBA")
     # Define our folder.
@@ -325,7 +325,7 @@ def create_level_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl):
 
     # Set all of our text at specific positions, colors, and with certain fonts.
     draw.text((355, 120), UserFormatted, (255, 255, 255), font=name_font)
-    draw.text((355, 170), f"LEVEL {userlvl}", (255, 255, 255), font=msg_font)
+    draw.text((355, 170), f"LEVEL {userlvl} RANK {rank}", (255, 255, 255), font=msg_font)
     draw.text((820, 185), f"XP {userxp} / {xp_lvl_up}", (255, 255, 255), font=xp_font)
 
     drawObject = ImageDraw.Draw(compiled)
