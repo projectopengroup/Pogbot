@@ -386,7 +386,8 @@ class Commands(commands.Cog, name="Commands"):
         for p_option in range(0, len(poll_options)):
             await poll_embed.add_reaction(option_emotes[p_option])
 
-    @commands.command(name="level", brief='Displays level card.', description="Displays your level card and rank.")
+    @commands.command(name="level", aliases=['rank'], brief='Displays level card.', description="Displays your level "
+                                                                                                "card and rank.")
     async def level(self, ctx, *, user: discord.Member = None):
         if user is None:
             user = ctx.author
