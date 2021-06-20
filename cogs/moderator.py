@@ -106,9 +106,12 @@ class Moderator(commands.Cog, name="Moderator"):
                              color=0x08d5f7)
 
             await user.add_roles(muted)
+            mutereason = reason
+            if reason is None:
+                mutereason = " "
             await send_embed(ctx, send_option=0,
                              description=f"<:Check:845178458426179605> "
-                                         f"**{user} has been muted.** *{reason}*",
+                                         f"**{user} has been muted.** {mutereason}",
                              color=0x08d5f7)
             MutedChannelID = get_log_item(ctx.author.guild.id, "Mute")
             if MutedChannelID != 0:
@@ -145,9 +148,12 @@ class Moderator(commands.Cog, name="Moderator"):
         # If the Muted role did exist
         else:
             await user.add_roles(role)
+            mutereason = reason
+            if reason is None:
+                mutereason = " "
             await send_embed(ctx, send_option=0,
                              description=f"<:Check:845178458426179605> "
-                                         f"**{user} has been muted.** *{reason}*",
+                                         f"**{user} has been muted.** {mutereason}",
                              color=0x08d5f7)
             MutedChannelID = get_log_item(ctx.author.guild.id, "Mute")
             if MutedChannelID != 0:
@@ -166,20 +172,21 @@ class Moderator(commands.Cog, name="Moderator"):
                                      footer=f"Mute")
             if time:
                 await asyncio.sleep(time)
-                await user.remove_roles(role)
-                MutedChannelID = get_log_item(ctx.author.guild.id, "Mute")
-                if MutedChannelID != 0:
-                    if user != "":
-                        channel = self.bot.get_channel(MutedChannelID)
-                        membercreated = str(user.created_at.strftime("%b %d, %Y"))
-                        await send_embed(channel, send_option=0, author=f"{user} was unmuted.",
-                                         author_pfp=user.avatar_url_as(format="png"), color=0x5eff89,
-                                         description=f"**{user.mention}** was unmuted.",
-                                         fields=[('User', f"{user}", True),
-                                                 ('ID', f"{user.id}", True),
-                                                 ('Account Created', f"{membercreated}", True)],
-                                         timestamp=(datetime.utcnow()),
-                                         footer=f"Unmute")
+                if role in user.roles:
+                    await user.remove_roles(role)
+                    MutedChannelID = get_log_item(ctx.author.guild.id, "Mute")
+                    if MutedChannelID != 0:
+                        if user != "":
+                            channel = self.bot.get_channel(MutedChannelID)
+                            membercreated = str(user.created_at.strftime("%b %d, %Y"))
+                            await send_embed(channel, send_option=0, author=f"{user} was unmuted.",
+                                             author_pfp=user.avatar_url_as(format="png"), color=0x5eff89,
+                                             description=f"**{user.mention}** was unmuted.",
+                                             fields=[('User', f"{user}", True),
+                                                     ('ID', f"{user.id}", True),
+                                                     ('Account Created', f"{membercreated}", True)],
+                                             timestamp=(datetime.utcnow()),
+                                             footer=f"Unmute")
             return
 
     @commands.command(name='kick', aliases=['boot'], brief='Kicks a user.',
