@@ -16,16 +16,28 @@ class Moderator(commands.Cog, name="Moderator"):
                       description="Removes the Muted role from a user.")
     @commands.has_permissions(manage_roles=True)
     async def unmute(self, ctx, user: discord.Member = None):
+        justprefix = await get_prefix(self.bot, ctx.message)
         if user is None:
-            justprefix = await get_prefix(self.bot, ctx.message)
             await send_embed(ctx, send_option=0,
                              description=f"<:Pogbot_X:850089728018874368> "
                                          f"**You must provide a user.**"
                                          f"\nTry ```{justprefix[2]}unmute User```",
                              color=0x08d5f7)
             return
-
         role = discord.utils.get(user.guild.roles, name="Muted")
+        if role is None:
+            await send_embed(ctx, send_option=0,
+                             description=f"<:Pogbot_X:850089728018874368> "
+                                         f"**No Muted role found, try running the mute command first.**",
+                             color=0x08d5f7)
+            return
+        if role not in user.roles:
+            await send_embed(ctx, send_option=0,
+                             description=f"<:Pogbot_X:850089728018874368> "
+                                         f"**User must be muted first.**",
+                             color=0x08d5f7)
+            return
+
         await user.remove_roles(role)
         await send_embed(ctx, send_option=0,
                          description=f"<:Check:845178458426179605> "
@@ -41,6 +53,7 @@ class Moderator(commands.Cog, name="Moderator"):
                                  description=f"**{user.mention}** was unmuted.",
                                  fields=[('User', f"{user}", True),
                                          ('ID', f"{user.id}", True),
+                                         ('Unmuted by', f"{ctx.message.author}", False),
                                          ('Account Created', f"{membercreated}", True)],
                                  timestamp=(datetime.utcnow()),
                                  footer=f"Unmute")
@@ -95,7 +108,7 @@ class Moderator(commands.Cog, name="Moderator"):
             await user.add_roles(muted)
             await send_embed(ctx, send_option=0,
                              description=f"<:Check:845178458426179605> "
-                                         f"**{user} has been muted.**",
+                                         f"**{user} has been muted.** *{reason}*",
                              color=0x08d5f7)
             MutedChannelID = get_log_item(ctx.author.guild.id, "Mute")
             if MutedChannelID != 0:
@@ -125,7 +138,8 @@ class Moderator(commands.Cog, name="Moderator"):
                                          description=f"**{user.mention}** was unmuted.",
                                          fields=[('User', f"{user}", True),
                                                  ('ID', f"{user.id}", True),
-                                                 ('Account Created', f"{membercreated}", True)],
+                                                 ('Account Created', f"{membercreated}", False),
+                                                 ('Unmuted by', f"Duration Expired", True)],
                                          timestamp=(datetime.utcnow()),
                                          footer=f"Unmute")
         # If the Muted role did exist
@@ -133,7 +147,7 @@ class Moderator(commands.Cog, name="Moderator"):
             await user.add_roles(role)
             await send_embed(ctx, send_option=0,
                              description=f"<:Check:845178458426179605> "
-                                         f"**{user} has been muted.**",
+                                         f"**{user} has been muted.** *{reason}*",
                              color=0x08d5f7)
             MutedChannelID = get_log_item(ctx.author.guild.id, "Mute")
             if MutedChannelID != 0:
