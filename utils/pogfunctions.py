@@ -335,7 +335,7 @@ def create_level_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl):
     x = 350
     y = 222
     h = 25
-    w = 620
+    w = 610
     progress = w * float(userxp) / float(xp_lvl_up)
 
     w = progress
