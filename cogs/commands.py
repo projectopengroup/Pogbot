@@ -70,7 +70,7 @@ class Commands(commands.Cog, name="Commands"):
                       description="Responds with the avatar of a user provided, if none provided, responds with the "
                                   "avatar of the user that called the command.")
     # Look for a command called avatar and collects optional user parameter, so if no user given, user = None.
-    async def avatar(self, ctx, user: discord.Member = None):
+    async def avatar(self, ctx,  *, user: discord.Member = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
         # command author.
         if user is None:
@@ -86,7 +86,7 @@ class Commands(commands.Cog, name="Commands"):
                       description="Responds with the ID of a user provided, if none provided, responds with the"
                                   " ID of the user that called the command.")
     # Look for a command called userid and collects optional user parameter, so if no user given, user = None.
-    async def userid(self, ctx, user: discord.Member = None):
+    async def userid(self, ctx, *, user: discord.Member = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
         # command author.
         if user is None:
@@ -141,7 +141,7 @@ class Commands(commands.Cog, name="Commands"):
                       description="Responds with the information of a user provided, if none provided, responds "
                                   "with the information of the user that called the command.")
     # Look for a command called whois and collects optional user parameter, so if no user given, user = None.
-    async def whois(self, ctx, user: discord.User = None):
+    async def whois(self, ctx, *, user: discord.User = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
         # command author.
         if user is None:
@@ -387,7 +387,7 @@ class Commands(commands.Cog, name="Commands"):
             await poll_embed.add_reaction(option_emotes[p_option])
 
     @commands.command(name="level", brief='Displays level card.', description="Displays your level card and rank.")
-    async def level(self, ctx, user: discord.Member = None):
+    async def level(self, ctx, *, user: discord.Member = None):
         if user is None:
             user = ctx.author
         check_user(ctx.guild.id, user.id)
