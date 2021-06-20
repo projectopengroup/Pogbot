@@ -455,6 +455,8 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members editing messages.
     async def on_message_edit(self, before, after):
+        if before.author.bot:
+            return
         if before.clean_content != after.clean_content:
             if isinstance(before.author, discord.member.User):
                 print(f"Non-Member Event Detected: {before.author}")
@@ -492,6 +494,8 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     # Look for members deleting messages.
     async def on_message_delete(self, message):
+        if message.author.bot:
+            return
         if isinstance(message.author, discord.member.User):
             print(f"Non-Member Event Detected: {message.author}")
             return

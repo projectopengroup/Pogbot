@@ -3,11 +3,13 @@ import io
 import PIL
 import discord
 import requests
+import re
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 from pathlib import Path
 from colorthief import ColorThief
 from math import sqrt
 from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get_global_bgcolor
+from discord.ext import commands
 
 
 # Function to create one line embeds. So far it takes most of the possible arguments that you can set to an embed. Not
@@ -213,3 +215,22 @@ def closest_color(rgb, colors):
 def diff_lists(before, after):
     b, a = set(before), set(after)
     return list(a - b), list(b - a), list(a & b)
+
+
+time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
+
+
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        args = argument.lower()
+        matches = re.findall(time_regex, args)
+        time = 0
+        for v, k in matches:
+            try:
+                time += time_dict[k] * float(v)
+            except KeyError:
+                raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
+            except ValueError:
+                raise commands.BadArgument("{} is not a number!".format(v))
+        return time
