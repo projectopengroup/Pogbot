@@ -268,7 +268,7 @@ class Games(commands.Cog, name="Games"):
                 embed_color = 0x08d5f7
 
             new_embed = await send_embed(ctx, send_option=2, title=f"You {result}", author="Blackjack Game",
-                                         author_pfp=ctx.author.avatar_url,
+                                         author_pfp=ctx.author.avatar.url,
                                          description=f"**{ctx.author.display_name}'s Hand**\nCards: "
                                                      f"{get_cards(user_hand)}\nTotal: "
                                                      f"`{get_total(user_hand)}`\n"
@@ -293,7 +293,7 @@ class Games(commands.Cog, name="Games"):
             dealer_hand.append(card)
             deck.remove(card)
 
-        game_embed = await send_embed(ctx, send_option=1, author="Blackjack Game", author_pfp=ctx.author.avatar_url,
+        game_embed = await send_embed(ctx, send_option=1, author="Blackjack Game", author_pfp=ctx.author.avatar.url,
                                       description=f"**{ctx.author.display_name}'s Hand**\nCards: "
                                                   f"{get_cards(user_hand)}\nTotal: "
                                                   f"`{get_total(user_hand)}`\n"
@@ -350,7 +350,7 @@ class Games(commands.Cog, name="Games"):
                                 return
 
                 new_embed = await send_embed(ctx, send_option=2, author="Blackjack Game",
-                                             author_pfp=ctx.author.avatar_url,
+                                             author_pfp=ctx.author.avatar.url,
                                              description=f"**{ctx.author.display_name}'s Hand**\nCards: "
                                                          f"{get_cards(user_hand)}\nTotal: "
                                                          f"`{get_total(user_hand)}`\n"
@@ -361,7 +361,7 @@ class Games(commands.Cog, name="Games"):
                 await game_embed.edit(embed=new_embed)
             except asyncio.TimeoutError:
                 new_embed = await send_embed(ctx, send_option=2, title=f"You Timed Out", author="Blackjack Game",
-                                             author_pfp=ctx.author.avatar_url,
+                                             author_pfp=ctx.author.avatar.url,
                                              description=f"**{ctx.author.display_name}'s Hand**\nCards: "
                                                          f"{get_cards(user_hand)}\nTotal: "
                                                          f"`{get_total(user_hand)}`\n"
