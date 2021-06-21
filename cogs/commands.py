@@ -39,7 +39,7 @@ class Commands(commands.Cog, name="Commands"):
         await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
                          color=0x08d5f7)
 
-    @commands.command(name='counter', brief='Displays a button counter',
+    @commands.command(name='counter', brief='Posts a button counter',
                       description="Posts a button counter.")
     async def counter(self, ctx):
         view = Counter()

@@ -11,5 +11,5 @@ If you'd like to contribute to this project, please get in contact with us on di
  ```bash
 $ git clone https://github.com/Rapptz/discord.py
 $ cd discord.py
-$ python3 -m pip install -U .[voice]
+$ python3.9 -m pip install -U .[voice]
 ```
