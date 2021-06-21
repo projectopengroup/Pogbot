@@ -49,7 +49,7 @@ class Moderator(commands.Cog, name="Moderator"):
                 channel = self.bot.get_channel(MutedChannelID)
                 membercreated = str(user.created_at.strftime("%b %d, %Y"))
                 await send_embed(channel, send_option=0, author=f"{user} was unmuted.",
-                                 author_pfp=user.avatar_url_as(format="png"), color=0x5eff89,
+                                 author_pfp=user.avatar.url, color=0x5eff89,
                                  description=f"**{user.mention}** was unmuted.",
                                  fields=[('User', f"{user}", True),
                                          ('ID', f"{user.id}", True),
@@ -119,7 +119,7 @@ class Moderator(commands.Cog, name="Moderator"):
                     channel = self.bot.get_channel(MutedChannelID)
                     membercreated = str(user.created_at.strftime("%b %d, %Y"))
                     await send_embed(channel, send_option=0, author=f"{user} was muted.",
-                                     author_pfp=user.avatar_url_as(format="png"), color=0x404040,
+                                     author_pfp=user.avatar.url, color=0x404040,
                                      description=f"**{user.mention}** was muted.",
                                      fields=[('User', f"{user}", True),
                                              ('ID', f"{user.id}", True),
@@ -137,7 +137,7 @@ class Moderator(commands.Cog, name="Moderator"):
                         channel = self.bot.get_channel(MutedChannelID)
                         membercreated = str(user.created_at.strftime("%b %d, %Y"))
                         await send_embed(channel, send_option=0, author=f"{user} was unmuted.",
-                                         author_pfp=user.avatar_url_as(format="png"), color=0x5eff89,
+                                         author_pfp=user.avatar.url, color=0x5eff89,
                                          description=f"**{user.mention}** was unmuted.",
                                          fields=[('User', f"{user}", True),
                                                  ('ID', f"{user.id}", True),
@@ -161,7 +161,7 @@ class Moderator(commands.Cog, name="Moderator"):
                     channel = self.bot.get_channel(MutedChannelID)
                     membercreated = str(user.created_at.strftime("%b %d, %Y"))
                     await send_embed(channel, send_option=0, author=f"{user} was muted.",
-                                     author_pfp=user.avatar_url_as(format="png"), color=0x404040,
+                                     author_pfp=user.avatar.url, color=0x404040,
                                      description=f"**{user.mention}** was muted.",
                                      fields=[('User', f"{user}", True),
                                              ('ID', f"{user.id}", True),
@@ -180,7 +180,7 @@ class Moderator(commands.Cog, name="Moderator"):
                             channel = self.bot.get_channel(MutedChannelID)
                             membercreated = str(user.created_at.strftime("%b %d, %Y"))
                             await send_embed(channel, send_option=0, author=f"{user} was unmuted.",
-                                             author_pfp=user.avatar_url_as(format="png"), color=0x5eff89,
+                                             author_pfp=user.avatar.url, color=0x5eff89,
                                              description=f"**{user.mention}** was unmuted.",
                                              fields=[('User', f"{user}", True),
                                                      ('ID', f"{user.id}", True),
@@ -226,7 +226,7 @@ class Moderator(commands.Cog, name="Moderator"):
                     channel = self.bot.get_channel(KickedChannelID)
                     membercreated = str(user.created_at.strftime("%b %d, %Y"))
                     await send_embed(channel, send_option=0, author=f"{user} was kicked.",
-                                     author_pfp=user.avatar_url_as(format="png"), color=0xa83232,
+                                     author_pfp=user.avatar.url, color=0xa83232,
                                      description=f"**{user.mention}** was kicked.",
                                      fields=[('User', f"{user}", True),
                                              ('ID', f"{user.id}", True),
@@ -248,7 +248,7 @@ class Moderator(commands.Cog, name="Moderator"):
                 channel = self.bot.get_channel(KickedChannelID)
                 membercreated = str(user.created_at.strftime("%b %d, %Y"))
                 await send_embed(channel, send_option=0, author=f"{user} was kicked.",
-                                 author_pfp=user.avatar_url_as(format="png"), color=0xa83232,
+                                 author_pfp=user.avatar.url, color=0xa83232,
                                  description=f"**{user.mention}** was kicked.",
                                  fields=[('User', f"{user}", True),
                                          ('ID', f"{user.id}", True),
@@ -272,7 +272,7 @@ class Moderator(commands.Cog, name="Moderator"):
         if DeleteChannelID != 0:
             channel = self.bot.get_channel(DeleteChannelID)
             await send_embed(channel, send_option=0, author=ctx.author,
-                             author_pfp=ctx.author.avatar_url_as(format="png"), color=0xff6e6e,
+                             author_pfp=ctx.author.avatar.url, color=0xff6e6e,
                              description=f"{ctx.author.mention} **purged {amount} messages** "
                                          f"in {ctx.channel.mention}",
                              fields=[('Messages Purged', f"{amount}", True),

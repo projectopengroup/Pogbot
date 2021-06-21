@@ -40,7 +40,7 @@ class Events(commands.Cog):
                 membercreated = str(member.created_at.strftime("%b %d, %Y"))
 
                 await send_embed(channel, send_option=0, author=f"{member} joined.",
-                                 author_pfp=member.avatar_url_as(format="png"), color=0x6eff90,
+                                 author_pfp=member.avatar.url, color=0x6eff90,
                                  description=f"**Join event by** {member.mention}",
                                  fields=[('User', f"{member}", False),
                                          ('User ID', f"{member.id}", False),
@@ -82,7 +82,7 @@ class Events(commands.Cog):
             # Get the welcome channel from the database and set it to a var named channel.
             channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
             # Make a new var called avatarRequest and send a request to download and get the users avatar to it.
-            avatarRequest = (requests.get(member.avatar_url)).content
+            avatarRequest = (requests.get(member.avatar.url)).content
             welcomemessage = welcomemessage.replace("%USER%", f"{member.mention}")
             welcomemessage = welcomemessage.replace("%SERVER%", f"{member.guild}")
             # Send a message with the file that our create welcome card function returns.
@@ -105,7 +105,7 @@ class Events(commands.Cog):
             # Get the welcome channel from the database and set it to a var named channel.
             channel = self.bot.get_channel(get_welcome_channel(member.guild.id))
             # Make a new var called avatarRequest and send a request to download and get the users avatar to it.
-            avatarRequest = (requests.get(member.avatar_url)).content
+            avatarRequest = (requests.get(member.avatar.url)).content
             # Send a message with the file that our create welcome card function returns.
             await channel.send(file=create_welcome_card(avatarRequest, member, member.guild))
             return
@@ -119,7 +119,7 @@ class Events(commands.Cog):
                 channel = self.bot.get_channel(RolesCreateChannelID)
                 rolecreated = str(role.created_at.strftime("%b %d, %Y"))
                 await send_embed(channel, send_option=0, author=f"{role.guild} role created.",
-                                 author_pfp=role.guild.icon_url_as(format="png"), color=0x5c7aff,
+                                 author_pfp=role.guild.icon.url, color=0x5c7aff,
                                  description=f"**Role** {role.mention} was created.",
                                  fields=[('Role', f"{role}", True),
                                          ('ID', f"{role.id}", True),
@@ -143,7 +143,7 @@ class Events(commands.Cog):
                 if before != "":
                     channel = self.bot.get_channel(RolesUpdateChannelID)
                     await send_embed(channel, send_option=0, author=f"{before.guild} role updated.",
-                                     author_pfp=before.guild.icon_url_as(format="png"), color=0xfff959,
+                                     author_pfp=before.guild.icon.url, color=0xfff959,
                                      description=f"**Role** {after.mention} was updated.",
                                      fields=[('Role', f"{after}", True),
                                              ('ID', f"{after.id}", True),
@@ -166,7 +166,7 @@ class Events(commands.Cog):
                 channel = self.bot.get_channel(RolesDeleteChannelID)
                 rolecreated = str(role.created_at.strftime("%b %d, %Y"))
                 await send_embed(channel, send_option=0, author=f"{role.guild} role deleted.",
-                                 author_pfp=role.guild.icon_url_as(format="png"), color=0xff5c5c,
+                                 author_pfp=role.guild.icon.url, color=0xff5c5c,
                                  description=f"**Role** **{role}** was deleted.",
                                  fields=[('Role', f"{role}", True),
                                          ('ID', f"{role.id}", True),
@@ -189,7 +189,7 @@ class Events(commands.Cog):
                 if member != "":
                     channel = self.bot.get_channel(JoinVCChannelID)
                     await send_embed(channel, send_option=0, author=f"{member} joined a voice channel.",
-                                     author_pfp=member.avatar_url_as(format="png"), color=0x42f595,
+                                     author_pfp=member.avatar.url, color=0x42f595,
                                      description=f"**{member.mention}** joined voice channel {after.channel.mention}.",
                                      fields=[('Channel', f"{after.channel}", True),
                                              ('ID', f"{after.channel.id}", True)],
@@ -203,7 +203,7 @@ class Events(commands.Cog):
                 if member != "":
                     channel = self.bot.get_channel(LeftVCChannelID)
                     await send_embed(channel, send_option=0, author=f"{member} left voice.",
-                                     author_pfp=member.avatar_url_as(format="png"), color=0xf54242,
+                                     author_pfp=member.avatar.url, color=0xf54242,
                                      description=f"**{member.mention}** left voice channel {before.channel.mention}.",
                                      fields=[('Channel', f"{before.channel}", True),
                                              ('ID', f"{before.channel.id}", True)],
@@ -217,7 +217,7 @@ class Events(commands.Cog):
                 if member != "":
                     channel = self.bot.get_channel(MovedVCChannelID)
                     await send_embed(channel, send_option=0, author=f"{member} moved in voice.",
-                                     author_pfp=member.avatar_url_as(format="png"), color=0xffd64f,
+                                     author_pfp=member.avatar.url, color=0xffd64f,
                                      description=f"**{member.mention}** moved from voice "
                                                  f"channel {before.channel.mention} to {after.channel.mention}.",
                                      fields=[('Came from', f"{before.channel}", False),
@@ -240,7 +240,7 @@ class Events(commands.Cog):
                 g_roles = [f"{role.mention}\n" for role in g_roles]
                 g_roles_str = ''.join(g_roles)
                 await send_embed(channel, send_option=0, author=f"{member} left.",
-                                 author_pfp=member.avatar_url_as(format="png"), color=0xff6e6e,
+                                 author_pfp=member.avatar.url, color=0xff6e6e,
                                  description=f"**Leave event by** {member.mention}",
                                  fields=[('User', f"{member}", False),
                                          ('User ID', f"{member.id}", False),
@@ -265,7 +265,7 @@ class Events(commands.Cog):
                     if "None" in str(nickname):
                         nickname = "None"
                     await send_embed(channel, send_option=0, author=f"{before} changed nickname.",
-                                     author_pfp=before.avatar_url_as(format="png"), color=0xb9ff6e,
+                                     author_pfp=before.avatar.url, color=0xb9ff6e,
                                      description=f"**Nickname event for** {before.mention}",
                                      fields=[('User', f"{before}", False),
                                              ('**Nickname**', f"**{nickname}**", False),
@@ -287,7 +287,7 @@ class Events(commands.Cog):
                         RoleID = RoleID.split("Role id=")[1].split(" name=")[0]
                         RoleMention = discord.utils.get(before.guild.roles, name=RoleName)
                         await send_embed(channel, send_option=0, author=f"{before} received a role.",
-                                         author_pfp=before.avatar_url_as(format="png"), color=0x7aff97,
+                                         author_pfp=before.avatar.url, color=0x7aff97,
                                          description=f"**Role** {RoleMention.mention} was given.",
                                          fields=[('Role', f"{RoleName}", True),
                                                  ('ID', f"{RoleID}", True),
@@ -307,7 +307,7 @@ class Events(commands.Cog):
                         RoleID = RoleID.split("Role id=")[1].split(" name=")[0]
                         RoleMention = discord.utils.get(before.guild.roles, name=RoleName)
                         await send_embed(channel, send_option=0, author=f"{before} lost a role.",
-                                         author_pfp=before.avatar_url_as(format="png"), color=0xffce7a,
+                                         author_pfp=before.avatar.url, color=0xffce7a,
                                          description=f"**Role** {RoleMention.mention} was removed.",
                                          fields=[('Role', f"{RoleName}", True),
                                                  ('ID', f"{RoleID}", True),
@@ -333,7 +333,7 @@ class Events(commands.Cog):
                             channel = self.bot.get_channel(NickChannelID)
                             membercreated = str(before.created_at.strftime("%b %d, %Y"))
                             await send_embed(channel, send_option=0, author=f"{before} changed username.",
-                                             author_pfp=before.avatar_url_as(format="png"), color=0xfa7a2f,
+                                             author_pfp=before.avatar.url, color=0xfa7a2f,
                                              description=f"**Username event for** {before.mention}",
                                              fields=[('User before', f"{before}", True),
                                                      ('User now', f"**{after}**", True),
@@ -355,7 +355,7 @@ class Events(commands.Cog):
                 membercreated = str(member.created_at.strftime("%b %d, %Y"))
                 banevent = await guild.audit_logs().find(banpredicate)
                 await send_embed(channel, send_option=0, author=f"{member} was banned.",
-                                 author_pfp=member.avatar_url_as(format="png"), color=0x000000,
+                                 author_pfp=member.avatar.url, color=0x000000,
                                  description=f"{member.mention} was banned.",
                                  fields=[('User', f"{member}", True),
                                          ('User ID', f"{member.id}", True),
@@ -374,7 +374,7 @@ class Events(commands.Cog):
                 channel = self.bot.get_channel(BanChannelID)
                 membercreated = str(member.created_at.strftime("%b %d, %Y"))
                 await send_embed(channel, send_option=0, author=f"{member} was unbanned.",
-                                 author_pfp=member.avatar_url_as(format="png"), color=0xFFFFFF,
+                                 author_pfp=member.avatar.url, color=0xFFFFFF,
                                  description=f"{member.mention} was unbanned.",
                                  fields=[('User', f"{member}", True),
                                          ('User ID', f"{member.id}", True),
@@ -391,7 +391,7 @@ class Events(commands.Cog):
             if channel != "":
                 sendchannel = self.bot.get_channel(ChanCreateID)
                 await send_embed(sendchannel, send_option=0, author=f"{channel.guild} channel created.",
-                                 author_pfp=channel.guild.icon_url_as(format="png"), color=0x976eff,
+                                 author_pfp=channel.guild.icon.url, color=0x976eff,
                                  description=f"**Channel** {channel.mention} was created.",
                                  fields=[('Name', f"{channel}", True),
                                          ('ID', f"{channel.id}", True)],
@@ -408,7 +408,7 @@ class Events(commands.Cog):
                 sendchannel = self.bot.get_channel(ChanDeleteID)
 
                 await send_embed(sendchannel, send_option=0, author=f"{channel.guild} channel deleted.",
-                                 author_pfp=channel.guild.icon_url_as(format="png"), color=0xfc4128,
+                                 author_pfp=channel.guild.icon.url, color=0xfc4128,
                                  description=f"Channel **{channel.mention}** was deleted.",
                                  fields=[('Name', f"{channel}", True),
                                          ('ID', f"{channel.id}", True)],
@@ -424,7 +424,7 @@ class Events(commands.Cog):
             if invite != "":
                 sendchannel = self.bot.get_channel(INVCreateID)
                 await send_embed(sendchannel, send_option=0, author=f"{invite.guild} invite created.",
-                                 author_pfp=invite.guild.icon_url_as(format="png"), color=0xf5f547,
+                                 author_pfp=invite.guild.icon.url, color=0xf5f547,
                                  description=f"**Invite** {invite.code} was created.",
                                  fields=[('Created by', f"{invite.inviter}", True),
                                          ('Max Uses', f"{invite.max_uses}", True),
@@ -444,7 +444,7 @@ class Events(commands.Cog):
             if invite != "":
                 sendchannel = self.bot.get_channel(INVDeleteID)
                 await send_embed(sendchannel, send_option=0, author=f"{invite.guild} invite deleted.",
-                                 author_pfp=invite.guild.icon_url_as(format="png"), color=0xfc4128,
+                                 author_pfp=invite.guild.icon.url, color=0xfc4128,
                                  description=f"**Invite** {invite.code} was deleted.",
                                  fields=[('Channel', f"{invite.channel.mention}", True),
                                          ('Invite Code', f"{invite.code}", True)],
@@ -478,7 +478,7 @@ class Events(commands.Cog):
                             msgafter = f"**Truncated**:{after.clean_content[0:450]}..."
 
                         await send_embed(channel, send_option=0, author=before.author,
-                                         author_pfp=before.author.avatar_url_as(format="png"), color=0xfff56e,
+                                         author_pfp=before.author.avatar.url, color=0xfff56e,
                                          description=f"Message by {before.author.mention}\n**Edited** "
                                                      f"in {before.channel.mention} [Jump to message]({after.jump_url})",
                                          fields=[('Before', f"{msgbefore}", True),
@@ -508,7 +508,7 @@ class Events(commands.Cog):
             set_db_item(message.author.guild.id, "snipes", MessageContent, "Message")
             set_db_item(message.author.guild.id, "snipes", message.id, "MessageID")
             set_db_item(message.author.guild.id, "snipes", Author, "Author")
-            set_db_item(message.author.guild.id, "snipes", message.author.avatar_url, "AuthorAvatar")
+            set_db_item(message.author.guild.id, "snipes", message.author.avatar.url, "AuthorAvatar")
             set_db_item(message.author.guild.id, "snipes", datetime.utcnow(), "Timestamp")
 
             DeleteChannelID = get_log_item(message.author.guild.id, "Delete")
@@ -521,7 +521,7 @@ class Events(commands.Cog):
                         MessageFormatted = MessageFormatted[1300]
 
                     await send_embed(channel, send_option=0, author=message.author,
-                                     author_pfp=message.author.avatar_url_as(format="png"), color=0xff6e6e,
+                                     author_pfp=message.author.avatar.url, color=0xff6e6e,
                                      description=f"Message by {message.author.mention}\n**Deleted** "
                                                  f"in {message.channel.mention}",
                                      fields=[('Message', f"{MessageFormatted}", True),
@@ -594,7 +594,7 @@ class Events(commands.Cog):
             # user went over the required xp to level up. Ex. The user has 100 xp, but only needed 96 xp to level up,
             # the users xp will be set to 4. The users level is then updated in the db
             if userxp >= xp_lvl_up:
-                await send_embed(msg.channel, author="Level Up!", author_pfp=msg.author.avatar_url,
+                await send_embed(msg.channel, author="Level Up!", author_pfp=msg.author.avatar.url,
                                  description=f"Keep up the activeness {msg.author.mention}! "
                                              f"You have leveled up to level {userlvl + 1}!",
                                  color=0x08d5f7)

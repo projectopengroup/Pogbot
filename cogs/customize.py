@@ -19,7 +19,7 @@ class Customize(commands.Cog, name="Customization"):
         if user is None:
             user = ctx.author
         check_global_user(user.id)
-        avatarRequest = (requests.get(user.avatar_url)).content
+        avatarRequest = (requests.get(user.avatar.url)).content
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
 
@@ -35,14 +35,14 @@ class Customize(commands.Cog, name="Customization"):
             validate = requests.get(imageurlorcolor)
             set_global_welcomeimg(user.id, imageurlorcolor)
             set_global_bgcolor(user.id, "None")
-            avatarRequest = (requests.get(user.avatar_url)).content
+            avatarRequest = (requests.get(user.avatar.url)).content
             await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
         except requests.exceptions.MissingSchema as exception:
             checkcolor = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', imageurlorcolor)
             if checkcolor:
                 set_global_bgcolor(user.id, imageurlorcolor)
                 set_global_welcomeimg(user.id, "None")
-                avatarRequest = (requests.get(user.avatar_url)).content
+                avatarRequest = (requests.get(user.avatar.url)).content
                 await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
             else:
                 embederror = discord.Embed(
@@ -64,7 +64,7 @@ class Customize(commands.Cog, name="Customization"):
         if checkcolor:
             user = ctx.author
             set_global_bannercolor(user.id, htmlcolorcode)
-            avatarRequest = (requests.get(user.avatar_url)).content
+            avatarRequest = (requests.get(user.avatar.url)).content
             # Testing create welcome card on message send right now, until we get it done.
             await ctx.send(file=create_welcome_card(avatarRequest, user, ctx.guild))
         else:

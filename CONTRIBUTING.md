@@ -6,3 +6,10 @@ If you'd like to contribute to this project, please get in contact with us on di
 ## Project Links
 * **[Project Open Group Discord](https://discord.gg/zRHZymwxfY)**
 * **[Project Open Group Codeck](https://open.codecks.io/pog)**
+
+**You will need the latest Alpha build of discord.py from the master branch.**
+ ```bash
+$ git clone https://github.com/Rapptz/discord.py
+$ cd discord.py
+$ python3 -m pip install -U .[voice]
+```

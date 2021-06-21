@@ -17,6 +17,17 @@ from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase6
 session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
 
+class Counter(discord.ui.View):
+    @discord.ui.button(label='0', style=discord.ButtonStyle.red)
+    async def counter(self, button: discord.ui.Button, interaction: discord.Interaction):
+        number = int(button.label)
+        button.label = str(number + 1)
+        if number + 1 >= 5:
+            button.style = discord.ButtonStyle.green
+
+        await interaction.message.edit(view=self)
+
+
 class Commands(commands.Cog, name="Commands"):
     def __init__(self, bot):
         self.bot = bot
@@ -27,6 +38,14 @@ class Commands(commands.Cog, name="Commands"):
         justprefix = await get_prefix(self.bot, ctx.message)
         await send_embed(ctx.message.channel, send_option=0, description=f"**The current prefix is {justprefix[2]}**",
                          color=0x08d5f7)
+
+    @commands.command(name='counter', brief='Displays a button counter',
+                      description="Posts a button counter.")
+    async def counter(self, ctx):
+        view = Counter()
+        # add_option_embed = await send_embed(ctx, send_option=2, description=f"**Count with me**", color=0x08d5f7)
+        # await ctx.send(embed=add_option_embed, view=view)
+        await ctx.send('**Count with me**', view=view)
 
     @commands.command(name='ping', aliases=['latency'], brief='Responds with latency.',
                       description="Responds with Pogbot's latency.")
@@ -64,22 +83,20 @@ class Commands(commands.Cog, name="Commands"):
     # Look for a command called icon.
     async def icon(self, ctx):
         # Send pogbot icon
-        await ctx.send(self.bot.user.avatar_url)
+        await ctx.send(self.bot.user.avatar.url)
 
     @commands.command(name='avatar', aliases=['av', 'pfp'], brief='Responds with an avatar.',
                       description="Responds with the avatar of a user provided, if none provided, responds with the "
                                   "avatar of the user that called the command.")
     # Look for a command called avatar and collects optional user parameter, so if no user given, user = None.
-    async def avatar(self, ctx,  *, user: discord.Member = None):
+    async def avatar(self, ctx, *, user: discord.Member = None):
         # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
         # command author.
         if user is None:
             user = ctx.author
         # Defining pfp from user's avatar_url.
-        pfp = user.avatar_url
-        # Creating an embed response using an f string to insert the author long name by using our variable 'user',
-        # setting the description to '**Avatar**', the color to match the bot, and the image to the specified user's
-        # pfp.
+        pfp = user.avatar.url
+
         await send_embed(ctx, title=f'**{user}**', description='**Avatar**', color=0x08d5f7, image=pfp)
 
     @commands.command(name='userid', aliases=['id', 'uid'], brief='Responds with a users ID.',
@@ -93,13 +110,13 @@ class Commands(commands.Cog, name="Commands"):
             user = ctx.author
         # Creates a discord embed with the elements: title (Which gets the user's tag),
         # description (Which gets the user's id), and color (which is the bot's color).
-        await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar_url, description=f'**{user.id}**',
+        await send_embed(ctx, author=f"{user}'s ID", author_pfp=user.avatar.url, description=f'**{user.id}**',
                          color=0x08d5f7)
 
     @commands.command(name='botinfo', aliases=['binfo'], brief='Responds with information about the bot.',
                       description="Responds with information about the bot and it's hosting environment.")
     async def botinfo(self, ctx):
-        await send_embed(ctx, title=f"**Pogbot's Info**", thumbnail=self.bot.user.avatar_url,
+        await send_embed(ctx, title=f"**Pogbot's Info**", thumbnail=self.bot.user.avatar.url,
                          fields=[(f'**Python Version:**', platform.python_version(), True),
                                  (f'**Operating System:**', platform.system(), True),
                                  (f'**OS Version:**', platform.release(), True),
@@ -190,7 +207,7 @@ class Commands(commands.Cog, name="Commands"):
 
         # Creates and sends an embed with various user info by adding them as fields. When getting dates, the format
         # as to be converted so that it is easier to read.
-        await send_embed(ctx, author=f"{username}", author_pfp=user.avatar_url, thumbnail=user.avatar_url,
+        await send_embed(ctx, author=f"{username}", author_pfp=user.avatar.url, thumbnail=user.avatar.url,
                          fields=[(f'**Username:**', usernameFull, True), (f'**Nickname:**', nickname, True),
                                  (f'**User ID:**', str(user.id), True),
                                  (f'**Registered:**', str(user.created_at.strftime("%b %d, %Y")), True),
@@ -413,7 +430,7 @@ class Commands(commands.Cog, name="Commands"):
 
         # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
         xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
-        avatarRequest = (requests.get(user.avatar_url)).content
+        avatarRequest = (requests.get(user.avatar.url)).content
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_level_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
 
