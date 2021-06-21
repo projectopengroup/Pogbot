@@ -146,9 +146,9 @@ class Games(commands.Cog, name="Games"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="ttt", aliases=['TicTacToe'], brief="Tic Tac Toe",
+    @commands.command(name="tictactoe", aliases=['ttt'], brief="Tic Tac Toe",
                       description="Starts a game of tic tac toe.")
-    async def ttt(self, ctx):
+    async def tictactoe(self, ctx):
         await ctx.send('TicTacToe, X goes first!', view=TicTacToe())
 
     @commands.command()
