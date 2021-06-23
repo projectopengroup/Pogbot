@@ -16,11 +16,15 @@ Once Pogbot is added, run the command !setup to get antiquated with Pogbot.
 ## Project Leads
 
 * **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)**
-* **[Jonny(h3resjonny#0741 on discord)](https://github.com/JDMDevelopment)**
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)**
+
+## Project Organizers
+
 * **Stu (ٰٰٰ'#2728 on discord)**
+* **[Jonny(h3resjonny#0741 on discord)](https://github.com/JDMDevelopment)**
 
 ## Contributors
+
 * **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group and Pogbot logos.
 * **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)** Developer. Foundational code contributions. 
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)** -> Developer. Foundational code contributions. 
