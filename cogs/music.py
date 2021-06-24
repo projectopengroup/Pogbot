@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Most of the music functionality is based off of music_bot_example.py Copyright (c) 2019 Valentin B."""
 import requests
 from discord.ext import commands
 import asyncio
