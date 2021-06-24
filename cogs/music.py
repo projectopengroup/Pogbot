@@ -219,7 +219,6 @@ class VoiceState:
         return self.voice and self.current
 
     async def audio_player_task(self):
-        print(f"{str(self.current.source)}")
         while True:
             self.next.clear()
 
@@ -357,7 +356,6 @@ class Music(commands.Cog, name="Music"):
                       description='Resumes the song that is currently paused.')
     @commands.has_permissions(manage_guild=True)
     async def resume(self, ctx: commands.Context):
-        """Resumes a currently paused song."""
 
         if not ctx.voice_state.is_playing and ctx.voice_state.voice.is_paused():
             ctx.voice_state.voice.resume()
@@ -446,9 +444,6 @@ class Music(commands.Cog, name="Music"):
     @commands.command(name='loop', brief='Loops and unloops the current song..',
                       description='Loops or unloops the current song.')
     async def loop(self, ctx: commands.Context):
-        """Loops the currently playing song.
-        Invoke this command again to unloop the song.
-        """
 
         if not ctx.voice_state.is_playing:
             return await ctx.send('Nothing being played at the moment.')
