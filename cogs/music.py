@@ -1,7 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Most of the music functionality is based off of music_bot_example.py Copyright (c) 2019 Valentin B."""
-import requests
-from discord.ext import commands
+
+"""
+Copyright (c) 2019 Valentin B.
+A simple music bot written in discord.py using youtube-dl.
+Though it's a simple example, music bots are complex and require much time and knowledge until they work perfectly.
+Use this as an example or a base for your own bot and extend it as you want. If there are any bugs, please let me know.
+Requirements:
+Python 3.5+
+pip install -U discord.py pynacl youtube-dl
+You also need FFmpeg in your PATH environment variable or the FFmpeg.exe binary in your bot's directory on Windows.
+"""
+
 import asyncio
 import functools
 import itertools
@@ -38,8 +47,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
         'nocheckcertificate': True,
         'ignoreerrors': False,
         'logtostderr': False,
-        'quiet': False,
-        'no_warnings': False,
+        'quiet': True,
+        'no_warnings': True,
         'default_search': 'auto',
         'source_address': '0.0.0.0',
     }
@@ -99,7 +108,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
                 raise YTDLError('Couldn\'t find anything that matches `{}`'.format(search))
 
         webpage_url = process_info['webpage_url']
-        print(process_info['webpage_url'])
         partial = functools.partial(cls.ytdl.extract_info, webpage_url, download=False)
         processed_info = await loop.run_in_executor(None, partial)
 
@@ -115,7 +123,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                     info = processed_info['entries'].pop(0)
                 except IndexError:
                     raise YTDLError('Couldn\'t retrieve any matches for `{}`'.format(webpage_url))
-        print(info['url'])
+
         return cls(ctx, discord.FFmpegPCMAudio(info['url'], **cls.FFMPEG_OPTIONS), data=info)
 
     @staticmethod
@@ -193,9 +201,8 @@ class VoiceState:
         self._loop = False
         self._volume = 0.5
         self.skip_votes = set()
-        print("Creating Loop task.")
+
         self.audio_player = bot.loop.create_task(self.audio_player_task())
-        print("Created Loop task.")
 
     def __del__(self):
         self.audio_player.cancel()
@@ -232,18 +239,12 @@ class VoiceState:
                 try:
                     async with timeout(180):  # 3 minutes
                         self.current = await self.songs.get()
-                        print("Getting songs..")
                 except asyncio.TimeoutError:
                     self.bot.loop.create_task(self.stop())
-                    print("Timedout")
                     return
 
             self.current.source.volume = self._volume
-            print("set volume")
-            print(str(self.current.source))
-            self.voice.play(self.current.source)
-            # self.voice.play(self.current.source, after=self.play_next_song)
-            print("played.")
+            self.voice.play(self.current.source, after=self.play_next_song)
             await self.current.source.channel.send(embed=self.current.create_embed())
 
             await self.next.wait()
@@ -297,7 +298,8 @@ class Music(commands.Cog, name="Music"):
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
 
-    @commands.command(name='join', brief='Joins VC', description='Joins a voice channel', invoke_without_subcommand=True)
+    @commands.command(name='join', brief='Joins VC', description='Joins a voice channel',
+                      invoke_without_subcommand=True)
     async def join(self, ctx: commands.Context):
 
         destination = ctx.author.voice.channel
@@ -369,7 +371,7 @@ class Music(commands.Cog, name="Music"):
             ctx.voice_state.voice.resume()
             await ctx.message.add_reaction('⏯')
 
-    @commands.command(name='stop',  brief='Stops the song and removes the queue.',
+    @commands.command(name='stop', brief='Stops the song and removes the queue.',
                       description='Stops playing and clears the song queue.')
     @commands.has_permissions(manage_guild=True)
     async def stop(self, ctx: commands.Context):
