@@ -38,8 +38,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
         'nocheckcertificate': True,
         'ignoreerrors': False,
         'logtostderr': False,
-        'quiet': True,
-        'no_warnings': True,
+        'quiet': False,
+        'no_warnings': False,
         'default_search': 'auto',
         'source_address': '0.0.0.0',
     }
@@ -99,6 +99,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                 raise YTDLError('Couldn\'t find anything that matches `{}`'.format(search))
 
         webpage_url = process_info['webpage_url']
+        print(process_info['webpage_url'])
         partial = functools.partial(cls.ytdl.extract_info, webpage_url, download=False)
         processed_info = await loop.run_in_executor(None, partial)
 
@@ -114,7 +115,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                     info = processed_info['entries'].pop(0)
                 except IndexError:
                     raise YTDLError('Couldn\'t retrieve any matches for `{}`'.format(webpage_url))
-
+        print(info['url'])
         return cls(ctx, discord.FFmpegPCMAudio(info['url'], **cls.FFMPEG_OPTIONS), data=info)
 
     @staticmethod
@@ -192,8 +193,9 @@ class VoiceState:
         self._loop = False
         self._volume = 0.5
         self.skip_votes = set()
-
+        print("Creating Loop task.")
         self.audio_player = bot.loop.create_task(self.audio_player_task())
+        print("Created Loop task.")
 
     def __del__(self):
         self.audio_player.cancel()
@@ -230,8 +232,10 @@ class VoiceState:
                 try:
                     async with timeout(180):  # 3 minutes
                         self.current = await self.songs.get()
+                        print("Getting songs..")
                 except asyncio.TimeoutError:
                     self.bot.loop.create_task(self.stop())
+                    print("Timedout")
                     return
 
             self.current.source.volume = self._volume
