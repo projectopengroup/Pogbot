@@ -19,10 +19,12 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 
 class VoiceError(Exception):
+    print(str(Exception))
     pass
 
 
 class YTDLError(Exception):
+    print(str(Exception))
     pass
 
 
