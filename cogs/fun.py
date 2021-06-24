@@ -192,6 +192,7 @@ class Fun(commands.Cog, name="Fun Stuff"):
         subinfo = requests.get(f"https://www.reddit.com/r/{sub}/about.json", headers={'User-agent': 'Pogbot'})
         subinfoj = subinfo.json()
         icon = subinfoj['data']['icon_img']
+        print(subinfoj)
         await send_embed(ctx, author_pfp=icon, author=f'{sub}', title=title, image=image, color=0x08d5f7,
                          url=link, fields=[("<:Reddit:854788220310519839> User", f"{author}", True),
                                            ('<:Upvote:854785750712582154> Upvotes', f"{upvotes}", True)])

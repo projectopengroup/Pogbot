@@ -4,3 +4,4 @@ Pillow
 colorthief
 requests-cache
 beautifulsoup4
+youtube_dl
