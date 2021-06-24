@@ -13,3 +13,5 @@ $ git clone https://github.com/Rapptz/discord.py
 $ cd discord.py
 $ python3.9 -m pip install -U .[voice]
 ```
+
+**You will need ```OPUS``` and ```FFMPEG``` on installed on your system as well.**
