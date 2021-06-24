@@ -20,12 +20,10 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 
 class VoiceError(Exception):
-    print(str(Exception))
     pass
 
 
 class YTDLError(Exception):
-    print(str(Exception))
     pass
 
 
@@ -221,6 +219,7 @@ class VoiceState:
         return self.voice and self.current
 
     async def audio_player_task(self):
+        print(f"{str(self.current.source)}")
         while True:
             self.next.clear()
 
