@@ -235,7 +235,9 @@ class VoiceState:
                     return
 
             self.current.source.volume = self._volume
+            print("set volume")
             self.voice.play(self.current.source, after=self.play_next_song)
+            print("played.")
             await self.current.source.channel.send(embed=self.current.create_embed())
 
             await self.next.wait()
