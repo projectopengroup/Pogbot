@@ -417,7 +417,8 @@ class Music(commands.Cog, name="Music"):
         # embed = (discord.Embed(description=f'**{len(ctx.voice_state.songs)} tracks** \n \n {queue}')
         #         .set_footer(text=f'Viewing page {page} of {pages}'))
 
-        await send_embed(ctx, description=f'<:Music:857498411136581632> **{len(ctx.voice_state.songs)} tracks** \n \n {queue}', color=0x08d5f7,
+        await send_embed(ctx, description=f'<:Music:857498411136581632> **{len(ctx.voice_state.songs)}'
+                                          f' tracks** \n \n {queue}', color=0x08d5f7,
                          footer=f'Viewing page {page} of {pages}')
 
     @commands.command(name='shuffle', brief='Shuffles the queue.',
@@ -457,12 +458,6 @@ class Music(commands.Cog, name="Music"):
     @commands.command(name='play', brief='Plays a song.',
                       description='Searches for and plays a song or adds it to the queue.')
     async def play(self, ctx: commands.Context, *, search: str):
-        """Plays a song.
-        If there are songs in the queue, this will be queued until the
-        other songs finished playing.
-        This command automatically searches from various sites if no URL is provided.
-        A list of these sites can be found here: https://rg3.github.io/youtube-dl/supportedsites.html
-        """
 
         if not ctx.voice_state.voice:
             await ctx.invoke(self.join)
