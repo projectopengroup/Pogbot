@@ -434,6 +434,94 @@ class Commands(commands.Cog, name="Commands"):
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_level_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
 
+    @commands.command(name='olympics', aliases=['olympicgames', 'medals', 'medalcount'],
+                      brief='Responds with the medal counts.',
+                      decription='Responds with the medal counts for each country for the olympic games. ')
+    async def olympics(self, ctx, page=1):
+        request = requests.get(url=f'https://www.cbssports.com/olympics/news/medal-count-tokyo-2021-olympics/')
+        soup = BeautifulSoup(request.text, 'html.parser')
+        medal_table = soup.find_all('table')
+        medal_data = medal_table[0].find_all('td')
+        flag_emotes = {
+            "united states": "<:unitedstates:868871032189108256>",
+            "ukraine": "<:ukraine:868871032411402291>",
+            "turkey": "<:turkey:868871032289783869>",
+            "tunisia": "<:tunisia:868871032289779763>",
+            "thailand": "<:thailand:868871032411402292>",
+            "switzerland": "<:switzerland:868871032239452232>",
+            "spain": "<:spain:868871032419790868>",
+            "south korea": "<:southkorea:868871032172322857>",
+            "slovenia": "<:slovenia:868871032176513026>",
+            "serbia": "<:serbia:868871032373674006>",
+            "russian olympic committee": "<:russianolympiccommittee:868871032184918079>",
+            "romania": "<:romania:868871032193306645>",
+            "puerto rico": "<:puertorico:868871032184930316>",
+            "norway": "<:norway:868871032184930317>",
+            "north korea": "<:northkorea:868871032130371627>",
+            "nigeria": "<:nigeria:868871032218452000>",
+            "new zealand": "<:newzealand:868871032407203890>",
+            "netherlands": "<:netherlands:868871032201707592>",
+            "mongolia": "<:mongolia:868871032373661746>",
+            "mexico": "<:mexico:868871032239452231>",
+            "kosovo": "<:kosovo:868871032046506087>",
+            "kazakhstan": "<:kazakhstan:868871032474333256>",
+            "japan": "<:japan:868871032474333255>",
+            "jamaica": "<:jamaica:868871032319131698>",
+            "italy": "<:italy:868871032176513025>",
+            "israel": "<:israel:868871032147153007>",
+            "ireland": "<:ireland:868871032130371625>",
+            "iran": "<:iran:868871032159731732>",
+            "indonesia": "<:indonesia:868871032046506085>",
+            "india": "<:india:868871032184918077>",
+            "hungary": "<:hungary:868871032130371624>",
+            "greece": "<:greece:868871032189116467>",
+            "great britain": "<:greatbritain:868871032147153006>",
+            "germany": "<:germany:868871032134582292>",
+            "georgia": "<:georgia:868871032189116466>",
+            "france": "<:france:868871031874531340>",
+            "finland": "<:finland:868871032289783868>",
+            "estonia": "<:estonia:868871032239452230>",
+            "ecuador": "<:ecuador:868871032218460190>",
+            "denmark": "<:denmark:868871032172322856>",
+            "chinese taipei": "<:chinesetaipei:868871032189108254>",
+            "china": "<:china:868871032176513024>",
+            "canada": "<:canada:868871032193306644>",
+            "bulgaria": "<:bulgaria:868871032042291211>",
+            "brazil": "<:brazil:868871032285589534>",
+            "belgium": "<:belgium:868871032218451999>",
+            "austria": "<:austria:868871032201707591>",
+            "australia": "<:australia:868871032310726726>",
+            "argentina": "<:argentina:868871032289779762>",
+            "algeria": "<:algeria:868871032373674005>"
+        }
+
+        for i in range(0, len(medal_data)):
+            medal_data[i] = medal_data[i].get_text()
+            medal_data[i] = medal_data[i].replace("\t", "")
+            medal_data[i] = "".join(medal_data[i].rstrip())
+
+        medal_fields = []
+
+        for i in range(1, int(len(medal_data) / 6)):
+            medal_fields.append((medal_data[i*6+1], medal_data[i*6+2], medal_data[i*6+3], medal_data[i*6+4],
+                                 medal_data[i*6+5]))
+
+        olymp_embed = discord.Embed(colour=0x08d5f7, title="**Olympic Games Medal Counts**")
+        olymp_embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/732409264907485185/868531514244202527"
+                                      "/unknown.png")
+        olymp_embed.set_footer(text="Ranked based on most golds")
+        for i in range((page-1)*10, page*10):
+            if medal_fields[i][0].lower() in flag_emotes:
+                olymp_embed.add_field(name=f"{flag_emotes[medal_fields[i][0].lower()]} **{medal_fields[i][0]}**",
+                                      value=f":first_place: `{medal_fields[i][1]}` :second_place: `{medal_fields[i][2]}` "
+                                            f":third_place: `{medal_fields[i][3]}`\nTotal: `{medal_fields[i][4]}`")
+            else:
+                olymp_embed.add_field(name=f"**{medal_fields[i][0]}**",
+                                      value=f":first_place: `{medal_fields[i][1]}` :second_place: `{medal_fields[i][2]}` "
+                                            f":third_place: `{medal_fields[i][3]}`\nTotal: `{medal_fields[i][4]}`")
+
+        await ctx.send(embed=olymp_embed)
+
 
 def setup(bot):
     bot.add_cog(Commands(bot))
