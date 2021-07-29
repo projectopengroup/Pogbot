@@ -300,7 +300,7 @@ class Games(commands.Cog, name="Games"):
                                                   f"**Dealer's Hand**\nCards: "
                                                   f"`{dealer_hand[0]}`, `?`\nTotal: "
                                                   f"`?`",
-                                      color=0x08d5f7, footer="Reply with **hit** or **stand**")
+                                      color=0x08d5f7, footer="Reply with hit or stand")
 
         if get_total(user_hand) == 21:
             await end_game("Win")

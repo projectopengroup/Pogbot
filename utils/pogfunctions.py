@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 from pathlib import Path
 from colorthief import ColorThief
 from math import sqrt
-from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get_global_bgcolor
+from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get_global_bgcolor, get_global_currency
 from discord.ext import commands
 
 
@@ -344,6 +344,169 @@ def create_level_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl, r
     drawObject.rectangle((x + (h / 2), y, x + w + (h / 2), y + h), fill=color)
 
     compiled.paste(statusbar, (0, 0), mask=statusbar)
+
+    # set a var to arr that represents bytes.
+    arr = io.BytesIO()
+    # Save our compiled image in PNG format as bytes
+    compiled.save(arr, format='PNG')
+    # Set the byte stream position to 0.
+    arr.seek(0)
+    # Set a file var to a file discord understands, using our bytes, with a filename of "WelcomeCard.png"
+    file = discord.File(fp=arr, filename=f'LevelCard.PNG')
+    # Send the file back.
+    return file
+
+
+def create_profile_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl, rank):
+    # Set a var to the image that was passed into the function and convert it to RGBA.
+    avatarlayer = Image.open(io.BytesIO(avatarRequest)).convert("RGBA")
+    # Define our folder.
+    welcomecardfolder = Path("img/card_welcomes/")
+    # Set our other image variables paths.
+    welcomecardbase = welcomecardfolder / "baselayer.png"
+    welcomecardtop = welcomecardfolder / "toplayer_profile.png"
+    welcomecardcircle = welcomecardfolder / "circlelayer.png"
+    welcomecardbanner = welcomecardfolder / "bannerlayer_profile.png"
+    welcomecardeffect = welcomecardfolder / "effectlayer.png"
+    levelstatusbar = welcomecardfolder / "statusbar_profile.png"
+    pogcoinlayer = welcomecardfolder / "pogcoinlayer.png"
+
+    fontvegurbold = Path("fonts/") / "Vegur-Bold.otf"
+    fontvegurlight = Path("fonts/") / "Vegur-Light.otf"
+
+    # Open our images by their paths.
+    toplayer = Image.open(welcomecardtop)
+    baselayer = Image.open(welcomecardbase)
+    circlelayer = Image.open(welcomecardcircle)
+    bannerlayer = Image.open(welcomecardbanner)
+    effectlayer = Image.open(welcomecardeffect)
+
+    statusbar = Image.open(levelstatusbar)
+    pogcoin = Image.open(pogcoinlayer)
+
+    # resize the avatarlayer
+    avatarlayer = avatarlayer.resize((105, 105), Image.ANTIALIAS)
+
+    compiled = baselayer.copy()
+
+    getcolorfrom = ColorThief(io.BytesIO(avatarRequest))
+    swatch = getcolorfrom.get_palette(color_count=25)
+    domcolor = getcolorfrom.get_color(quality=1)
+
+    custombgcolor = get_global_bgcolor(user.id)
+    if custombgcolor != "None":
+        Lightcolor = ImageColor.getrgb(custombgcolor)
+        print(Lightcolor)
+    else:
+        Lightcolor = closest_color((8, 213, 247), swatch)
+        print(Lightcolor)
+
+    custombannercolor = get_global_bannercolor(user.id)
+    if custombannercolor != "None":
+        if custombannercolor == "#FFFFFF":
+            custombannercolor = "#000000"
+        Darkcolor = ImageColor.getrgb(custombannercolor)
+        print(Darkcolor)
+    else:
+        Darkcolor = closest_color((15, 15, 15), swatch)
+        print(Darkcolor)
+
+    custombg = get_global_welcomeimg(user.id)
+    if custombg != "None":
+        try:
+            custombgimg = requests.get(custombg).content
+            alpha = toplayer.getchannel('A')
+            newlayer = Image.open(io.BytesIO(custombgimg)).convert("RGBA")
+            newlayer = newlayer.resize((int(toplayer.size[0]), int(toplayer.size[1])), 0)
+            # baselayer = baselayer.resize((int(baselayer.size[0]),int(baselayer.size[1])), 0)
+            print(baselayer.getbands())
+            print(newlayer.getbands())
+            print(baselayer.size)
+            print(newlayer.size)
+            newlayer.putalpha(alpha)
+            toplayer = newlayer.copy()
+            effectlayer = Image.new('RGBA', effectlayer.size, (255, 0, 0, 0))
+        except PIL.UnidentifiedImageError as exception:
+            alpha = toplayer.getchannel('A')
+            toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
+            toplayer.putalpha(alpha)
+            alpha = effectlayer.getchannel('A')
+            effectlayer = Image.new('RGBA', effectlayer.size, color=Darkcolor)
+            effectlayer.putalpha(alpha)
+        except requests.ConnectionError as exception:
+            alpha = toplayer.getchannel('A')
+            toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
+            toplayer.putalpha(alpha)
+            alpha = effectlayer.getchannel('A')
+            effectlayer = Image.new('RGBA', effectlayer.size, color=Darkcolor)
+            effectlayer.putalpha(alpha)
+    else:
+        alpha = toplayer.getchannel('A')
+        toplayer = Image.new('RGBA', toplayer.size, color=Lightcolor)
+        toplayer.putalpha(alpha)
+
+    alpha = bannerlayer.getchannel('A')
+    bannerlayer = Image.new('RGBA', bannerlayer.size, color=Darkcolor)
+    bannerlayer.putalpha(alpha)
+    # This is to help people understand x and y axis and which direction they move in from their orgin state.
+    #               ,right(x)
+    # paste(image, (0, 0))
+    #                  ^down(y)
+    # In the compiled image, paste the toplayer and set a mask.
+    compiled.paste(avatarlayer, (18, 67), mask=avatarlayer)
+    compiled.paste(toplayer, (0, 0), mask=toplayer)
+    compiled.paste(bannerlayer, (0, 0), mask=bannerlayer)
+    compiled.paste(effectlayer, (0, 0), mask=effectlayer)
+
+
+    # Going to leave the circle off for now, I think it looks better without it? Maybe I'm wrong. Lol.
+    # compiled.paste(circlelayer, (0, 0), mask=circlelayer)
+
+    # Name and set our fonts.
+    name_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 32)
+    pog_coin_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 30)
+    coins_font = ImageFont.truetype("fonts/Vegur-Light.otf", 28)
+    msg_font = ImageFont.truetype("fonts/Vegur-Light.otf", 30)
+    xp_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 20)
+    member_num_font = ImageFont.truetype("fonts/Vegur-Light.otf", 20)
+
+    # Draw our compiled image as a base.
+    draw = ImageDraw.Draw(compiled)
+
+    if len(str(user)) > 18:
+        UserSplit = str(user).upper()
+        UserSplit = UserSplit.split('#')
+        UserFormatted = UserSplit[0]
+        UserFormatted = UserFormatted[0:13] + "...#" + UserSplit[1]
+    else:
+        UserFormatted = str(user).upper()
+
+    currency = get_global_currency(user.id)
+
+    # Set all of our text at specific positions, colors, and with certain fonts.
+    draw.text((132, 108), UserFormatted, (255, 255, 255), font=name_font)
+    draw.text((22, 177), f"LEVEL {userlvl} RANK {rank}", (255, 255, 255), font=msg_font)
+    draw.text((390, 188), f"XP {userxp} / {xp_lvl_up}", (255, 255, 255), font=xp_font)
+    draw.text((599, 108), f"POG COINS", (255, 255, 255), font=pog_coin_font)
+    draw.text((599, 141), str(currency), (255, 255, 255), font=coins_font)
+
+    drawObject = ImageDraw.Draw(compiled)
+
+    color = 98, 211, 245
+
+    x = 20
+    y = 221
+    h = 20
+    w = 590
+    progress = w * float(userxp) / float(xp_lvl_up)
+
+    w = progress
+    drawObject.ellipse((x + w, y, x + h + w, y + h), fill=color)
+    drawObject.ellipse((x, y, x + h, y + h), fill=color)
+    drawObject.rectangle((x + (h / 2), y, x + w + (h / 2), y + h), fill=color)
+
+    compiled.paste(statusbar, (0, 0), mask=statusbar)
+    compiled.paste(pogcoin, (0, 0), mask=pogcoin)
 
     # set a var to arr that represents bytes.
     arr = io.BytesIO()

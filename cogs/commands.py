@@ -10,7 +10,7 @@ import json
 from bs4 import BeautifulSoup
 from datetime import timedelta, datetime
 from discord.ext import commands
-from utils.pogfunctions import send_embed, create_welcome_card, create_level_card
+from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user
 
@@ -522,6 +522,36 @@ class Commands(commands.Cog, name="Commands"):
 
         await ctx.send(embed=olymp_embed)
 
+    @commands.command(name="profile", brief='Displays user profile.',
+                      description="Displays the user information like level, coin balance, etc.")
+    async def profile(self, ctx, *, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+        check_user(ctx.guild.id, user.id)
+        # Gets the user's xp in the server
+        userxp = get_db_user_item(ctx.guild.id, user.id, "XP")
+
+        # Gets the user's level in the server
+        userlvl = get_db_user_item(ctx.guild.id, user.id, "Level")
+
+        MemberList = []
+        for member in ctx.guild.members:
+            MemberList.append([member.id, get_db_user_item(ctx.guild.id, member.id, "Level"),
+                               get_db_user_item(ctx.guild.id, member.id, "XP")])
+
+        sorted_member_list = sorted(MemberList, key=operator.itemgetter(1, 2))
+        sorted_member_list.reverse()
+        x = 0
+        for i in sorted_member_list:
+            x = x + 1
+            if i[0] == user.id:
+                rank = x
+
+        # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
+        xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
+        avatarRequest = (requests.get(user.avatar.url)).content
+        # Testing create welcome card on message send right now, until we get it done.
+        await ctx.send(file=create_profile_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
 
 def setup(bot):
     bot.add_cog(Commands(bot))

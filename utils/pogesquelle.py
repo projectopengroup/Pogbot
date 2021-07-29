@@ -535,5 +535,16 @@ def get_global_welcomeimg(userid):
     conn.commit()
     conn.close()
     return data
+
+
+def get_global_currency(userid):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'SELECT Currency FROM globalusers WHERE UserID={userid}')
+    data = cur.fetchone()
+    data = data[0]
+    conn.commit()
+    conn.close()
+    return data
 # Global user settings end here, please keep the other settings out of this half of the file ###########
 # GLOBAL USER SETTINGS ###################################################################################
