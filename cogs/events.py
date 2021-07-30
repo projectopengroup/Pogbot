@@ -6,7 +6,8 @@ from utils.pogfunctions import send_embed, create_welcome_card, diff_lists
 from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
     get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64, check_rolereactions, \
-    get_rolelist, get_emojilist, check_user, get_db_user_item, set_db_user_item
+    get_rolelist, get_emojilist, check_user, get_db_user_item, set_db_user_item, get_global_currency, \
+    set_global_currency
 import os
 import requests
 from discord.utils import get
@@ -564,6 +565,22 @@ class Events(commands.Cog):
                 # await bot.process_commands(msg)
                 return
             return
+        if str(msg.author.id) == "171238557417996289":
+            # Look for the text "updatecoins" in the message
+            if "updatecoins" in msg.content:
+                await msg.channel.send("Updating coins...")
+                for guild in self.bot.guilds:
+                    await msg.channel.send(guild)
+                    for member in guild.members:
+                        print(member)
+                        added_coins = 0
+                        for level in range(0, get_db_user_item(msg.guild.id, member.id, "Level")):
+                            currency = get_global_currency(member.id)
+                            set_global_currency(member.id, currency + ((level+1) * 100))
+                            added_coins += (level+1) * 100
+                        if get_global_currency(member.id) is not None and get_global_currency(member.id) != 0:
+                            await msg.channel.send(f"Added {added_coins} coins to {member} "
+                                                   f"(lvl {get_db_user_item(msg.guild.id, member.id, 'Level')})")
         # Check if the message author is a bot.
         if msg.author.bot:
             # if it is a bot then return the code from here without going further.
@@ -583,10 +600,10 @@ class Events(commands.Cog):
         # amount of xp between the range 11 and 18 is given to the user.
         if xplock == "0" or datetime.strptime(xplock, "%Y-%m-%d %H:%M:%S.%f") < datetime.now():
             set_db_user_item(msg.guild.id, msg.author.id, "XPLockedUntil", datetime.now() + timedelta(minutes=1))
-            set_db_user_item(msg.guild.id, msg.author.id, "XP", int(userxp) + random.randint(11, 18))
+            set_db_user_item(msg.guild.id, msg.author.id, "XP", int(userxp) + random.randint(14, 22))
             # The formula calculates how much xp is needed to reach the next level, and it is unique to each level.
             # The higher the level the user is at, the more xp that is needed to reach the next level.
-            xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
+            xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.20) ** 1.20))
             # Gets the users new xp total
             userxp = get_db_user_item(msg.guild.id, msg.author.id, "XP")
 
@@ -596,11 +613,14 @@ class Events(commands.Cog):
             if userxp >= xp_lvl_up:
                 await send_embed(msg.channel, author="Level Up!", author_pfp=msg.author.avatar.url,
                                  description=f"Keep up the activeness {msg.author.mention}! "
-                                             f"You have leveled up to level {userlvl + 1}!",
+                                             f"You have leveled up to level {userlvl + 1} and you have earned "
+                                             f"{(userlvl+1) * 100} coins!",
                                  color=0x08d5f7)
                 overflow_xp = userxp - xp_lvl_up
                 set_db_user_item(msg.guild.id, msg.author.id, "XP", overflow_xp)
                 set_db_user_item(msg.guild.id, msg.author.id, "Level", userlvl + 1)
+                currency = get_global_currency(msg.author.id)
+                set_global_currency(msg.author.id, currency + ((userlvl+1) * 100))
 
         # Print the server name and channel of the message followed by author name and the message content.
         print(f'Server Message in {msg.guild} [{msg.channel}] {msg.author} : {msg.content}')

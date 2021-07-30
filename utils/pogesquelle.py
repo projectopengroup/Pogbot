@@ -537,12 +537,21 @@ def get_global_welcomeimg(userid):
     return data
 
 
+def set_global_currency(userid, currency):
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'UPDATE globalusers SET Currency = {currency} WHERE UserID={userid}')
+    conn.commit()
+    conn.close()
+
+
 def get_global_currency(userid):
     conn = sqlite3.connect('prefs.db')
     cur = conn.cursor()
     cur.execute(f'SELECT Currency FROM globalusers WHERE UserID={userid}')
     data = cur.fetchone()
-    data = data[0]
+    if data is not None:
+        data = data[0]
     conn.commit()
     conn.close()
     return data
