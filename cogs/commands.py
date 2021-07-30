@@ -426,7 +426,7 @@ class Commands(commands.Cog, name="Commands"):
                 rank = x
 
         # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
-        xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
+        xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.20) ** 1.20))
         avatarRequest = (requests.get(user.avatar.url)).content
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_level_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
@@ -545,7 +545,7 @@ class Commands(commands.Cog, name="Commands"):
                 rank = x
 
         # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
-        xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.24) ** 1.24))
+        xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.20) ** 1.20))
         avatarRequest = (requests.get(user.avatar.url)).content
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_profile_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))

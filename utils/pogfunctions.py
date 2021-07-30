@@ -497,8 +497,8 @@ def create_profile_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl,
     x = 20
     y = 221
     h = 20
-    w = 590
-    progress = w * float(userxp) / float(xp_lvl_up)
+    w = 450
+    progress = w * (float(userxp) / float(xp_lvl_up))
 
     w = progress
     drawObject.ellipse((x + w, y, x + h + w, y + h), fill=color)
