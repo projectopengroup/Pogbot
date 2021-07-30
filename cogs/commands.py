@@ -4,7 +4,6 @@ import re
 
 import discord
 import requests
-import requests_cache
 import operator
 import json
 from bs4 import BeautifulSoup
@@ -13,8 +12,6 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user
-
-session = requests_cache.CachedSession('covid_cache', expire_after=timedelta(hours=6))
 
 
 class Counter(discord.ui.View):
@@ -255,8 +252,8 @@ class Commands(commands.Cog, name="Commands"):
         elif country.lower() in possible_skorea:
             country = "s. korea"
 
-        request1 = session.get(url=f'https://www.worldometers.info/coronavirus/#main_table')
-        request2 = session.get(url=f'https://www.worldometers.info/coronavirus/weekly-trends/#weekly_table')
+        request1 = requests.get(url=f'https://www.worldometers.info/coronavirus/#main_table')
+        request2 = requests.get(url=f'https://www.worldometers.info/coronavirus/weekly-trends/#weekly_table')
         soup1 = BeautifulSoup(request1.text, 'html.parser')
         soup2 = BeautifulSoup(request2.text, 'html.parser')
 
