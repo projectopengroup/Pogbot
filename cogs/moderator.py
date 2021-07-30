@@ -70,7 +70,6 @@ class Moderator(commands.Cog, name="Moderator"):
                                          f"\nTry ```{justprefix[2]}mute User```",
                              color=0x08d5f7)
             return
-
         try:
             user_member = ctx.guild.get_member(user.id)
             if user_member.top_role >= ctx.author.top_role:
@@ -285,7 +284,7 @@ class Moderator(commands.Cog, name="Moderator"):
                              timestamp=(datetime.utcnow()),
                              footer=f"Purge")
 
-    @commands.command(name='bann', aliases=['bannish', 'votedofftheisland'], brief='Bans a user.',
+    @commands.command(name='ban', aliases=['bannish', 'votedofftheisland'], brief='Bans a user.',
                       description="Bans a user from the discord server.")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, user: discord.User = None, *, reason=None):
@@ -349,6 +348,29 @@ class Moderator(commands.Cog, name="Moderator"):
                                      f"**{user} has been unbanned.**",
                          color=0x08d5f7)
         return
+
+    @commands.command(name='warn', aliases=['careful'], brief='Warns a user.',
+                      description="Warns a user.")
+    @commands.has_permissions(manage_roles=True)
+    async def warn(self, ctx, user: discord.Member = None, *, reason=None):
+        if user is None:
+            justprefix = await get_prefix(self.bot, ctx.message)
+            await send_embed(ctx, send_option=0,
+                             description=f"<:Pogbot_X:850089728018874368> "
+                                         f"**You must provide a user.**"
+                                         f"\nTry ```{justprefix[2]}mute User```",
+                             color=0x08d5f7)
+            return
+        if reason is None:
+            reason = "No reason given."
+        await send_embed(ctx, send_option=0,
+                         description=f"<:Check:845178458426179605> "
+                                     f"**{user} has been warned.** Reason: *{reason}*",
+                         color=0x08d5f7)
+        await send_embed(ctx.author, send_option=0,
+                         description=f"<:Check:845178458426179605> "
+                                     f"**You has been warned in the server {ctx.guild}.** Reason: *{reason}*",
+                         color=0x08d5f7)
 
 
 def setup(bot):
