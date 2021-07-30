@@ -545,6 +545,14 @@ def set_global_currency(userid, currency):
     conn.close()
 
 
+def reset_global_currency():
+    conn = sqlite3.connect('prefs.db')
+    cur = conn.cursor()
+    cur.execute(f'UPDATE globalusers SET Currency = 0')
+    conn.commit()
+    conn.close()
+
+
 def get_global_currency(userid):
     conn = sqlite3.connect('prefs.db')
     cur = conn.cursor()

@@ -7,7 +7,7 @@ from utils.pogesquelle import get_welcome_card, get_welcome_role, \
     get_welcome_channel, get_welcome_message, get_welcome_dm_message, check_global_user, get_welcome_dm_message, \
     get_welcome_role, check_log_item, get_log_item, set_db_item, check_snipes, encodebase64, check_rolereactions, \
     get_rolelist, get_emojilist, check_user, get_db_user_item, set_db_user_item, get_global_currency, \
-    set_global_currency
+    set_global_currency, reset_global_currency
 import os
 import requests
 from discord.utils import get
@@ -567,7 +567,7 @@ class Events(commands.Cog):
             return
         if str(msg.author.id) == "171238557417996289":
             # Look for the text "updatecoins" in the message
-            if "resetcoins" in msg.content:
+            if "updatecoins" in msg.content:
                 await msg.channel.send("Updating coins...")
                 for guild in self.bot.guilds:
                     await msg.channel.send(guild)
@@ -575,14 +575,14 @@ class Events(commands.Cog):
                         print(member)
                         added_coins = 0
                         for level in range(0, get_db_user_item(guild.id, member.id, "Level")):
-                            if level == 0:
-                                set_global_currency(member.id, 0)
                             currency = get_global_currency(member.id)
                             set_global_currency(member.id, currency + ((level+1) * 100))
                             added_coins += (level+1) * 100
                         if get_global_currency(member.id) is not None and get_global_currency(member.id) != 0:
                             await msg.channel.send(f"Added {added_coins} coins to {member} "
                                                    f"(lvl {get_db_user_item(guild.id, member.id, 'Level')})")
+            elif "reset_coins" in msg.content:
+                reset_global_currency()
         # Check if the message author is a bot.
         if msg.author.bot:
             # if it is a bot then return the code from here without going further.
