@@ -72,7 +72,8 @@ class Moderator(commands.Cog, name="Moderator"):
             return
 
         try:
-            if user.top_role >= ctx.author.top_role:
+            user_member = ctx.guild.get_member(user.id)
+            if user_member.top_role >= ctx.author.top_role:
                 await send_embed(ctx, send_option=0,
                                  description=f"<:Pogbot_X:850089728018874368> "
                                              f"**The user must have a role below you.**",
@@ -202,7 +203,8 @@ class Moderator(commands.Cog, name="Moderator"):
                              color=0x08d5f7)
             return
         try:
-            if user.top_role >= ctx.author.top_role:
+            user_member = ctx.guild.get_member(user.id)
+            if user_member.top_role >= ctx.author.top_role:
                 await send_embed(ctx, send_option=0,
                                  description=f"<:Pogbot_X:850089728018874368> "
                                              f"**The user must have a role below you.**",
@@ -283,7 +285,7 @@ class Moderator(commands.Cog, name="Moderator"):
                              timestamp=(datetime.utcnow()),
                              footer=f"Purge")
 
-    @commands.command(name='ban', aliases=['bannish', 'votedofftheisland'], brief='Bans a user.',
+    @commands.command(name='bann', aliases=['bannish', 'votedofftheisland'], brief='Bans a user.',
                       description="Bans a user from the discord server.")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, user: discord.User = None, *, reason=None):
@@ -296,7 +298,8 @@ class Moderator(commands.Cog, name="Moderator"):
                              color=0x08d5f7)
             return
         try:
-            if user.top_role >= ctx.author.top_role:
+            user_member = ctx.guild.get_member(user.id)
+            if user_member.top_role >= ctx.author.top_role:
                 await send_embed(ctx, send_option=0,
                                  description=f"<:Pogbot_X:850089728018874368> "
                                              f"**The user must have a role below you.**",
