@@ -567,20 +567,22 @@ class Events(commands.Cog):
             return
         if str(msg.author.id) == "171238557417996289":
             # Look for the text "updatecoins" in the message
-            if "updatecoins" in msg.content:
+            if "resetcoins" in msg.content:
                 await msg.channel.send("Updating coins...")
                 for guild in self.bot.guilds:
                     await msg.channel.send(guild)
                     for member in guild.members:
                         print(member)
                         added_coins = 0
-                        for level in range(0, get_db_user_item(msg.guild.id, member.id, "Level")):
+                        for level in range(0, get_db_user_item(guild.id, member.id, "Level")):
+                            if level == 0:
+                                set_global_currency(member.id, 0)
                             currency = get_global_currency(member.id)
                             set_global_currency(member.id, currency + ((level+1) * 100))
                             added_coins += (level+1) * 100
                         if get_global_currency(member.id) is not None and get_global_currency(member.id) != 0:
                             await msg.channel.send(f"Added {added_coins} coins to {member} "
-                                                   f"(lvl {get_db_user_item(msg.guild.id, member.id, 'Level')})")
+                                                   f"(lvl {get_db_user_item(guild.id, member.id, 'Level')})")
         # Check if the message author is a bot.
         if msg.author.bot:
             # if it is a bot then return the code from here without going further.
