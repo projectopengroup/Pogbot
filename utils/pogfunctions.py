@@ -1,5 +1,6 @@
 import io
-
+import random
+from datetime import datetime, timedelta
 import PIL
 import discord
 import requests
@@ -8,7 +9,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 from pathlib import Path
 from colorthief import ColorThief
 from math import sqrt
-from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get_global_bgcolor, get_global_currency
+from utils.pogesquelle import get_global_welcomeimg, get_global_bannercolor, get_global_bgcolor, get_global_currency, \
+    check_global_user, check_user, get_db_user_item, set_db_user_item, set_global_currency
 from discord.ext import commands
 
 
@@ -518,6 +520,47 @@ def create_profile_card(avatarRequest, user, server, userxp, xp_lvl_up, userlvl,
     file = discord.File(fp=arr, filename=f'LevelCard.PNG')
     # Send the file back.
     return file
+
+
+async def check_xp(ctx):
+    check_global_user(ctx.author.id)
+    # Check if user is in user table unique to each server. If not, then creates an entry for that user.
+    check_user(ctx.guild.id, ctx.author.id)
+    # Gets the user's xp in the server
+    userxp = get_db_user_item(ctx.guild.id, ctx.author.id, "XP")
+    # Gets the user's level in the server
+    userlvl = get_db_user_item(ctx.guild.id, ctx.author.id, "Level")
+    # Gets the time when the user can earn xp again (A person can only earn xp once a minute)
+    xplock = get_db_user_item(ctx.guild.id, ctx.author.id, "XPLockedUntil")
+
+    # Checks if the user is able to earn xp again. If yes, the xp lock is set to 1 minute from now and a random
+    # amount of xp between the range 11 and 18 is given to the user.
+    if xplock == "0" or datetime.strptime(xplock, "%Y-%m-%d %H:%M:%S.%f") < datetime.now():
+        set_db_user_item(ctx.guild.id, ctx.author.id, "XPLockedUntil", datetime.now() + timedelta(minutes=1))
+        set_db_user_item(ctx.guild.id, ctx.author.id, "XP", int(userxp) + random.randint(14, 22))
+        currency = get_global_currency(ctx.author.id)
+        set_global_currency(ctx.author.id, currency + 10)
+
+        # The formula calculates how much xp is needed to reach the next level, and it is unique to each level.
+        # The higher the level the user is at, the more xp that is needed to reach the next level.
+        xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.20) ** 1.20))
+        # Gets the users new xp total
+        userxp = get_db_user_item(ctx.guild.id, ctx.author.id, "XP")
+
+        # Checks to see if the user has enough xp to level up. If yes, the users xp amount is set to the amount
+        # the user went over the required xp to level up. Ex. The user has 100 xp, but only needed 96 xp to
+        # level up, the users xp will be set to 4. The users level is then updated in the db
+        if userxp >= xp_lvl_up:
+            await send_embed(ctx.channel, author="Level Up!", author_pfp=ctx.author.avatar.url,
+                             description=f"Keep up the activeness {ctx.author.mention}! "
+                                         f"You have leveled up to level {userlvl + 1} and you have earned "
+                                         f"<:PogCoin:870094422233215007> {(userlvl + 1) * 100} Pog Coins!",
+                             color=0x08d5f7)
+            overflow_xp = userxp - xp_lvl_up
+            set_db_user_item(ctx.guild.id, ctx.author.id, "XP", overflow_xp)
+            set_db_user_item(ctx.guild.id, ctx.author.id, "Level", userlvl + 1)
+            currency = get_global_currency(ctx.author.id)
+            set_global_currency(ctx.author.id, currency + ((userlvl + 1) * 100))
 
 
 def closest_color(rgb, colors):

@@ -9,7 +9,7 @@ import json
 from bs4 import BeautifulSoup
 from datetime import timedelta, datetime
 from discord.ext import commands
-from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card
+from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card, check_xp
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user, get_global_currency, set_global_currency
 
@@ -405,7 +405,7 @@ class Commands(commands.Cog, name="Commands"):
     async def level(self, ctx, *, user: discord.Member = None):
         if user is None:
             user = ctx.author
-        check_user(ctx.guild.id, user.id)
+        await check_xp(ctx)
         # Gets the user's xp in the server
         userxp = get_db_user_item(ctx.guild.id, user.id, "XP")
 
@@ -525,7 +525,7 @@ class Commands(commands.Cog, name="Commands"):
     async def profile(self, ctx, *, user: discord.Member = None):
         if user is None:
             user = ctx.author
-        check_user(ctx.guild.id, user.id)
+        await check_xp(ctx)
         # Gets the user's xp in the server
         userxp = get_db_user_item(ctx.guild.id, user.id, "XP")
 
@@ -564,8 +564,9 @@ class Commands(commands.Cog, name="Commands"):
             return
         if amount > author_currency:
             await send_embed(ctx, author="Insufficient Funds", description="<:Pogbot_X:850089728018874368> "
-                                                                           "You do not have enough Pog Coins to pay "
-                                                                           "that amount.",
+                                                                           "You do not have enough "
+                                                                           "<:PogCoin:870094422233215007> Pog Coins to "
+                                                                           "pay that amount.",
                              color=0x08d5f7)
             return
         set_global_currency(ctx.author.id, author_currency - amount)
@@ -573,8 +574,9 @@ class Commands(commands.Cog, name="Commands"):
         recipient_currency = get_global_currency(user.id)
         set_global_currency(user.id, recipient_currency + amount)
 
-        await send_embed(ctx, author="Payment", description=f"{ctx.author.mention} paid {user.mention} {amount} "
-                                                            f"Pog Coins.", color=0x08d5f7)
+        await send_embed(ctx, author="Successful Payment",
+                         description=f"{ctx.author.mention} paid {user.mention} <:PogCoin:870094422233215007> {amount} "
+                                     f"Pog Coins.", color=0x08d5f7)
 
 
 def setup(bot):
