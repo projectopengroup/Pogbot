@@ -603,6 +603,9 @@ class Events(commands.Cog):
         if xplock == "0" or datetime.strptime(xplock, "%Y-%m-%d %H:%M:%S.%f") < datetime.now():
             set_db_user_item(msg.guild.id, msg.author.id, "XPLockedUntil", datetime.now() + timedelta(minutes=1))
             set_db_user_item(msg.guild.id, msg.author.id, "XP", int(userxp) + random.randint(14, 22))
+            currency = get_global_currency(msg.author.id)
+            set_global_currency(msg.author.id, currency + 10)
+
             # The formula calculates how much xp is needed to reach the next level, and it is unique to each level.
             # The higher the level the user is at, the more xp that is needed to reach the next level.
             xp_lvl_up = round(125 * (((int(userlvl) + 1) / 1.20) ** 1.20))

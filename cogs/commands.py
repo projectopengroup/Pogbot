@@ -11,7 +11,7 @@ from datetime import timedelta, datetime
 from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
-    check_global_user
+    check_global_user, get_global_currency, set_global_currency
 
 
 class Counter(discord.ui.View):
@@ -500,14 +500,15 @@ class Commands(commands.Cog, name="Commands"):
         medal_fields = []
 
         for i in range(1, int(len(medal_data) / 6)):
-            medal_fields.append((medal_data[i*6+1], medal_data[i*6+2], medal_data[i*6+3], medal_data[i*6+4],
-                                 medal_data[i*6+5]))
+            medal_fields.append(
+                (medal_data[i * 6 + 1], medal_data[i * 6 + 2], medal_data[i * 6 + 3], medal_data[i * 6 + 4],
+                 medal_data[i * 6 + 5]))
 
         olymp_embed = discord.Embed(colour=0x08d5f7, title="**Olympic Games Medal Counts**")
         olymp_embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/732409264907485185/868531514244202527"
                                       "/unknown.png")
         olymp_embed.set_footer(text="Ranked based on most golds")
-        for i in range((page-1)*10, page*10):
+        for i in range((page - 1) * 10, page * 10):
             if medal_fields[i][0].lower() in flag_emotes:
                 olymp_embed.add_field(name=f"{flag_emotes[medal_fields[i][0].lower()]} **{medal_fields[i][0]}**",
                                       value=f":first_place: `{medal_fields[i][1]}` :second_place: `{medal_fields[i][2]}` "
@@ -549,6 +550,32 @@ class Commands(commands.Cog, name="Commands"):
         avatarRequest = (requests.get(user.avatar.url)).content
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_profile_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
+
+    @commands.command(name="pay", aliases=["give", "gift"], brief='Pays a user coins.',
+                      description="Pays the specified user the specified amount of coins.")
+    async def pay(self, ctx, user: discord.Member, amount):
+        author_currency = get_global_currency(ctx.author.id)
+        try:
+            amount = int(amount)
+        except ValueError:
+            await send_embed(ctx, author="Invalid Amount", description="<:Pogbot_X:850089728018874368> "
+                                                                       "That is not a valid amount.",
+                             color=0x08d5f7)
+            return
+        if amount > author_currency:
+            await send_embed(ctx, author="Insufficient Funds", description="<:Pogbot_X:850089728018874368> "
+                                                                           "You do not have enough Pog Coins to pay "
+                                                                           "that amount.",
+                             color=0x08d5f7)
+            return
+        set_global_currency(ctx.author.id, author_currency - amount)
+
+        recipient_currency = get_global_currency(user.id)
+        set_global_currency(user.id, recipient_currency + amount)
+
+        await send_embed(ctx, author="Payment", description=f"{ctx.author.mention} paid {user.mention} {amount} "
+                                                            f"Pog Coins.", color=0x08d5f7)
+
 
 def setup(bot):
     bot.add_cog(Commands(bot))

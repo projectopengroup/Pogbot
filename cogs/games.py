@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from utils.gamelogic import Connect4Game
-from utils.pogesquelle import get_prefix
+from utils.pogesquelle import get_prefix, get_global_currency, set_global_currency
 from utils.pogfunctions import send_embed
 
 
@@ -221,11 +221,12 @@ class Games(commands.Cog, name="Games"):
     @commands.command(name='blackjack', aliases=['bj'],
                       brief='Play blackjack.',
                       decription='Play a game of blackjack against the computer.')
-    async def blackjack(self, ctx):
+    async def blackjack(self, ctx, bet=0):
         deck = ['♠ A', '♠ 2', '♠ 3', '♠ 4', '♠ 5', '♠ 6', '♠ 7', '♠ 8', '♠ 9', '♠ 10', '♠ J', '♠ Q', '♠ K',
                 '♦ A', '♦ 2', '♦ 3', '♦ 4', '♦ 5', '♦ 6', '♦ 7', '♦ 8', '♦ 9', '♦ 10', '♦ J', '♦ Q', '♦ K',
                 '♣ A', '♣ 2', '♣ 3', '♣ 4', '♣ 5', '♣ 6', '♣ 7', '♣ 8', '♣ 9', '♣ 10', '♣ J', '♣ Q', '♣ K',
                 '♥ A', '♥ 2', '♥ 3', '♥ 4', '♥ 5', '♥ 6', '♥ 7', '♥ 8', '♥ 9', '♥ 10', '♥ J', '♥ Q', '♥ K']
+        currency = get_global_currency(ctx.author.id)
 
         def get_total(cards):
             total = 0
@@ -260,12 +261,21 @@ class Games(commands.Cog, name="Games"):
 
         async def end_game(result):
             embed_color = None
+            footer_str = ""
             if result == "Win":
+                currency = get_global_currency(ctx.author.id)
+                set_global_currency(ctx.author.id, currency + bet)
+                footer_str = f"You won {bet} coins"
                 embed_color = discord.Colour.green()
             elif result == "Lose":
+                currency = get_global_currency(ctx.author.id)
+                set_global_currency(ctx.author.id, currency - bet)
+                footer_str = f"You lost {bet} coins"
                 embed_color = discord.Colour.red()
             elif result == "Tied":
                 embed_color = 0x08d5f7
+                footer_str = f"You got your bet of {bet} coins back"
+
 
             new_embed = await send_embed(ctx, send_option=2, title=f"You {result}", author="Blackjack Game",
                                          author_pfp=ctx.author.avatar.url,
@@ -274,13 +284,18 @@ class Games(commands.Cog, name="Games"):
                                                      f"`{get_total(user_hand)}`\n"
                                                      f"**Dealer's Hand**\nCards: "
                                                      f"{get_cards(dealer_hand)}\nTotal: "
-                                                     f"`{get_total(dealer_hand)}`",
+                                                     f"`{get_total(dealer_hand)}`", footer=footer_str,
                                          color=embed_color)
             await game_embed.edit(embed=new_embed)
             return
 
         def checkAuthor(message):
             return message.author.id == ctx.author.id and message.guild.id == ctx.guild.id
+
+        if bet > currency:
+            await send_embed(ctx, author="Insufficient Funds", description="<:Pogbot_X:850089728018874368> "
+                                         "You do not have enough Pog Coins to make that bet.", color=0x08d5f7)
+            return
 
         user_hand = []
         dealer_hand = []
@@ -360,6 +375,8 @@ class Games(commands.Cog, name="Games"):
                                              color=0x08d5f7, footer="Reply with hit or stand")
                 await game_embed.edit(embed=new_embed)
             except asyncio.TimeoutError:
+                currency = get_global_currency(ctx.author.id)
+                set_global_currency(ctx.author.id, currency - bet)
                 new_embed = await send_embed(ctx, send_option=2, title=f"You Timed Out", author="Blackjack Game",
                                              author_pfp=ctx.author.avatar.url,
                                              description=f"**{ctx.author.display_name}'s Hand**\nCards: "
@@ -367,7 +384,7 @@ class Games(commands.Cog, name="Games"):
                                                          f"`{get_total(user_hand)}`\n"
                                                          f"**Dealer's Hand**\nCards: "
                                                          f"{get_cards(dealer_hand)}\nTotal: "
-                                                         f"`{get_total(dealer_hand)}`",
+                                                         f"`{get_total(dealer_hand)}`", footer=f"You lost {bet} coins",
                                              color=discord.Colour.red())
                 await game_embed.edit(embed=new_embed)
                 return
