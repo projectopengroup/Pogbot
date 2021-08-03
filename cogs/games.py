@@ -3,6 +3,7 @@ import random
 
 import discord
 from discord.ext import commands
+import requests
 
 from utils.gamelogic import Connect4Game
 from utils.pogesquelle import get_prefix, get_global_currency, set_global_currency
@@ -388,6 +389,148 @@ class Games(commands.Cog, name="Games"):
                                              color=discord.Colour.red())
                 await game_embed.edit(embed=new_embed)
                 return
+            
+    
+    @commands.command()
+    async def trivia(self, ctx, *, category="Default"):
+        request = None
+        if category.lower() == "sports":
+            request = requests.get(url="https://opentdb.com/api.php?amount=5&category=21").json()
+        else:
+            request = requests.get(url="https://opentdb.com/api.php?amount=5").json()
+        question_num = 0
+        leaderboard = {'leaderboard': []}
+        for question in request["results"]:
+            question['question'] = question['question'].replace('&quot;', '"')
+            question['question'] = question['question'].replace("&#039;", "'")
+            question['question'] = question['question'].replace("&amp;", "&")
+            if question["type"] == "boolean":
+                correct_answer_option = 0
+                if "False" == question["correct_answer"]:
+                    correct_answer_option = 1
+
+                q_embed = await send_embed(ctx, send_option=1, title=f"**Question {question_num+1}**",
+                                           description=f"Q: {question['question']}\n<:OptionA:854536640625508393> True\n"
+                                                       f"<:OptionB:854536641519812618> False\n \nCategory: "
+                                                       f"{question['category']}\nDifficulty: {question['difficulty']}",
+                                           color=0x08d5f7)
+                await q_embed.add_reaction("<:OptionA:854536640625508393>")
+                await q_embed.add_reaction("<:OptionB:854536641519812618>")
+                await asyncio.sleep(15)
+
+                getmsg = await ctx.channel.fetch_message(q_embed.id)
+                users = await getmsg.reactions[correct_answer_option].users().flatten()
+                for i in range(0, 2):
+                    if i == correct_answer_option:
+                        pass
+                    else:
+                        temp_users = await getmsg.reactions[i].users().flatten()
+                        for user in temp_users:
+                            if user in users:
+                                users.remove(user)
+                correct_users = "The following users answered correctly: \n \n"
+                for user in users:
+                    found_user = False
+                    for users in leaderboard["leaderboard"]:
+                        if user.name == users["name"]:
+                            users["score"] = users["score"] + 1
+                            found_user = True
+                    if not found_user:
+                        leaderboard["leaderboard"].append({"name": user.name, "score": 1})
+                    correct_users += user.name + "\n"
+                if correct_users == "The following users answered correctly: \n \n":
+                    correct_users = "No one answered that question correctly."
+                await send_embed(ctx, title="Correct Users",
+                                 description=correct_users,
+                                 color=0x08d5f7)
+
+                a_embed = await send_embed(ctx, send_option=2, title=f"**Question {question_num + 1}**",
+                                           description=f"Q: {question['question']}\n<:OptionA:854536640625508393> True\n"
+                                                       f"<:OptionB:854536641519812618> False\n \nCategory: "
+                                                       f"{question['category']}\nDifficulty: {question['difficulty']}",
+                                           footer=f"Correct Answer: {question['correct_answer']}", color=0x08d5f7)
+                await q_embed.edit(embed=a_embed)
+            else:
+                question['correct_answer'] = question['correct_answer'].replace('&quot;', '"')
+                question['correct_answer'] = question['correct_answer'].replace("&#039;", "'")
+                question['correct_answer'] = question['correct_answer'].replace("&amp;", "&")
+                for i in range(0, 3):
+                    question['incorrect_answers'][i] = question['incorrect_answers'][i].replace('&quot;', '"')
+                    question['incorrect_answers'][i] = question['incorrect_answers'][i].replace("&#039;", "'")
+                    question['incorrect_answers'][i] = question['incorrect_answers'][i].replace("&amp;", "&")
+                options = [question["correct_answer"], question["incorrect_answers"][0],
+                           question["incorrect_answers"][1], question["incorrect_answers"][2]]
+                random.shuffle(options)
+
+                correct_answer_option = 0
+                for option in range(0, 4):
+                    if options[option] == question["correct_answer"]:
+                        correct_answer_option = option
+
+                q_embed = await send_embed(ctx, send_option=1, title=f"**Question {question_num + 1}**",
+                                           description=f"Q: {question['question']}\n<:OptionA:854536640625508393> "
+                                                       f"{options[0]}\n<:OptionB:854536641519812618> {options[1]}\n"
+                                                       f"<:OptionC:854536641867415572> {options[2]}\n"
+                                                       f"<:OptionD:854541014059581500> {options[3]}\n \n"
+                                                       f"Category: {question['category']}\n"
+                                                       f"Difficulty: {question['difficulty']}",
+                                           color=0x08d5f7)
+                await q_embed.add_reaction("<:OptionA:854536640625508393>")
+                await q_embed.add_reaction("<:OptionB:854536641519812618>")
+                await q_embed.add_reaction("<:OptionC:854536641867415572>")
+                await q_embed.add_reaction("<:OptionD:854541014059581500>")
+                await asyncio.sleep(15)
+
+                getmsg = await ctx.channel.fetch_message(q_embed.id)
+                users = await getmsg.reactions[correct_answer_option].users().flatten()
+                for i in range(0, 4):
+                    if i == correct_answer_option:
+                        pass
+                    else:
+                        temp_users = await getmsg.reactions[i].users().flatten()
+                        for user in temp_users:
+                            if user in users:
+                                users.remove(user)
+                correct_users = "The following users answered correctly: \n \n"
+                for user in users:
+                    found_user = False
+                    for users in leaderboard["leaderboard"]:
+                        if user.name == users["name"]:
+                            users["score"] = users["score"] + 1
+                            found_user = True
+                    if not found_user:
+                        leaderboard["leaderboard"].append({"name": user.name, "score": 1})
+                    correct_users += user.name + "\n"
+                if correct_users == "The following users answered correctly: \n \n":
+                    correct_users = "No one answered that question correctly."
+                await send_embed(ctx, title="Correct Users",
+                                 description=correct_users,
+                                 color=0x08d5f7)
+
+                a_embed = await send_embed(ctx, send_option=2, title=f"**Question {question_num + 1}**",
+                                           description=f"Q: {question['question']}\n<:OptionA:854536640625508393> "
+                                                       f"{options[0]}\n<:OptionB:854536641519812618> {options[1]}\n"
+                                                       f"<:OptionC:854536641867415572> {options[2]}\n"
+                                                       f"<:OptionD:854541014059581500> {options[3]}\n \n"
+                                                       f"Category: {question['category']}\n"
+                                                       f"Difficulty: {question['difficulty']}",
+                                           footer=f"Correct Answer: {question['correct_answer']}", color=0x08d5f7)
+                await q_embed.edit(embed=a_embed)
+            await asyncio.sleep(4)
+            question_num += 1
+        leaderboard = sorted(leaderboard["leaderboard"], key=lambda x: x["score"], reverse=True)
+        previous_score = 0
+        current_place = 1
+        standings_str = ""
+        for user in range(0, len(leaderboard)):
+            if leaderboard[user]["score"] == previous_score:
+                pass
+            else:
+                current_place = user + 1
+            standings_str += f"{current_place}. {leaderboard[user]['name']} - {leaderboard[user]['score']}\n"
+            previous_score = leaderboard[user]["score"]
+
+        await send_embed(ctx, title="Final Standings", description=standings_str, color=0x08d5f7)
 
 
 def setup(bot):
