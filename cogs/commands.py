@@ -12,6 +12,10 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card, check_xp
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user, get_global_currency, set_global_currency
+from rembg.bg import remove
+import numpy as np
+import io
+from PIL import Image
 
 
 class Counter(discord.ui.View):
@@ -577,6 +581,22 @@ class Commands(commands.Cog, name="Commands"):
         await send_embed(ctx, author="Successful Payment",
                          description=f"{ctx.author.mention} paid {user.mention} <:PogCoin:870094422233215007> {amount} "
                                      f"Pog Coins.", color=0x08d5f7)
+
+    @commands.command(name='cutout', brief='Removes the background from an image.',
+                      description="Removes the background form an image, leaving a cutout.")
+    async def cutout(self, ctx):
+        async with ctx.typing():
+            attachment_url = ctx.message.attachments[0].url
+            attachment_content = (requests.get(attachment_url)).content
+            result = remove(attachment_content)
+            img = Image.open(io.BytesIO(result)).convert("RGBA")
+
+            arr = io.BytesIO()
+            img.save(arr, format='PNG')
+            arr.seek(0)
+            file = discord.File(fp=arr, filename=f'Cutout.PNG')
+
+        await ctx.send(file=file)
 
 
 def setup(bot):
