@@ -584,7 +584,7 @@ class Commands(commands.Cog, name="Commands"):
                                      f"Pog Coins.", color=0x08d5f7)
 
     @commands.command(name='cutout', brief='Removes the background from an image.',
-                      description="Removes the background form an image, leaving a cutout.")
+                      description="Removes the background from an image, leaving a cutout.")
     @commands.cooldown(1, 15, commands.BucketType.user)  # one command, every 10 seconds, per user
     async def cutout(self, ctx):
         async with ctx.typing():
