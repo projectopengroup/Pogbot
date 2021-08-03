@@ -13,6 +13,7 @@ from utils.pogfunctions import send_embed, create_welcome_card, create_level_car
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user, get_global_currency, set_global_currency
 from rembg.bg import remove
+from pathlib import Path
 import numpy as np
 from discord.ext.commands.cooldowns import BucketType
 import io
@@ -592,11 +593,12 @@ class Commands(commands.Cog, name="Commands"):
             attachment_content = (requests.get(attachment_url)).content
             result = remove(attachment_content)
             img = Image.open(io.BytesIO(result)).convert("RGBA")
-
-            arr = io.BytesIO()
+            imgfolder = Path("img/")
+            arr = f"{imgfolder}cutout.png" #io.BytesIO() was this causing memory issues maybe?
             img.save(arr, format='PNG')
-            arr.seek(0)
-            file = discord.File(fp=arr, filename=f'Cutout.PNG')
+
+            # arr.seek(0)
+            file = discord.File(fp=arr, filename=f'cutout.png')
 
         await ctx.send(file=file)
 
