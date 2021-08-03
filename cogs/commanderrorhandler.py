@@ -34,6 +34,14 @@ class CommandErrorHandler(commands.Cog):
                                          color=0x08d5f7)
             await ctx.send(embed=errorsend)
 
+        elif isinstance(error, commands.CommandOnCooldown):
+            errorsend = await send_embed(ctx, send_option=2,
+                                             description=f"<:Pogbot_X:850089728018874368> "
+                                                         f"**{ctx.author} Please wait {round(error.retry_after, 2)} "
+                                                         f"more seconds.**",
+                                             color=0x08d5f7)
+            await ctx.send(embed=errorsend)
+
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 errorsend = await send_embed(ctx, send_option=2,

@@ -14,6 +14,7 @@ from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase6
     check_global_user, get_global_currency, set_global_currency
 from rembg.bg import remove
 import numpy as np
+from discord.ext.commands.cooldowns import BucketType
 import io
 from PIL import Image
 
@@ -584,6 +585,7 @@ class Commands(commands.Cog, name="Commands"):
 
     @commands.command(name='cutout', brief='Removes the background from an image.',
                       description="Removes the background form an image, leaving a cutout.")
+    @commands.cooldown(1, 10, commands.BucketType.user)  # one command, every 10 seconds, per user
     async def cutout(self, ctx):
         async with ctx.typing():
             attachment_url = ctx.message.attachments[0].url
