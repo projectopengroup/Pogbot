@@ -605,7 +605,7 @@ class Commands(commands.Cog, name="Commands"):
             print(f"{imgfolder}/base.png")
 
             f = np.fromfile(f"{imgfolder}/base.png")
-            result = remove(f)
+            result = remove(f, alpha_matting=True)
             # attachment_content = (requests.get(attachment_url)).content
             # result = remove(attachment_content)
             img = Image.open(io.BytesIO(result)).convert("RGBA")
