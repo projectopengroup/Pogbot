@@ -1,6 +1,7 @@
 import os
 import platform
 import re
+import urllib
 
 import discord
 import requests
@@ -13,11 +14,14 @@ from utils.pogfunctions import send_embed, create_welcome_card, create_level_car
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user, get_global_currency, set_global_currency
 from rembg.bg import remove
+from urllib.request import Request, urlopen
 from pathlib import Path
 import numpy as np
 from discord.ext.commands.cooldowns import BucketType
 import io
 from PIL import Image
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Counter(discord.ui.View):
@@ -589,12 +593,22 @@ class Commands(commands.Cog, name="Commands"):
     @commands.cooldown(1, 15, commands.BucketType.user)  # one command, every 10 seconds, per user
     async def cutout(self, ctx):
         async with ctx.typing():
-            attachment_url = ctx.message.attachments[0].url
-            attachment_content = (requests.get(attachment_url)).content
-            result = remove(attachment_content)
-            img = Image.open(io.BytesIO(result)).convert("RGBA")
+
             imgfolder = Path("img/")
-            arr = f"{imgfolder}cutout.png" #io.BytesIO() was this causing memory issues maybe?
+            attachment_url = ctx.message.attachments[0].url
+            print(attachment_url)
+            opener = urllib.request.build_opener()
+            opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+            urllib.request.install_opener(opener)
+            urllib.request.urlretrieve(attachment_url, f"{imgfolder}/base.png")
+            print(f"{imgfolder}/base.png")
+
+            f = np.fromfile(f"{imgfolder}/base.png")
+            result = remove(f)
+            # attachment_content = (requests.get(attachment_url)).content
+            # result = remove(attachment_content)
+            img = Image.open(io.BytesIO(result)).convert("RGBA")
+            arr = f"{imgfolder}/cutout.png" #io.BytesIO() was this causing memory issues maybe?
             img.save(arr, format='PNG')
 
             # arr.seek(0)
