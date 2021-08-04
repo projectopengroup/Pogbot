@@ -6,6 +6,7 @@ import urllib
 import discord
 import requests
 import operator
+import gc
 import json
 from bs4 import BeautifulSoup
 from datetime import timedelta, datetime
@@ -615,6 +616,8 @@ class Commands(commands.Cog, name="Commands"):
             file = discord.File(fp=arr, filename=f'cutout.png')
 
         await ctx.send(file=file)
+        del file
+        gc.collect()
 
 
 def setup(bot):
