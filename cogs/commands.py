@@ -22,6 +22,7 @@ from discord.ext.commands.cooldowns import BucketType
 import io
 from PIL import Image
 from PIL import ImageFile
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
@@ -590,11 +591,11 @@ class Commands(commands.Cog, name="Commands"):
                                      f"Pog Coins.", color=0x08d5f7)
 
     @commands.command(name='cutout', brief='Removes the background from an image.',
-                      description="Removes the background from an image, leaving a cutout.")
+                      description="Removes the background from an image, leaving a cutout.\n Toggle True or False for"
+                                  " alpha formatting. It's False by default. i.e. !cutout True")
     @commands.cooldown(1, 15, commands.BucketType.user)  # one command, every 10 seconds, per user
-    async def cutout(self, ctx):
+    async def cutout(self, ctx, alpha: bool = False):
         async with ctx.typing():
-
             imgfolder = Path("img/")
             attachment_url = ctx.message.attachments[0].url
             print(attachment_url)
@@ -605,17 +606,24 @@ class Commands(commands.Cog, name="Commands"):
             print(f"{imgfolder}/base.png")
 
             f = np.fromfile(f"{imgfolder}/base.png")
-            result = remove(f, alpha_matting=True)
+            if alpha:
+                result = remove(f, alpha_matting=True)
+            else:
+                result = remove(f, alpha_matting=False)
+
             # attachment_content = (requests.get(attachment_url)).content
             # result = remove(attachment_content)
             img = Image.open(io.BytesIO(result)).convert("RGBA")
-            arr = f"{imgfolder}/cutout.png" #io.BytesIO() was this causing memory issues maybe?
+            arr = f"{imgfolder}/cutout.png"  # io.BytesIO() was this causing memory issues maybe?
             img.save(arr, format='PNG')
 
             # arr.seek(0)
             file = discord.File(fp=arr, filename=f'cutout.png')
 
         await ctx.send(file=file)
+        del img
+        del arr
+        del result
         del file
         gc.collect()
 
