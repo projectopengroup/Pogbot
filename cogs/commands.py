@@ -600,7 +600,6 @@ class Commands(commands.Cog, name="Commands"):
             imgfolder = Path("img/")
             attachment_url = ctx.message.attachments[0].url
             # attachment_content = (requests.get(attachment_url)).content
-            subprocess.call(["rm output.png"])
             subprocess.call([f"curl -s {attachment_url} | python3.9 rembg -a -ae 15 > output.png"])
 
 
