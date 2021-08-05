@@ -600,8 +600,8 @@ class Commands(commands.Cog, name="Commands"):
             imgfolder = Path("img/")
             attachment_url = ctx.message.attachments[0].url
             # attachment_content = (requests.get(attachment_url)).content
-            os.system("rm output.png")
-            os.system(f"curl -s {attachment_url} | python3.9 rembg -a -ae 15 > output.png")
+            os.system(f"rm {imgfolder}/output.png")
+            os.system(f"curl -s {attachment_url} | python3.9 rembg -a -ae 15 > {imgfolder}/output.png")
 
 
 
@@ -614,7 +614,7 @@ class Commands(commands.Cog, name="Commands"):
 
             # img.save(arr, format='PNG')
             # arr.seek(0)
-            arr = "/output.png"
+            arr = f"{imgfolder}/output.png"
             file = discord.File(fp=arr, filename=f'cutout.png')
 
         await ctx.send(file=file)
@@ -623,36 +623,6 @@ class Commands(commands.Cog, name="Commands"):
         # del result
         # del file
         # gc.collect()
-        @commands.command(name='cutout234', brief='Removes the background from an image.',
-                          description="Removes the background from an image, leaving a cutout.\n Toggle True or False for"
-                                      " alpha formatting. It's False by default. i.e. !cutout True")
-        @commands.cooldown(1, 15, commands.BucketType.user)  # one command, every 10 seconds, per user
-        async def cutout234(self, ctx, alpha: bool = False):
-            async with ctx.typing():
-                imgfolder = Path("img/")
-                attachment_url = ctx.message.attachments[0].url
-                # attachment_content = (requests.get(attachment_url)).content
-                os.system("rm output.png")
-                os.system(f"curl -s {attachment_url} | python3.9 rembg -a -ae 15 > output.png")
-
-                # if alpha:
-                #     result = remove(attachment_content, alpha_matting=True)
-                # else:
-                #     result = remove(attachment_content, alpha_matting=False)
-                # img = Image.open(io.BytesIO(result)).convert("RGBA")
-                # arr = io.BytesIO()
-
-                # img.save(arr, format='PNG')
-                # arr.seek(0)
-                arr = "/output.png"
-                file = discord.File(fp=arr, filename=f'cutout.png')
-
-            await ctx.send(file=file)
-            # del img
-            # del arr
-            # del result
-            # del file
-            # gc.collect()
 
 def setup(bot):
     bot.add_cog(Commands(bot))
