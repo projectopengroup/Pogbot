@@ -591,38 +591,6 @@ class Commands(commands.Cog, name="Commands"):
                          description=f"{ctx.author.mention} paid {user.mention} <:PogCoin:870094422233215007> {amount} "
                                      f"Pog Coins.", color=0x08d5f7)
 
-    @commands.command(name='cutout', brief='Removes the background from an image.',
-                      description="Removes the background from an image, leaving a cutout.\n Toggle True or False for"
-                                  " alpha formatting. It's False by default. i.e. !cutout True")
-    @commands.cooldown(1, 15, commands.BucketType.user)  # one command, every 10 seconds, per user
-    async def cutout(self, ctx, alpha: bool = False):
-        async with ctx.typing():
-            imgfolder = Path("img/")
-            attachment_url = ctx.message.attachments[0].url
-            # attachment_content = (requests.get(attachment_url)).content
-            os.system(f"rm {imgfolder}/output.png")
-            os.system(f"curl -s {attachment_url} | python3.9 rembg -a -ae 15 > {imgfolder}/output.png")
-
-
-
-            # if alpha:
-            #     result = remove(attachment_content, alpha_matting=True)
-            # else:
-            #     result = remove(attachment_content, alpha_matting=False)
-            # img = Image.open(io.BytesIO(result)).convert("RGBA")
-            # arr = io.BytesIO()
-
-            # img.save(arr, format='PNG')
-            # arr.seek(0)
-            arr = f"{imgfolder}/output.png"
-            file = discord.File(fp=arr, filename=f'cutout.png')
-
-        await ctx.send(file=file)
-        # del img
-        # del arr
-        # del result
-        # del file
-        # gc.collect()
 
 def setup(bot):
     bot.add_cog(Commands(bot))
