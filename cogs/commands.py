@@ -606,6 +606,7 @@ class Commands(commands.Cog, name="Commands"):
             #
             #
             #
+            os.system("rm output.png")
             subprocess.call([f"curl -s {attachment_url} | python3.9 rembg -a -ae 15 > output.png"])
 
 
