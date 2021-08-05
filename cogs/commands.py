@@ -6,6 +6,7 @@ import urllib
 import discord
 import requests
 import operator
+import subprocess
 import gc
 import json
 from bs4 import BeautifulSoup
@@ -598,34 +599,30 @@ class Commands(commands.Cog, name="Commands"):
         async with ctx.typing():
             imgfolder = Path("img/")
             attachment_url = ctx.message.attachments[0].url
-            print(attachment_url)
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-            urllib.request.install_opener(opener)
-            urllib.request.urlretrieve(attachment_url, f"{imgfolder}/base.png")
-            print(f"{imgfolder}/base.png")
-
-            f = np.fromfile(f"{imgfolder}/base.png")
-            if alpha:
-                result = remove(f, alpha_matting=True)
-            else:
-                result = remove(f, alpha_matting=False)
-
             # attachment_content = (requests.get(attachment_url)).content
-            # result = remove(attachment_content)
-            img = Image.open(io.BytesIO(result)).convert("RGBA")
-            arr = f"{imgfolder}/cutout.png"  # io.BytesIO() was this causing memory issues maybe?
-            img.save(arr, format='PNG')
+            subprocess.call(["rm output.png"])
+            subprocess.call([f"curl -s {attachment_url} | python3.9 rembg -a -ae 15 > output.png"])
 
+
+
+            # if alpha:
+            #     result = remove(attachment_content, alpha_matting=True)
+            # else:
+            #     result = remove(attachment_content, alpha_matting=False)
+            # img = Image.open(io.BytesIO(result)).convert("RGBA")
+            # arr = io.BytesIO()
+
+            # img.save(arr, format='PNG')
             # arr.seek(0)
+            arr = "/output.png"
             file = discord.File(fp=arr, filename=f'cutout.png')
 
         await ctx.send(file=file)
-        del img
-        del arr
-        del result
-        del file
-        gc.collect()
+        # del img
+        # del arr
+        # del result
+        # del file
+        # gc.collect()
 
 
 def setup(bot):
