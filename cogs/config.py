@@ -38,8 +38,8 @@ class Config(commands.Cog, name="Setup Command"):  # , hidden=True):
     # Look for a command called setup
     async def setup(self, ctx):
         if setup_in_progress(ctx):
-            # Check if the user using the setup command has administrator:
-            if ctx.author.guild_permissions.administrator:
+            # Check if the user using the setup command has at minimum ability to ban members:
+            if ctx.author.guild_permissions.ban_members:
                 # Sending a message embed that says running setup.
                 embedorg = discord.Embed(description='<:Check:845178458426179605> **Running Setup...**',
                                          color=0x08d5f7)
