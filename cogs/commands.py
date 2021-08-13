@@ -22,6 +22,7 @@ import numpy as np
 from discord.ext.commands.cooldowns import BucketType
 import io
 from PIL import Image
+from collections import namedtuple
 from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -590,6 +591,67 @@ class Commands(commands.Cog, name="Commands"):
         await send_embed(ctx, author="Successful Payment",
                          description=f"{ctx.author.mention} paid {user.mention} <:PogCoin:870094422233215007> {amount} "
                                      f"Pog Coins.", color=0x08d5f7)
+
+    @commands.command()
+    async def schedule(self, ctx):
+        rliveGameData = requests.get("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard")
+        liveGameData = json.loads(rliveGameData.text)
+
+        teamDict = {"Minnesota Vikings": ["<:vikings:771799797769175080>", "Vikings"],
+                    "Tennessee Titans": ["<:titans:771799797837463552>", "Titans"],
+                    "Houston Texans": ["<:texans:771799797828026428>", "Texans"],
+                    "Pittsburgh Steelers": ["<:steelers:771799797434548225>", "Steelers"],
+                    "Seattle Seahawks": ["<:seahawks:771799797458796604>", "Seahawks"],
+                    "New Orleans Saints": ["<:saints:771799797790408714>", "Saints"],
+                    "Baltimore Ravens": ["<:ravens:771800517805735938>", "Ravens"],
+                    "Los Angeles Rams": ["<:rams:771799797605859358>", "Rams"],
+                    "Las Vegas Raiders": ["<:raiders:771799797858041877>", "Raiders"],
+                    "New England Patriots": ["<:patriots:771799796725710880>", "Patriots"],
+                    "Carolina Panthers": ["<:panthers:771799797480292412>", "Panthers"],
+                    "Green Bay Packers": ["<:packers:771799797698920478>", "Packers"],
+                    "Detroit Lions": ["<:lions:771799797757116418>", "Lions"],
+                    "New York Jets": ["<:jets:771799797715566632>", "Jets"],
+                    "Jacksonville Jaguars": ["<:jags:771799797501263914>", "Jaguars"],
+                    "New York Giants": ["<:giants:771799797187084358>", "Giants"],
+                    "Washington": ["<:footballteam:771799797094809662>", "Football Team"],
+                    "Atlanta Falcons": ["<:falcons:771799797413183570>", "Falcons"],
+                    "Philadelphia Eagles": ["<:eagles:771799797371633694>", "Eagles"],
+                    "Miami Dolphins": ["<:dolphins:771799797353938954>", "Dolphins"],
+                    "Dallas Cowboys": ["<:cowboys:771799797504933909>", "Cowboys"],
+                    "Indianapolis Colts": ["<:colts:771799797702721536>", "Colts"],
+                    "Kansas City Chiefs": ["<:chiefs:771799796712734751>", "Chiefs"],
+                    "Los Angeles Chargers": ["<:chargers:771799796784562197>", "Chargers"],
+                    "Arizona Cardinals": ["<:cardinals:771799796662534156>", "Cardinals"],
+                    "Tampa Bay Buccaneers": ["<:buccaneers:771799796717060126>", "Buccaneers"],
+                    "Cleveland Browns": ["<:browns:771799797001617428>", "Browns"],
+                    "Denver Broncos": ["<:broncos:771799795999834113>", "Broncos"],
+                    "Buffalo Bills": ["<:bills:771799794137169970>", "Bills"],
+                    "Cincinnati Bengals": ["<:bengals:771799793915134012>", "Bengals"],
+                    "Chicago Bears": ["<:bears:771799793726521415>", "Bears"],
+                    "San Francisco 49ers": ["<:49ers:771799793553899521>", "49ers"]}
+
+        schedule_str = ""
+        for game in liveGameData["events"]:
+            gameInfo = {"Status": game["status"]["type"]["detail"],
+                        "Home Team": game['competitions'][0]['competitors'][0]['team']['displayName'],
+                        "Away Team": game['competitions'][0]['competitors'][1]['team']['displayName']}
+            gameInfo["Matchup"] = f"{teamDict[gameInfo['Away Team']][0]} {teamDict[gameInfo['Away Team']][1]} @ " \
+                                  f"{teamDict[gameInfo['Home Team']][1]} {teamDict[gameInfo['Home Team']][0]}"
+
+            if game["status"]["type"]["detail"] != "Final":
+                gameInfo["Odds"] = game["competitions"][0]["odds"][0]["details"]
+                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Odds']}\n"
+            else:
+                gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
+                gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]
+                gameInfo["Score Display"] = f'{gameInfo["Home Score"]} - {gameInfo["Away Score"]}'
+                if game["competitions"][0]["competitors"][0]["winner"]:
+                    gameInfo["Winner"] = "Home Team"
+                else:
+                    gameInfo["Winner"] = "Away Team"
+                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Away Score']} - " \
+                                f"{gameInfo['Home Score']}\n"
+        await send_embed(ctx, title="**NFL Schedule**", description=schedule_str, color=0x08d5f7)
 
 
 def setup(bot):
