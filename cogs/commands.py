@@ -769,10 +769,10 @@ class Commands(commands.Cog, name="Commands"):
             gameInfo["Matchup"] = f"{teamDict[gameInfo['Away Team']][0]} {teamDict[gameInfo['Away Team']][1]} @ " \
                                   f"{teamDict[gameInfo['Home Team']][1]} {teamDict[gameInfo['Home Team']][0]}"
 
-            if game["status"]["type"]["detail"] != "Final":
+            if game["status"]["type"]["description"] == "Scheduled":
                 gameInfo["Odds"] = game["competitions"][0]["odds"][0]["details"]
                 schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Odds']}\n"
-            else:
+            elif game["status"]["type"]["description"] == "Final":
                 gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
                 gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]
                 gameInfo["Score Display"] = f'{gameInfo["Home Score"]} - {gameInfo["Away Score"]}'
@@ -780,8 +780,13 @@ class Commands(commands.Cog, name="Commands"):
                     gameInfo["Winner"] = "Home Team"
                 else:
                     gameInfo["Winner"] = "Away Team"
-                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Away Score']} - " \
-                                f"{gameInfo['Home Score']}\n"
+                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Score Display']}\n"
+            elif game["status"]["type"]["description"] == "In Progress":
+                gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
+                gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]
+                gameInfo["Score Display"] = f'{gameInfo["Home Score"]} - {gameInfo["Away Score"]}'
+                schedule_str += f"**{gameInfo['Matchup']}**\nIn Progress - {gameInfo['Status']}\n" \
+                                f"{gameInfo['Score Display']}\n"
         await send_embed(ctx, title="**NFL Schedule**", description=schedule_str, color=0x08d5f7)
 
 
