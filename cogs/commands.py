@@ -15,14 +15,13 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card, check_xp
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user, get_global_currency, set_global_currency
-from rembg.bg import remove
+# from rembg.bg import remove
 from urllib.request import Request, urlopen
 from pathlib import Path
 import numpy as np
 from discord.ext.commands.cooldowns import BucketType
 import io
-from PIL import Image
-from collections import namedtuple
+from PIL import Image, ImageFont, ImageDraw
 from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -565,6 +564,137 @@ class Commands(commands.Cog, name="Commands"):
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_profile_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
 
+    @commands.command(name="leaderboard", aliases=['lb', 'rankings'], brief="Displays the server's leaderboard.",
+                      description="Displays the server's leaderboard which is ranked by level.")
+    async def leaderboard(self, ctx, page=1):
+        if page < 1:
+            page = 1
+        await check_xp(ctx)
+
+        MemberList = []
+        for member in ctx.guild.members:
+            MemberList.append([member.id, get_db_user_item(ctx.guild.id, member.id, "Level"),
+                               get_db_user_item(ctx.guild.id, member.id, "XP")])
+
+        sorted_member_list = sorted(MemberList, key=operator.itemgetter(1, 2))
+        sorted_member_list.reverse()
+
+        x = 0
+        user_rank = None
+        user_xp = None
+        user_level = None
+        for i in sorted_member_list:
+            x = x + 1
+            if i[0] == ctx.author.id:
+                user_rank = x
+                user_level = i[1]
+                user_xp = i[2]
+
+        top_ten_list = []
+        for int in range((page-1)*10, page*10):
+            try:
+                top_ten_list.append(sorted_member_list[int])
+            except IndexError:
+                pass
+
+
+        welcomecardfolder = Path("img/card_welcomes/")
+
+        base_layer = Image.open(welcomecardfolder / "leaderboard_baselayer.png")
+        top_layer = Image.open(welcomecardfolder / "leaderboard_toplayer.png")
+
+        compiled = base_layer.copy()
+        guild_icon_layer = Image.open(io.BytesIO((requests.get(ctx.guild.icon)).content)).convert("RGBA")
+        guild_icon_layer = guild_icon_layer.resize((85, 85), Image.ANTIALIAS)
+        compiled.paste(guild_icon_layer, (49, 13), mask=guild_icon_layer)
+
+        server_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 44)
+        level_txt_font = ImageFont.truetype("fonts/Vegur-Light.otf", 18)
+        level_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 24)
+        rank_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 30)
+        username_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 22)
+        you_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 18)
+
+        draw = ImageDraw.Draw(top_layer)
+        draw.text((160, 11), f"{ctx.guild}", (255, 255, 255), font=server_font)
+
+        iter = 0
+        for user in top_ten_list:
+            user_obj = await self.bot.fetch_user(user[0])
+            user_avatar_layer = Image.open(io.BytesIO((requests.get(user_obj.avatar.url)).content)).convert("RGBA")
+            user_avatar_layer = user_avatar_layer.resize((39, 39), Image.ANTIALIAS)
+            compiled.paste(user_avatar_layer, (33, 115 + 58 * iter), mask=user_avatar_layer)
+
+            if len(str(user_obj)) > 24:
+                UserSplit = str(user_obj).upper()
+                UserSplit = UserSplit.split('#')
+                UserFormatted = UserSplit[0]
+                UserFormatted = UserFormatted[0:19] + "...#" + UserSplit[1]
+            else:
+                UserFormatted = str(user_obj).upper()
+
+            if (page-1)*10+1+iter == user_rank:
+                draw.text((505, 123 + 58 * iter), f"(YOU)", (255, 255, 255), font=you_font)
+            draw.text((80, 115 + 58 * iter), f"LEVEL", (255, 255, 255), font=level_txt_font)
+            draw.text((80, 130 + 58 * iter), f"{user[1]}", (255, 255, 255), font=level_font)
+            draw.text((143, 117 + 58 * iter), f"#{(page-1)*10+1+iter}", (255, 255, 255), font=rank_font)
+            draw.text((228, 120 + 58 * iter), f"{UserFormatted}", (255, 255, 255), font=username_font)
+
+            color = 98, 211, 245
+            x = 226
+            y = 151 + 58 * iter
+            h = 3
+            w = 318
+            xp_lvl_up = round(125 * (((user[1] + 1) / 1.20) ** 1.20))
+            progress = w * (float(user[2]) / float(xp_lvl_up))
+            w = progress
+            draw.ellipse((x + w, y, x + h + w, y + h), fill=color)
+            draw.ellipse((x, y, x + h, y + h), fill=color)
+            draw.rectangle((x + (h / 2), y, x + w + (h / 2), y + h), fill=color)
+
+            iter += 1
+
+        user_avatar_layer = Image.open(io.BytesIO((requests.get(ctx.author.avatar.url)).content)).convert("RGBA")
+        user_avatar_layer = user_avatar_layer.resize((39, 39), Image.ANTIALIAS)
+        compiled.paste(user_avatar_layer, (33, 115 + 58 * 11-1), mask=user_avatar_layer)
+
+        if len(str(ctx.author)) > 24:
+            UserSplit = str(ctx.author).upper()
+            UserSplit = UserSplit.split('#')
+            UserFormatted = UserSplit[0]
+            UserFormatted = UserFormatted[0:19] + "...#" + UserSplit[1]
+        else:
+            UserFormatted = str(ctx.author).upper()
+
+        draw.text((50, 81 + 58 * 11-1), f"YOUR RANK", (255, 255, 255), font=username_font)
+        draw.text((80, 115 + 58 * 11-1), f"LEVEL", (255, 255, 255), font=level_txt_font)
+        draw.text((80, 130 + 58 * 11-1), f"{user_level}", (255, 255, 255), font=level_font)
+        draw.text((143, 117 + 58 * 11-1), f"#{user_rank}", (255, 255, 255), font=rank_font)
+        draw.text((228, 120 + 58 * 11-1), f"{UserFormatted}", (255, 255, 255), font=username_font)
+
+        color = 98, 211, 245
+        x = 226
+        y = 151 + 58 * 11 -1
+        h = 3
+        w = 318
+        xp_lvl_up = round(125 * (((user_level + 1) / 1.20) ** 1.20))
+        progress = w * (float(user_xp) / float(xp_lvl_up))
+        w = progress
+        draw.ellipse((x + w, y, x + h + w, y + h), fill=color)
+        draw.ellipse((x, y, x + h, y + h), fill=color)
+        draw.rectangle((x + (h / 2), y, x + w + (h / 2), y + h), fill=color)
+
+        compiled.paste(top_layer, (0, 0), mask=top_layer)
+
+        # set a var to arr that represents bytes.
+        arr = io.BytesIO()
+        # Save our compiled image in PNG format as bytes
+        compiled.save(arr, format='PNG')
+        # Set the byte stream position to 0.
+        arr.seek(0)
+        # Set a file var to a file discord understands, using our bytes, with a filename of "WelcomeCard.png"
+        await ctx.send(file=discord.File(fp=arr, filename=f'LevelCard.PNG'))
+
     @commands.command(name="pay", aliases=["give", "gift"], brief='Pays a user coins.',
                       description="Pays the specified user the specified amount of coins.")
     async def pay(self, ctx, user: discord.Member, amount):
@@ -592,7 +722,8 @@ class Commands(commands.Cog, name="Commands"):
                          description=f"{ctx.author.mention} paid {user.mention} <:PogCoin:870094422233215007> {amount} "
                                      f"Pog Coins.", color=0x08d5f7)
 
-    @commands.command()
+    @commands.command(name="schedule", brief="Displays the NFL schedule.",
+                      description="Displays the NFL schedule for the current week.")
     async def schedule(self, ctx):
         rliveGameData = requests.get("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard")
         liveGameData = json.loads(rliveGameData.text)
