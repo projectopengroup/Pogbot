@@ -169,8 +169,6 @@ class Commands(commands.Cog, name="Commands"):
                                   "with the information of the user that called the command.")
     # Look for a command called whois and collects optional user parameter, so if no user given, user = None.
     async def whois(self, ctx, *, user: discord.User = None):
-        # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
-        # command author.
         if user is None:
             user = ctx.author
 
