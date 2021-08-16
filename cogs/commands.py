@@ -15,13 +15,13 @@ from discord.ext import commands
 from utils.pogfunctions import send_embed, create_welcome_card, create_level_card, create_profile_card, check_xp
 from utils.pogesquelle import get_prefix, get_db_item, check_snipes, decodebase64, check_user, get_db_user_item, \
     check_global_user, get_global_currency, set_global_currency
-from rembg.bg import remove
+# from rembg.bg import remove
 from urllib.request import Request, urlopen
 from pathlib import Path
 import numpy as np
 from discord.ext.commands.cooldowns import BucketType
 import io
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -564,6 +564,137 @@ class Commands(commands.Cog, name="Commands"):
         # Testing create welcome card on message send right now, until we get it done.
         await ctx.send(file=create_profile_card(avatarRequest, user, ctx.guild, userxp, xp_lvl_up, userlvl, rank))
 
+    @commands.command(name="leaderboard", aliases=['lb', 'rankings'], brief="Displays the server's leaderboard.",
+                      description="Displays the server's leaderboard which is ranked by level.")
+    async def leaderboard(self, ctx, page=1):
+        if page < 1:
+            page = 1
+        await check_xp(ctx)
+
+        MemberList = []
+        for member in ctx.guild.members:
+            MemberList.append([member.id, get_db_user_item(ctx.guild.id, member.id, "Level"),
+                               get_db_user_item(ctx.guild.id, member.id, "XP")])
+
+        sorted_member_list = sorted(MemberList, key=operator.itemgetter(1, 2))
+        sorted_member_list.reverse()
+
+        x = 0
+        user_rank = None
+        user_xp = None
+        user_level = None
+        for i in sorted_member_list:
+            x = x + 1
+            if i[0] == ctx.author.id:
+                user_rank = x
+                user_level = i[1]
+                user_xp = i[2]
+
+        top_ten_list = []
+        for int in range((page-1)*10, page*10):
+            try:
+                top_ten_list.append(sorted_member_list[int])
+            except IndexError:
+                pass
+
+
+        welcomecardfolder = Path("img/card_welcomes/")
+
+        base_layer = Image.open(welcomecardfolder / "leaderboard_baselayer.png")
+        top_layer = Image.open(welcomecardfolder / "leaderboard_toplayer.png")
+
+        compiled = base_layer.copy()
+        guild_icon_layer = Image.open(io.BytesIO((requests.get(ctx.guild.icon)).content)).convert("RGBA")
+        guild_icon_layer = guild_icon_layer.resize((85, 85), Image.ANTIALIAS)
+        compiled.paste(guild_icon_layer, (49, 13), mask=guild_icon_layer)
+
+        server_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 44)
+        level_txt_font = ImageFont.truetype("fonts/Vegur-Light.otf", 18)
+        level_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 24)
+        rank_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 30)
+        username_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 22)
+        you_font = ImageFont.truetype("fonts/Vegur-Bold.otf", 18)
+
+        draw = ImageDraw.Draw(top_layer)
+        draw.text((160, 11), f"{ctx.guild}", (255, 255, 255), font=server_font)
+
+        iter = 0
+        for user in top_ten_list:
+            user_obj = await self.bot.fetch_user(user[0])
+            user_avatar_layer = Image.open(io.BytesIO((requests.get(user_obj.avatar.url)).content)).convert("RGBA")
+            user_avatar_layer = user_avatar_layer.resize((39, 39), Image.ANTIALIAS)
+            compiled.paste(user_avatar_layer, (33, 115 + 58 * iter), mask=user_avatar_layer)
+
+            if len(str(user_obj)) > 24:
+                UserSplit = str(user_obj).upper()
+                UserSplit = UserSplit.split('#')
+                UserFormatted = UserSplit[0]
+                UserFormatted = UserFormatted[0:19] + "...#" + UserSplit[1]
+            else:
+                UserFormatted = str(user_obj).upper()
+
+            if (page-1)*10+1+iter == user_rank:
+                draw.text((505, 123 + 58 * iter), f"(YOU)", (255, 255, 255), font=you_font)
+            draw.text((80, 115 + 58 * iter), f"LEVEL", (255, 255, 255), font=level_txt_font)
+            draw.text((80, 130 + 58 * iter), f"{user[1]}", (255, 255, 255), font=level_font)
+            draw.text((143, 117 + 58 * iter), f"#{(page-1)*10+1+iter}", (255, 255, 255), font=rank_font)
+            draw.text((228, 120 + 58 * iter), f"{UserFormatted}", (255, 255, 255), font=username_font)
+
+            color = 98, 211, 245
+            x = 226
+            y = 151 + 58 * iter
+            h = 3
+            w = 318
+            xp_lvl_up = round(125 * (((user[1] + 1) / 1.20) ** 1.20))
+            progress = w * (float(user[2]) / float(xp_lvl_up))
+            w = progress
+            draw.ellipse((x + w, y, x + h + w, y + h), fill=color)
+            draw.ellipse((x, y, x + h, y + h), fill=color)
+            draw.rectangle((x + (h / 2), y, x + w + (h / 2), y + h), fill=color)
+
+            iter += 1
+
+        user_avatar_layer = Image.open(io.BytesIO((requests.get(ctx.author.avatar.url)).content)).convert("RGBA")
+        user_avatar_layer = user_avatar_layer.resize((39, 39), Image.ANTIALIAS)
+        compiled.paste(user_avatar_layer, (33, 115 + 58 * 11-1), mask=user_avatar_layer)
+
+        if len(str(ctx.author)) > 24:
+            UserSplit = str(ctx.author).upper()
+            UserSplit = UserSplit.split('#')
+            UserFormatted = UserSplit[0]
+            UserFormatted = UserFormatted[0:19] + "...#" + UserSplit[1]
+        else:
+            UserFormatted = str(ctx.author).upper()
+
+        draw.text((50, 81 + 58 * 11-1), f"YOUR RANK", (255, 255, 255), font=username_font)
+        draw.text((80, 115 + 58 * 11-1), f"LEVEL", (255, 255, 255), font=level_txt_font)
+        draw.text((80, 130 + 58 * 11-1), f"{user_level}", (255, 255, 255), font=level_font)
+        draw.text((143, 117 + 58 * 11-1), f"#{user_rank}", (255, 255, 255), font=rank_font)
+        draw.text((228, 120 + 58 * 11-1), f"{UserFormatted}", (255, 255, 255), font=username_font)
+
+        color = 98, 211, 245
+        x = 226
+        y = 151 + 58 * 11 -1
+        h = 3
+        w = 318
+        xp_lvl_up = round(125 * (((user_level + 1) / 1.20) ** 1.20))
+        progress = w * (float(user_xp) / float(xp_lvl_up))
+        w = progress
+        draw.ellipse((x + w, y, x + h + w, y + h), fill=color)
+        draw.ellipse((x, y, x + h, y + h), fill=color)
+        draw.rectangle((x + (h / 2), y, x + w + (h / 2), y + h), fill=color)
+
+        compiled.paste(top_layer, (0, 0), mask=top_layer)
+
+        # set a var to arr that represents bytes.
+        arr = io.BytesIO()
+        # Save our compiled image in PNG format as bytes
+        compiled.save(arr, format='PNG')
+        # Set the byte stream position to 0.
+        arr.seek(0)
+        # Set a file var to a file discord understands, using our bytes, with a filename of "WelcomeCard.png"
+        await ctx.send(file=discord.File(fp=arr, filename=f'LevelCard.PNG'))
+
     @commands.command(name="pay", aliases=["give", "gift"], brief='Pays a user coins.',
                       description="Pays the specified user the specified amount of coins.")
     async def pay(self, ctx, user: discord.Member, amount):
@@ -590,6 +721,73 @@ class Commands(commands.Cog, name="Commands"):
         await send_embed(ctx, author="Successful Payment",
                          description=f"{ctx.author.mention} paid {user.mention} <:PogCoin:870094422233215007> {amount} "
                                      f"Pog Coins.", color=0x08d5f7)
+
+    @commands.command(name="schedule", brief="Displays the NFL schedule.",
+                      description="Displays the NFL schedule for the current week.")
+    async def schedule(self, ctx):
+        rliveGameData = requests.get("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard")
+        liveGameData = json.loads(rliveGameData.text)
+
+        teamDict = {"Minnesota Vikings": ["<:vikings:771799797769175080>", "Vikings"],
+                    "Tennessee Titans": ["<:titans:771799797837463552>", "Titans"],
+                    "Houston Texans": ["<:texans:771799797828026428>", "Texans"],
+                    "Pittsburgh Steelers": ["<:steelers:771799797434548225>", "Steelers"],
+                    "Seattle Seahawks": ["<:seahawks:771799797458796604>", "Seahawks"],
+                    "New Orleans Saints": ["<:saints:771799797790408714>", "Saints"],
+                    "Baltimore Ravens": ["<:ravens:771800517805735938>", "Ravens"],
+                    "Los Angeles Rams": ["<:rams:771799797605859358>", "Rams"],
+                    "Las Vegas Raiders": ["<:raiders:771799797858041877>", "Raiders"],
+                    "New England Patriots": ["<:patriots:771799796725710880>", "Patriots"],
+                    "Carolina Panthers": ["<:panthers:771799797480292412>", "Panthers"],
+                    "Green Bay Packers": ["<:packers:771799797698920478>", "Packers"],
+                    "Detroit Lions": ["<:lions:771799797757116418>", "Lions"],
+                    "New York Jets": ["<:jets:771799797715566632>", "Jets"],
+                    "Jacksonville Jaguars": ["<:jags:771799797501263914>", "Jaguars"],
+                    "New York Giants": ["<:giants:771799797187084358>", "Giants"],
+                    "Washington": ["<:footballteam:771799797094809662>", "Football Team"],
+                    "Atlanta Falcons": ["<:falcons:771799797413183570>", "Falcons"],
+                    "Philadelphia Eagles": ["<:eagles:771799797371633694>", "Eagles"],
+                    "Miami Dolphins": ["<:dolphins:771799797353938954>", "Dolphins"],
+                    "Dallas Cowboys": ["<:cowboys:771799797504933909>", "Cowboys"],
+                    "Indianapolis Colts": ["<:colts:771799797702721536>", "Colts"],
+                    "Kansas City Chiefs": ["<:chiefs:771799796712734751>", "Chiefs"],
+                    "Los Angeles Chargers": ["<:chargers:771799796784562197>", "Chargers"],
+                    "Arizona Cardinals": ["<:cardinals:771799796662534156>", "Cardinals"],
+                    "Tampa Bay Buccaneers": ["<:buccaneers:771799796717060126>", "Buccaneers"],
+                    "Cleveland Browns": ["<:browns:771799797001617428>", "Browns"],
+                    "Denver Broncos": ["<:broncos:771799795999834113>", "Broncos"],
+                    "Buffalo Bills": ["<:bills:771799794137169970>", "Bills"],
+                    "Cincinnati Bengals": ["<:bengals:771799793915134012>", "Bengals"],
+                    "Chicago Bears": ["<:bears:771799793726521415>", "Bears"],
+                    "San Francisco 49ers": ["<:49ers:771799793553899521>", "49ers"]}
+
+        schedule_str = ""
+        for game in liveGameData["events"]:
+            gameInfo = {"Status": game["status"]["type"]["detail"],
+                        "Home Team": game['competitions'][0]['competitors'][0]['team']['displayName'],
+                        "Away Team": game['competitions'][0]['competitors'][1]['team']['displayName']}
+            gameInfo["Matchup"] = f"{teamDict[gameInfo['Away Team']][0]} {teamDict[gameInfo['Away Team']][1]} @ " \
+                                  f"{teamDict[gameInfo['Home Team']][1]} {teamDict[gameInfo['Home Team']][0]}"
+
+            if game["status"]["type"]["description"] == "Scheduled":
+                gameInfo["Odds"] = game["competitions"][0]["odds"][0]["details"]
+                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Odds']}\n"
+            elif game["status"]["type"]["description"] == "Final":
+                gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
+                gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]
+                gameInfo["Score Display"] = f'{gameInfo["Home Score"]} - {gameInfo["Away Score"]}'
+                if game["competitions"][0]["competitors"][0]["winner"]:
+                    gameInfo["Winner"] = "Home Team"
+                else:
+                    gameInfo["Winner"] = "Away Team"
+                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Score Display']}\n"
+            elif game["status"]["type"]["description"] == "In Progress":
+                gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
+                gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]
+                gameInfo["Score Display"] = f'{gameInfo["Home Score"]} - {gameInfo["Away Score"]}'
+                schedule_str += f"**{gameInfo['Matchup']}**\nIn Progress - {gameInfo['Status']}\n" \
+                                f"{gameInfo['Score Display']}\n"
+        await send_embed(ctx, title="**NFL Schedule**", description=schedule_str, color=0x08d5f7)
 
 
 def setup(bot):
