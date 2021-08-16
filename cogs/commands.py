@@ -149,7 +149,7 @@ class Commands(commands.Cog, name="Commands"):
 
         list_of_bots = [bot.mention for bot in server.members if bot.bot]
 
-        await send_embed(ctx, title=f"**{server} Info**", thumbnail=server.icon_url,
+        await send_embed(ctx, title=f"**{server} Info**", thumbnail=server.icon.url,
                          fields=[(f'**Server Owner**', f"{server.owner}", True),
                                  (f'**Owner ID:**', server.owner.id, True),
                                  (f'**Server ID:**', server.id, True),
@@ -170,8 +170,6 @@ class Commands(commands.Cog, name="Commands"):
                                   "with the information of the user that called the command.")
     # Look for a command called whois and collects optional user parameter, so if no user given, user = None.
     async def whois(self, ctx, *, user: discord.User = None):
-        # Checks if user parameter is given. If user = none, that means no user was given so user variable is set to the
-        # command author.
         if user is None:
             user = ctx.author
 
