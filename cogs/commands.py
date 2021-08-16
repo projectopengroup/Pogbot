@@ -23,6 +23,7 @@ from discord.ext.commands.cooldowns import BucketType
 import io
 from PIL import Image, ImageFont, ImageDraw
 from PIL import ImageFile
+from math import floor, ceil
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -693,7 +694,7 @@ class Commands(commands.Cog, name="Commands"):
         # Set the byte stream position to 0.
         arr.seek(0)
         # Set a file var to a file discord understands, using our bytes, with a filename of "WelcomeCard.png"
-        await ctx.send(file=discord.File(fp=arr, filename=f'LevelCard.PNG'))
+        await ctx.send(file=discord.File(fp=arr, filename=f'Leaderboard.PNG'))
 
     @commands.command(name="pay", aliases=["give", "gift"], brief='Pays a user coins.',
                       description="Pays the specified user the specified amount of coins.")
@@ -728,66 +729,137 @@ class Commands(commands.Cog, name="Commands"):
         rliveGameData = requests.get("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard")
         liveGameData = json.loads(rliveGameData.text)
 
-        teamDict = {"Minnesota Vikings": ["<:vikings:771799797769175080>", "Vikings"],
-                    "Tennessee Titans": ["<:titans:771799797837463552>", "Titans"],
-                    "Houston Texans": ["<:texans:771799797828026428>", "Texans"],
-                    "Pittsburgh Steelers": ["<:steelers:771799797434548225>", "Steelers"],
-                    "Seattle Seahawks": ["<:seahawks:771799797458796604>", "Seahawks"],
-                    "New Orleans Saints": ["<:saints:771799797790408714>", "Saints"],
-                    "Baltimore Ravens": ["<:ravens:771800517805735938>", "Ravens"],
-                    "Los Angeles Rams": ["<:rams:771799797605859358>", "Rams"],
-                    "Las Vegas Raiders": ["<:raiders:771799797858041877>", "Raiders"],
-                    "New England Patriots": ["<:patriots:771799796725710880>", "Patriots"],
-                    "Carolina Panthers": ["<:panthers:771799797480292412>", "Panthers"],
-                    "Green Bay Packers": ["<:packers:771799797698920478>", "Packers"],
-                    "Detroit Lions": ["<:lions:771799797757116418>", "Lions"],
-                    "New York Jets": ["<:jets:771799797715566632>", "Jets"],
-                    "Jacksonville Jaguars": ["<:jags:771799797501263914>", "Jaguars"],
-                    "New York Giants": ["<:giants:771799797187084358>", "Giants"],
-                    "Washington": ["<:footballteam:771799797094809662>", "Football Team"],
-                    "Atlanta Falcons": ["<:falcons:771799797413183570>", "Falcons"],
-                    "Philadelphia Eagles": ["<:eagles:771799797371633694>", "Eagles"],
-                    "Miami Dolphins": ["<:dolphins:771799797353938954>", "Dolphins"],
-                    "Dallas Cowboys": ["<:cowboys:771799797504933909>", "Cowboys"],
-                    "Indianapolis Colts": ["<:colts:771799797702721536>", "Colts"],
-                    "Kansas City Chiefs": ["<:chiefs:771799796712734751>", "Chiefs"],
-                    "Los Angeles Chargers": ["<:chargers:771799796784562197>", "Chargers"],
-                    "Arizona Cardinals": ["<:cardinals:771799796662534156>", "Cardinals"],
-                    "Tampa Bay Buccaneers": ["<:buccaneers:771799796717060126>", "Buccaneers"],
-                    "Cleveland Browns": ["<:browns:771799797001617428>", "Browns"],
-                    "Denver Broncos": ["<:broncos:771799795999834113>", "Broncos"],
-                    "Buffalo Bills": ["<:bills:771799794137169970>", "Bills"],
-                    "Cincinnati Bengals": ["<:bengals:771799793915134012>", "Bengals"],
-                    "Chicago Bears": ["<:bears:771799793726521415>", "Bears"],
-                    "San Francisco 49ers": ["<:49ers:771799793553899521>", "49ers"]}
+        teamDict = {"Minnesota Vikings": ["<:vikings:771799797769175080>", "Vikings", 32],
+                    "Tennessee Titans": ["<:titans:771799797837463552>", "Titans", 31],
+                    "Houston Texans": ["<:texans:771799797828026428>", "Texans", 30],
+                    "Pittsburgh Steelers": ["<:steelers:771799797434548225>", "Steelers", 29],
+                    "Seattle Seahawks": ["<:seahawks:771799797458796604>", "Seahawks", 28],
+                    "New Orleans Saints": ["<:saints:771799797790408714>", "Saints", 27],
+                    "Baltimore Ravens": ["<:ravens:771800517805735938>", "Ravens", 26],
+                    "Los Angeles Rams": ["<:rams:771799797605859358>", "Rams", 25],
+                    "Las Vegas Raiders": ["<:raiders:771799797858041877>", "Raiders", 24],
+                    "New England Patriots": ["<:patriots:771799796725710880>", "Patriots", 23],
+                    "Carolina Panthers": ["<:panthers:771799797480292412>", "Panthers", 22],
+                    "Green Bay Packers": ["<:packers:771799797698920478>", "Packers", 21],
+                    "Detroit Lions": ["<:lions:771799797757116418>", "Lions", 20],
+                    "New York Jets": ["<:jets:771799797715566632>", "Jets", 19],
+                    "Jacksonville Jaguars": ["<:jags:771799797501263914>", "Jaguars", 18],
+                    "New York Giants": ["<:giants:771799797187084358>", "Giants", 17],
+                    "Washington": ["<:footballteam:771799797094809662>", "Football Team", 16],
+                    "Atlanta Falcons": ["<:falcons:771799797413183570>", "Falcons", 15],
+                    "Philadelphia Eagles": ["<:eagles:771799797371633694>", "Eagles", 14],
+                    "Miami Dolphins": ["<:dolphins:771799797353938954>", "Dolphins", 13],
+                    "Dallas Cowboys": ["<:cowboys:771799797504933909>", "Cowboys", 12],
+                    "Indianapolis Colts": ["<:colts:771799797702721536>", "Colts", 11],
+                    "Kansas City Chiefs": ["<:chiefs:771799796712734751>", "Chiefs", 10],
+                    "Los Angeles Chargers": ["<:chargers:771799796784562197>", "Chargers", 9],
+                    "Arizona Cardinals": ["<:cardinals:771799796662534156>", "Cardinals", 8],
+                    "Tampa Bay Buccaneers": ["<:buccaneers:771799796717060126>", "Buccaneers", 7],
+                    "Cleveland Browns": ["<:browns:771799797001617428>", "Browns", 6],
+                    "Denver Broncos": ["<:broncos:771799795999834113>", "Broncos", 5],
+                    "Buffalo Bills": ["<:bills:771799794137169970>", "Bills", 4],
+                    "Cincinnati Bengals": ["<:bengals:771799793915134012>", "Bengals", 3],
+                    "Chicago Bears": ["<:bears:771799793726521415>", "Bears", 2],
+                    "San Francisco 49ers": ["<:49ers:771799793553899521>", "49ers", 1]}
 
+        welcomecardfolder = Path("img/card_welcomes/")
+
+        compiled = Image.open(welcomecardfolder / "nflschedule_toplayer.png")
+        side_bars = Image.open(welcomecardfolder / "game_sidebars.png")
+        team_logos = Image.open(welcomecardfolder / "nflteamlogos.png")
+        draw = ImageDraw.Draw(compiled)
+        week_txt_font = ImageFont.truetype("fonts/gadugi-bold.ttf", 48)
+
+        week_label = liveGameData["leagues"][0]["season"]["type"]["name"]
+        week_num = liveGameData["week"]["number"]
+        if week_label == "Preseason":
+            draw.text((408, 147), f"PRESEASON", (255, 255, 255), font=week_txt_font)
+            draw.text((325, 183), f"WEEK {week_num} SCHEDULE", (255, 255, 255), font=week_txt_font)
+        else:
+            draw.text((325, 152), f"WEEK {week_num} SCHEDULE", (255, 255, 255), font=week_txt_font)
+
+        num_games = 0
         schedule_str = ""
         for game in liveGameData["events"]:
-            gameInfo = {"Status": game["status"]["type"]["detail"],
+            at_txt_font = ImageFont.truetype("fonts/gadugi-bold.ttf", 31)
+            date_txt_font = ImageFont.truetype("fonts/gadugi-bold.ttf", 20)
+            odds_txt_font = ImageFont.truetype("fonts/gadugi-bold.ttf", 16)
+
+            new_bars = side_bars.copy()
+            compiled.paste(new_bars, (140 + 228 * (num_games % 4), 259 + 152 * floor(num_games / 4)), mask=new_bars)
+
+            gameInfo = {"Status": game["status"]["type"]["detail"], "Start Date": game['competitions'][0]["startDate"],
                         "Home Team": game['competitions'][0]['competitors'][0]['team']['displayName'],
                         "Away Team": game['competitions'][0]['competitors'][1]['team']['displayName']}
             gameInfo["Matchup"] = f"{teamDict[gameInfo['Away Team']][0]} {teamDict[gameInfo['Away Team']][1]} @ " \
                                   f"{teamDict[gameInfo['Home Team']][1]} {teamDict[gameInfo['Home Team']][0]}"
 
+            home_logo = team_logos.crop((((teamDict[gameInfo["Home Team"]][2]-1) % 8)*128, 
+                                         floor((teamDict[gameInfo["Home Team"]][2]-1)/8)*128, 
+                                         (teamDict[gameInfo["Home Team"]][2] - floor((teamDict[gameInfo["Home Team"]][2]-1) / 8)*8)*128,
+                                         ceil(teamDict[gameInfo["Home Team"]][2]/8)*128))
+            away_logo = team_logos.crop((((teamDict[gameInfo["Away Team"]][2]-1) % 8)*128, 
+                                         floor((teamDict[gameInfo["Away Team"]][2]-1)/8)*128, 
+                                         (teamDict[gameInfo["Away Team"]][2] - floor((teamDict[gameInfo["Away Team"]][2]-1) / 8)*8)*128,
+                                         ceil(teamDict[gameInfo["Away Team"]][2]/8)*128))
+
+            home_logo = home_logo.resize((60, 60), Image.ANTIALIAS)
+            away_logo = away_logo.resize((60, 60), Image.ANTIALIAS)
+
+            compiled.paste(home_logo, (258 + 228 * (num_games % 4), 278 + 152 * floor(num_games / 4)), mask=home_logo)
+            compiled.paste(away_logo, (150 + 228 * (num_games % 4), 278 + 152 * floor(num_games / 4)), mask=away_logo)
+            draw.text((220 + 228 * (num_games % 4), 285 + 152 * floor(num_games / 4)), f"@", (255, 255, 255),
+                      font=at_txt_font)
+
+            dt_object = datetime.strptime(gameInfo["Start Date"], "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
+            draw.text((150 + 228 * (num_games % 4), 252 + 152 * floor(num_games / 4)),
+                      f"{dt_object.month}/{dt_object.day}", (255, 255, 255), font=date_txt_font)
+
             if game["status"]["type"]["description"] == "Scheduled":
                 gameInfo["Odds"] = game["competitions"][0]["odds"][0]["details"]
-                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Odds']}\n"
+
+                if int(dt_object.hour) > 12:
+                    draw.text((150 + 228 * (num_games % 4), 333 + 152 * floor(num_games / 4)),
+                              f"{dt_object.hour-12}:{dt_object.minute:02} {dt_object:%p} EDT", (255, 255, 255),
+                              font=date_txt_font)
+                else:
+                    draw.text((150 + 228 * (num_games % 4), 333 + 152 * floor(num_games / 4)),
+                              f"{dt_object.hour}:{dt_object.minute:02} {dt_object:%p} EDT", (255, 255, 255),
+                              font=date_txt_font)
+                draw.text((173 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
+                          f"{gameInfo['Odds']} ", (255, 255, 255), font=odds_txt_font)
             elif game["status"]["type"]["description"] == "Final":
                 gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
                 gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]
-                gameInfo["Score Display"] = f'{gameInfo["Home Score"]} - {gameInfo["Away Score"]}'
+                gameInfo["Score Display"] = f'{gameInfo["Away Score"]} - {gameInfo["Home Score"]}'
                 if game["competitions"][0]["competitors"][0]["winner"]:
                     gameInfo["Winner"] = "Home Team"
                 else:
                     gameInfo["Winner"] = "Away Team"
-                schedule_str += f"**{gameInfo['Matchup']}**\n{gameInfo['Status']}\n{gameInfo['Score Display']}\n"
+
+                draw.text((150 + 228 * (num_games % 4), 333 + 152 * floor(num_games / 4)),
+                          f"{gameInfo['Score Display']}", (255, 255, 255), font=date_txt_font)
+                draw.text((150 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
+                          f"FINAL", (255, 255, 255), font=odds_txt_font)
             elif game["status"]["type"]["description"] == "In Progress":
                 gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
                 gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]
-                gameInfo["Score Display"] = f'{gameInfo["Home Score"]} - {gameInfo["Away Score"]}'
-                schedule_str += f"**{gameInfo['Matchup']}**\nIn Progress - {gameInfo['Status']}\n" \
-                                f"{gameInfo['Score Display']}\n"
-        await send_embed(ctx, title="**NFL Schedule**", description=schedule_str, color=0x08d5f7)
+                gameInfo["Score Display"] = f'{gameInfo["Away Score"]} - {gameInfo["Home Score"]}'
+
+                draw.text((150 + 228 * (num_games % 4), 333 + 152 * floor(num_games / 4)),
+                          f"{gameInfo['Status']}", (255, 255, 255), font=date_txt_font)
+                draw.text((150 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
+                          f"{gameInfo['Score Display']}", (255, 255, 255), font=odds_txt_font)
+            num_games += 1
+
+        # set a var to arr that represents bytes.
+        arr = io.BytesIO()
+        # Save our compiled image in PNG format as bytes
+        compiled.save(arr, format='PNG')
+        # Set the byte stream position to 0.
+        arr.seek(0)
+        # Set a file var to a file discord understands, using our bytes, with a filename of "WelcomeCard.png"
+        await ctx.send(file=discord.File(fp=arr, filename=f'NFLSchedule.PNG'))
 
 
 def setup(bot):
