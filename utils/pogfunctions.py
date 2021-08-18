@@ -537,7 +537,7 @@ async def check_xp(ctx):
     # amount of xp between the range 11 and 18 is given to the user.
     if xplock == "0" or datetime.strptime(xplock, "%Y-%m-%d %H:%M:%S.%f") < datetime.now():
         set_db_user_item(ctx.guild.id, ctx.author.id, "XPLockedUntil", datetime.now() + timedelta(minutes=1))
-        set_db_user_item(ctx.guild.id, ctx.author.id, "XP", int(userxp) + random.randint(14, 22))
+        set_db_user_item(ctx.guild.id, ctx.author.id, "XP", int(userxp) + random.randint(15, 25))
         currency = get_global_currency(ctx.author.id)
         set_global_currency(ctx.author.id, currency + 10)
 

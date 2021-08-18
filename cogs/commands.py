@@ -811,10 +811,27 @@ class Commands(commands.Cog, name="Commands"):
 
             dt_object = datetime.strptime(gameInfo["Start Date"], "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
             draw.text((150 + 228 * (num_games % 4), 252 + 152 * floor(num_games / 4)),
-                      f"{dt_object.month}/{dt_object.day}", (255, 255, 255), font=date_txt_font)
+                      f"{dt_object.strftime('%a').upper()} {dt_object.month}/{dt_object.day}", (255, 255, 255),
+                      font=date_txt_font)
 
             if game["status"]["type"]["description"] == "Scheduled":
-                gameInfo["Odds"] = game["competitions"][0]["odds"][0]["details"]
+                try:
+                    gameInfo["Odds"] = game["competitions"][0]["odds"][0]["details"]
+                    team, odds = gameInfo["Odds"].split(" ")
+                    if team == game['competitions'][0]['competitors'][0]['team']['abbreviation']:
+                        home_logo = home_logo.resize((25, 25), Image.ANTIALIAS)
+                        compiled.paste(home_logo, (150 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
+                                       mask=home_logo)
+                    else:
+                        away_logo = away_logo.resize((25, 25), Image.ANTIALIAS)
+                        compiled.paste(away_logo, (150 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
+                                       mask=away_logo)
+                    draw.text((180 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
+                              f"{odds} ", (255, 255, 255), font=odds_txt_font)
+                except KeyError:
+                    gameInfo["Odds"] = "NO ODDS"
+                    draw.text((150 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
+                              f"{gameInfo['Odds']} ", (255, 255, 255), font=odds_txt_font)
 
                 if int(dt_object.hour) > 12:
                     draw.text((150 + 228 * (num_games % 4), 333 + 152 * floor(num_games / 4)),
@@ -824,8 +841,6 @@ class Commands(commands.Cog, name="Commands"):
                     draw.text((150 + 228 * (num_games % 4), 333 + 152 * floor(num_games / 4)),
                               f"{dt_object.hour}:{dt_object.minute:02} {dt_object:%p} EDT", (255, 255, 255),
                               font=date_txt_font)
-                draw.text((173 + 228 * (num_games % 4), 357 + 152 * floor(num_games / 4)),
-                          f"{gameInfo['Odds']} ", (255, 255, 255), font=odds_txt_font)
             elif game["status"]["type"]["description"] == "Final":
                 gameInfo["Home Score"] = game["competitions"][0]["competitors"][0]["score"]
                 gameInfo["Away Score"] = game["competitions"][0]["competitors"][1]["score"]

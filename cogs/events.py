@@ -589,7 +589,6 @@ class Events(commands.Cog):
             return
 
         if "!profile" in msg.content.lower() or "!level" in msg.content.lower() or "!rank" in msg.content.lower():
-            print("Profile or level/rank command")
             pass
         else:
             await check_xp(msg)
