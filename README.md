@@ -15,7 +15,7 @@ Once Pogbot is added, run the command !setup to get antiquated with Pogbot.
 
 ## Project Leads
 
-* **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)**
+* **ProtoMan**
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)**
 
 ## Project Organizers
