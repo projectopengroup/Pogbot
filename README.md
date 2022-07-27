@@ -26,7 +26,7 @@ Once Pogbot is added, run the command !setup to get antiquated with Pogbot.
 ## Contributors
 
 * **TG(TG#5287 on discord)** -> Graphics contributions. Created the Project Open Group and Pogbot logos.
-* **[Mag(Mag#7777 on discord)](https://github.com/mag-nif-i-cent)** Developer. Foundational code contributions. 
+* **ProtoMan https://github.com/mag-nif-i-cent)** Developer. Foundational code contributions. 
 * **[Cheetah(TheOneCheetah#3764 on discord)](https://github.com/TheOneCheetah)** -> Developer. Foundational code contributions. 
 * **[DJ DeHao(DJ DeHao#4627 on discord)](https://github.com/DJ-DeHao)** -> Coder. Code contributions. (avatar command).
 * **[Gummies(Panda Gummies#2155 on discord)](https://github.com/Gummies351)** -> Coder. Code contributions. (echo command).
